@@ -2,7 +2,9 @@
 # 🐉 DRAGON MOONAD
 
 Revolutionary LP Mining Protocol on Monad Blockchain
+## 🌐 Live Demo
 
+[![View Live](https://img.shields.io/badge/Live%20Demo-DRAGON%20MOONAD-orange?style=for-the-badge)](https://00impera.github.io/dragon-moonad/)
 ![DRAGON MOONAD](https://files.catbox.moe/byzt1g.png)
 
 ## 🌟 About
@@ -55,7 +57,7 @@ DRAGON MOONAD is a next-generation DeFi protocol offering liquidity mining rewar
 ```
 Your Pending Rewards = (Your LP Tokens / Total LP Staked) × Blocks × 1 DRAGON
 ```
-
+👉 [View the DRAGON MOONAD Live Site](https://00impera.github.io/dragon-moonad/)
 **Example:** If you stake 100 LP tokens out of 1,000 total (10%), you earn 0.1 DRAGON per block.
 
 ## ⚠️ Disclaimer
