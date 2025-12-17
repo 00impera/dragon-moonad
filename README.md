@@ -68,7 +68,7 @@ DYOR. Cryptocurrency investments carry risk. Not financial advice.
 
 ## 📄 License
 
-MIT License
+MIT License                                                                                                                                           [![Donate to My Moon](https://img.shields.io/badge/Donate%20to-My%20Moon%20%E2%9C%A8-orange?style=for-the-badge&logo=ethereum)](https://etherscan.io/address/0x592B35c8917eD36c39Ef73D0F5e92B0173560b2e)
 
 ---
 
