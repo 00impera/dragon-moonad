@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRAGON MOONAD - Revolutionary LP Mining on Monad</title>
+    <meta name="description" content="Stake, Earn, and Grow with Dragon's Revolutionary LP Mining System on Monad Blockchain">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #2a1f3a 100%);
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 14, 39, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            border-bottom: 2px solid rgba(255, 107, 0, 0.3);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ff6b00;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-links a:hover {
+            color: #ff6b00;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .dragon-icon {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 2rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .dragon-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(255, 107, 0, 0.5);
+        }
+
+        h1 {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff6b00, #ff9500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: #b0b0b0;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b00, #ff9500);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: #ff6b00;
+            border: 2px solid #ff6b00;
+        }
+
+        .btn-secondary:hover {
+            background: #ff6b00;
+            color: #fff;
+        }
+
+        .section {
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            color: #ff6b00;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 107, 0, 0.5);
+            box-shadow: 0 10px 30px rgba(255, 107, 0, 0.2);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ff6b00;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: #b0b0b0;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            border-color: rgba(255, 107, 0, 0.5);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #ff6b00;
+        }
+
+        .mechanism-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .mechanism-card h3 {
+            color: #ff6b00;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .mechanism-step {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            background: #ff6b00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .contract-info {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 20px;
+            margin-top: 2rem;
+            border: 1px solid rgba(255, 107, 0, 0.2);
+        }
+
+        .contract-address {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            padding: 0.5rem 1rem;
+            background: #ff6b00;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #ff9500;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .social-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            color: #fff;
+            font-size: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .social-btn:hover {
+            background: #ff6b00;
+            transform: translateY(-5px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(10, 14, 39, 0.95);
+            border-top: 2px solid rgba(255, 107, 0, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            .tagline { font-size: 1.2rem; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <nav>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon">
+                <span>DRAGON MOONAD</span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#about">About</a></li>
+                <li><a href="#mechanism">How It Works</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#contract">Contract</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="dragon-icon">
+                    <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad">
+                </div>
+                <h1>DRAGON MOONAD</h1>
+                <p class="tagline">Revolutionary LP Mining Protocol on Monad</p>
+                <p style="font-size: 1.2rem; color: #b0b0b0; margin-bottom: 2rem;">
+                    Stake LP tokens, earn DRAGON rewards every block, and grow your portfolio
+                </p>
+                <div class="cta-buttons">
+                    <a href="#mechanism" class="btn btn-primary">Learn More</a>
+                    <a href="#contract" class="btn btn-secondary">View Contract</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="about">
+        <div class="container">
+            <h2 class="section-title">Token Overview</h2>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value">1M</div>
+                    <div class="stat-label">Total Supply</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">DRAGON</div>
+                    <div class="stat-label">Token Symbol</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">1 DRAGON</div>
+                    <div class="stat-label">Reward per Block</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">Monad</div>
+                    <div class="stat-label">Blockchain</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="mechanism" style="background: rgba(0,0,0,0.2);">
+        <div class="container">
+            <h2 class="section-title">How DRAGON Works</h2>
+            
+            <div class="mechanism-card">
+                <h3>🔥 LP Mining Mechanism</h3>
+                <p style="margin-bottom: 1rem; color: #b0b0b0;">
+                    DRAGON uses a fair liquidity mining system that rewards users proportionally for providing liquidity.
+                </p>
+                
+                <div class="mechanism-step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong style="color: #ff6b00;">Add Liquidity</strong>
+                        <p style="color: #b0b0b0; margin-top: 0.5rem;">
+                            Provide DRAGON and MONAD tokens to a DEX liquidity pool to receive LP tokens.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mechanism-step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong style="color: #ff6b00;">Stake Your LP Tokens</strong>
+                        <p style="color: #b0b0b0; margin-top: 0.5rem;">
+                            Deposit LP tokens into the Dragon Mining Contract to start earning rewards.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mechanism-step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong style="color: #ff6b00;">Earn Block Rewards</strong>
+                        <p style="color: #b0b0b0; margin-top: 0.5rem;">
+                            Receive 1 DRAGON per block, distributed proportionally to all LP stakers.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="mechanism-step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong style="color: #ff6b00;">Claim or Compound</strong>
+                        <p style="color: #b0b0b0; margin-top: 0.5rem;">
+                            Withdraw rewards anytime or reinvest to maximize returns.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mechanism-card">
+                <h3>💰 Reward Formula</h3>
+                <p style="color: #b0b0b0; margin-bottom: 1rem;">
+                    Your rewards are calculated fairly based on your stake:
+                </p>
+                <div style="background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 10px; font-family: monospace;">
+                    <p style="color: #ff6b00; font-size: 1.2rem;">Your Pending Rewards = </p>
+                    <p style="color: #fff; margin-top: 0.5rem;">
+                        (Your LP Tokens / Total LP Staked) × Blocks Passed × 1 DRAGON
+                    </p>
+                </div>
+                <p style="color: #b0b0b0; margin-top: 1rem;">
+                    <strong>Example:</strong> If you stake 100 LP tokens out of 1,000 total (10%), you earn 0.1 DRAGON per block.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="features">
+        <div class="container">
+            <h2 class="section-title">Why DRAGON?</h2>
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Built on Monad</h3>
+                    <p style="color: #b0b0b0;">
+                        Lightning-fast transactions with minimal fees on Monad's high-performance blockchain.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💎</div>
+                    <h3>Continuous Rewards</h3>
+                    <p style="color: #b0b0b0;">
+                        Earn DRAGON tokens every single block by staking LP tokens.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔐</div>
+                    <h3>Verified Contracts</h3>
+                    <p style="color: #b0b0b0;">
+                        100% verified smart contracts on Sourcify for complete transparency.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Claiming</h3>
+                    <p style="color: #b0b0b0;">
+                        Withdraw your earned rewards anytime with one simple transaction.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Fair Distribution</h3>
+                    <p style="color: #b0b0b0;">
+                        Proportional rewards ensure fairness for all participants.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Emergency Withdraw</h3>
+                    <p style="color: #b0b0b0;">
+                        Safety first - unstake your LP tokens anytime without restrictions.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="contract">
+        <div class="container">
+            <h2 class="section-title">Smart Contracts</h2>
+            
+            <div class="contract-info">
+                <h3 style="color: #ff6b00; margin-bottom: 1rem;">🪙 DRAGON Token</h3>
+                <div class="contract-address">
+                    <span style="flex: 1;">0x1b685B0c771b877d1a4e8F02365a4A809E962c81</span>
+                    <button class="copy-btn" onclick="copyAddress('0x1b685B0c771b877d1a4e8F02365a4A809E962c81', this)">Copy</button>
+                </div>
+                <p style="color: #b0b0b0;">✅ Verified on Sourcify | Match ID: 520026</p>
+            </div>
+
+            <div class="contract-info">
+                <h3 style="color: #ff6b00; margin-bottom: 1rem;">⛏️ LP Mining Contract</h3>
+                <div class="contract-address">
+                    <span style="flex: 1;">0x28840f3e117345A5FBF08b7F67503D2F47B28023</span>
+                    <button class="copy-btn" onclick="copyAddress('0x28840f3e117345A5FBF08b7F67503D2F47B28023', this)">Copy</button>
+                </div>
+                <p style="color: #b0b0b0;">✅ Verified on Sourcify | Match ID: 520027</p>
+            </div>
+
+            <div class="contract-info">
+                <h3 style="color: #ff6b00; margin-bottom: 1rem;">➕ Add DRAGON to Wallet</h3>
+                <div style="background: rgba(0,0,0,0.3); padding: 1rem; border-radius: 10px;">
+                    <p><strong>Token Address:</strong> 0x1b685B0c771b877d1a4e8F02365a4A809E962c81</p>
+                    <p><strong>Symbol:</strong> DRAGON</p>
+                    <p><strong>Decimals:</strong> 18</p>
+                    <p><strong>Network:</strong> Monad (Chain ID: 143)</p>
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="https://x.com/bnbgold277983" class="social-btn" title="Twitter" target="_blank">🐦</a>
+                <a href="https://t.me/MonadFrogsNFT_bot/app" class="social-btn" title="Telegram" target="_blank">✈️</a>
+                <a href="https://discord.com/channels/1316093079090106472" class="social-btn" title="Discord" target="_blank">💬</a>
+                <a href="https://github.com/00impera/dragon-moonad" class="social-btn" title="GitHub" target="_blank">💻</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p style="color: #b0b0b0;">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
+            <p style="color: #666; margin-top: 0.5rem; font-size: 0.9rem;">
+                ⚠️ DYOR. Crypto investments carry risk. Not financial advice.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.width = Math.random() * 3 + 'px';
+            star.style.height = star.style.width;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        function copyAddress(address, button) {
+            navigator.clipboard.writeText(address).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Copied!';
+                button.style.background = '#00ff00';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#ff6b00';
+                }, 2000);
+            });
+        }
+
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-card, .feature-card, .mechanism-card, .contract-info').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(30px)';
+            el.style.transition = 'all 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
