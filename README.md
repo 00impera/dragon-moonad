@@ -1,4 +1,6 @@
- README.MD
+ README.MD                                                                                    [![MONAD Price](https://api.dexscreener.com/latest/dex/tokens/0x3E459BeA2A3Efab22Ce12358E672dD31A9594D34/badge)](https://dexscreener.com/monad/0x3E459BeA2A3Efab22Ce12358E672dD31A9594D34)
+
+[View MONAD Price on DexScreener](https://dexscreener.com/monad/0x3E459BeA2A3Efab22Ce12358E672dD31A9594D34)
 # 🐉 DRAGON MOONAD
 
 Revolutionary LP Mining Protocol on Monad Blockchain
