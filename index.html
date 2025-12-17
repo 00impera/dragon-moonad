@@ -7,59 +7,60 @@
     <meta name="description" content="Stake, Earn, and Grow with Dragon's Revolutionary LP Mining System on Monad Blockchain">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%); color: #fff; overflow-x: hidden; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000000; color: #FFFFFF; overflow-x: hidden; }
         .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s infinite; }
         @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        nav { position: fixed; top: 0; width: 100%; background: rgba(26, 26, 46, 0.95); backdrop-filter: blur(10px); padding: 1rem 2rem; z-index: 1000; border-bottom: 2px solid rgba(232, 65, 24, 0.3); }
+        nav { position: fixed; top: 0; width: 100%; background: #111111cc; backdrop-filter: blur(10px); padding: 1rem 2rem; z-index: 1000; border-bottom: 2px solid #FF10F0; }
         .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-        .logo { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: bold; color: #e84118; }
+        .logo { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: bold; color: #FF10F0; }
         .logo img { width: 40px; height: 40px; border-radius: 50%; }
         .nav-links { display: flex; gap: 2rem; list-style: none; }
         .nav-links a { color: #fff; text-decoration: none; transition: color 0.3s; font-weight: 500; }
-        .nav-links a:hover { color: #e84118; }
+        .nav-links a:hover { color: #FF10F0; }
         .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 10; }
         .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 80px; }
         .hero-content { animation: fadeInUp 1s ease; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .dragon-icon { width: 150px; height: 150px; margin: 0 auto 2rem; animation: float 3s ease-in-out infinite; }
         @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-        .dragon-icon img { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 50px rgba(232, 65, 24, 0.5); }
-        h1 { font-size: 4rem; margin-bottom: 1rem; background: linear-gradient(45deg, #e84118, #c23616); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .tagline { font-size: 1.5rem; margin-bottom: 2rem; color: #dcdde1; }
+        .dragon-icon img { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 50px #FF10F088; }
+        h1 { font-size: 4rem; margin-bottom: 1rem; background: linear-gradient(45deg, #FF10F0, #FFD700); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .tagline { font-size: 1.5rem; margin-bottom: 2rem; color: #FFD700; }
         .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
         .btn { padding: 1rem 2rem; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: all 0.3s; text-decoration: none; display: inline-block; }
-        .btn-primary { background: linear-gradient(45deg, #e84118, #c23616); color: #fff; }
-        .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(232, 65, 24, 0.4); }
-        .btn-secondary { background: transparent; color: #e84118; border: 2px solid #e84118; }
-        .btn-secondary:hover { background: #e84118; color: #fff; }
+        .btn-primary { background: #FF10F0; color: #000; }
+        .btn-primary:hover { background: #FFD700; color: #000; box-shadow: 0 10px 30px #FF10F044; }
+        .btn-secondary { background: transparent; color: #FF10F0; border: 2px solid #FF10F0; }
+        .btn-secondary:hover { background: #FF10F0; color: #000; }
         .section { padding: 5rem 0; }
-        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #e84118; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #FF10F0; }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
-        .stat-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; text-align: center; border: 1px solid rgba(232, 65, 24, 0.2); transition: all 0.3s; }
-        .stat-card:hover { transform: translateY(-10px); border-color: rgba(232, 65, 24, 0.5); box-shadow: 0 10px 30px rgba(232, 65, 24, 0.2); }
-        .stat-value { font-size: 2.5rem; font-weight: bold; color: #e84118; margin-bottom: 0.5rem; }
-        .stat-label { font-size: 1rem; color: #dcdde1; }
+        .stat-card { background: #111111; backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; text-align: center; border: 1px solid #444444; transition: all 0.3s; }
+        .stat-card:hover { transform: translateY(-10px); border-color: #FFD700; box-shadow: 0 10px 30px #FFD70044; }
+        .stat-value { font-size: 2.5rem; font-weight: bold; color: #FFD700; margin-bottom: 0.5rem; }
+        .stat-label { font-size: 1rem; color: #FF10F0; }
         .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-        .feature-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; border: 1px solid rgba(232, 65, 24, 0.2); transition: all 0.3s; }
-        .feature-card:hover { transform: translateY(-10px); border-color: rgba(232, 65, 24, 0.5); }
-        .feature-icon { font-size: 3rem; margin-bottom: 1rem; }
-        .feature-card h3 { font-size: 1.5rem; margin-bottom: 1rem; color: #e84118; }
-        .mechanism-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; margin-bottom: 2rem; border: 1px solid rgba(232, 65, 24, 0.2); }
-        .mechanism-card h3 { color: #e84118; margin-bottom: 1rem; font-size: 1.8rem; }
-        .mechanism-step { display: flex; gap: 1rem; margin: 1rem 0; padding: 1rem; background: rgba(0, 0, 0, 0.2); border-radius: 10px; }
-        .step-number { width: 30px; height: 30px; background: #e84118; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
-        .contract-info { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; margin-top: 2rem; border: 1px solid rgba(232, 65, 24, 0.2); }
-        .contract-address { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: rgba(0, 0, 0, 0.3); border-radius: 10px; word-break: break-all; }
-        .copy-btn { padding: 0.5rem 1rem; background: #e84118; border: none; border-radius: 5px; color: #fff; cursor: pointer; white-space: nowrap; }
-        .copy-btn:hover { background: #c23616; }
+        .feature-card { background: #111111; backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; border: 1px solid #444444; transition: all 0.3s; }
+        .feature-card:hover { transform: translateY(-10px); border-color: #FF10F0; }
+        .feature-icon { font-size: 3rem; margin-bottom: 1rem; color: #00FFFF; }
+        .feature-card h3 { font-size: 1.5rem; margin-bottom: 1rem; color: #FFD700; }
+        .mechanism-card { background: #111111; backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; margin-bottom: 2rem; border: 1px solid #444444; }
+        .mechanism-card h3 { color: #FF10F0; margin-bottom: 1rem; font-size: 1.8rem; }
+        .mechanism-step { display: flex; gap: 1rem; margin: 1rem 0; padding: 1rem; background: #222; border-radius: 10px; }
+        .step-number { width: 30px; height: 30px; background: #FF10F0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; color: #000; }
+        .contract-info { background: #111111; backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; margin-top: 2rem; border: 1px solid #444444; }
+        .contract-address { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: #222; border-radius: 10px; word-break: break-all; }
+        .copy-btn { padding: 0.5rem 1rem; background: #FF10F0; border: none; border-radius: 5px; color: #000; cursor: pointer; white-space: nowrap; }
+        .copy-btn:hover { background: #FFD700; color: #000; }
         .social-links { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
-        .social-btn { width: 50px; height: 50px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); display: flex; align-items: center; justify-content: center; text-decoration: none; color: #fff; font-size: 1.5rem; transition: all 0.3s; }
-        .social-btn:hover { background: #e84118; transform: translateY(-5px); }
-        footer { text-align: center; padding: 2rem; background: rgba(26, 26, 46, 0.95); border-top: 2px solid rgba(232, 65, 24, 0.3); }
+        .social-btn { width: 50px; height: 50px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #FF10F0; font-size: 1.5rem; transition: all 0.3s; border: 2px solid #444444; }
+        .social-btn:hover { background: #FF10F0; color: #000; border-color: #FFD700; }
+        .social-btn img { width: 28px; height: 28px; }
+        footer { text-align: center; padding: 2rem; background: #111111cc; border-top: 2px solid #FF10F0; }
         @media (max-width: 768px) { h1 { font-size: 2.5rem; } .tagline { font-size: 1.2rem; } .nav-links { display: none; } }
-        #dragon-token-widget { margin:2rem auto;max-width:350px;background:rgba(255,255,255,0.03);border-radius:16px;padding:1.5rem 1rem;text-align:center;border:1px solid rgba(232,65,24,0.15);box-shadow:0 2px 12px rgba(232,65,24,0.05);}
-        #dragon-token-logo {width:48px;height:48px;border-radius:50%;margin-bottom:8px;box-shadow:0 0 12px rgba(232,65,24,0.27);}
+        #dragon-token-widget { margin:2rem auto;max-width:350px;background:#111111;border-radius:16px;padding:1.5rem 1rem;text-align:center;border:1px solid #444444;box-shadow:0 2px 12px #FF10F044;}
+        #dragon-token-logo {width:48px;height:48px;border-radius:50%;margin-bottom:8px;box-shadow:0 0 12px #FF10F088;}
         #buy-dragon-widget { margin:2rem 0; }
     </style>
 </head>
@@ -89,7 +90,7 @@
                 </div>
                 <h1>DRAGON MOONAD</h1>
                 <p class="tagline">Revolutionary LP Mining Protocol on Monad</p>
-                <p style="font-size: 1.2rem; color: #dcdde1; margin-bottom: 2rem;">
+                <p style="font-size: 1.2rem; color: #FFD700; margin-bottom: 2rem;">
                     Stake LP tokens, earn DRAGON rewards every block, and grow your portfolio
                 </p>
                 <div class="cta-buttons">
@@ -123,27 +124,33 @@
             </div>
             <!-- Live DRAGON Token Info Widget -->
             <div id="dragon-token-widget">
-              <div id="dragon-token-loading" style="color:#e84118;">Loading live token info...</div>
+              <div id="dragon-token-loading" style="color:#FF10F0;">Loading live token info...</div>
               <div id="dragon-token-info" style="display:none;">
                 <img id="dragon-token-logo" src="" alt="Token Logo">
                 <h3 id="dragon-token-name" style="margin:0.5rem 0 0.2rem 0;"></h3>
-                <div style="color:#dcdde1;margin-bottom:0.5rem;"><span id="dragon-token-symbol"></span> | Decimals: <span id="dragon-token-decimals"></span></div>
+                <div style="color:#FFD700;margin-bottom:0.5rem;"><span id="dragon-token-symbol"></span> | Decimals: <span id="dragon-token-decimals"></span></div>
                 <div style="margin-bottom:0.5rem;"><b>Total Supply:</b> <span id="dragon-token-supply"></span></div>
                 <div style="margin-bottom:0.5rem;"><b>Holders:</b> <span id="dragon-token-holders"></span></div>
                 <div style="margin-bottom:0.5rem;"><b>Verified:</b> <span id="dragon-token-verified"></span></div>
-                <div style="margin-bottom:0.5rem;"><a id="dragon-token-website" href="#" target="_blank" style="color:#e84118;text-decoration:underline;">Website</a></div>
+                <div style="margin-bottom:0.5rem;"><a id="dragon-token-website" href="#" target="_blank" style="color:#FF10F0;text-decoration:underline;">Website</a></div>
               </div>
             </div>
             <!-- Buy DRAGON Widget -->
             <div id="buy-dragon-widget">
-              <input id="mint-amount" type="number" min="1" placeholder="Amount to mint" style="padding:0.5rem 1rem;border-radius:8px;border:1px solid #e84118;width:160px;">
-              <button id="mint-btn" style="padding:0.5rem 1.5rem;background:#e84118;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">Buy DRAGON</button>
+              <input id="mint-amount" type="number" min="1" placeholder="Amount to mint" style="padding:0.5rem 1rem;border-radius:8px;border:1px solid #FF10F0;width:160px;">
+              <button id="mint-btn" style="padding:0.5rem 1.5rem;background:#FF10F0;color:#000;border:none;border-radius:8px;font-weight:bold;cursor:pointer;">Buy DRAGON</button>
               <div id="mint-status" style="margin-top:1rem;color:#44bd32;font-weight:bold;"></div>
+            </div>
+            <!-- DEX Price Badge -->
+            <div style="margin:2rem 0;">
+              <a href="https://dexscreener.com/monad/0x1b685B0c771b877d1a4e8F02365a4A809E962c81" target="_blank">
+                <img src="https://api.dexscreener.com/latest/dex/tokens/0x1b685B0c771b877d1a4e8F02365a4A809E962c81/badge" alt="DEX Price">
+              </a>
             </div>
         </div>
     </div>
 
-    <div class="section" id="mechanism" style="background: rgba(0,0,0,0.2);">
+    <div class="section" id="mechanism" style="background: #111111;">
         <div class="container">
             <h2 class="section-title">How LP Mining Works</h2>
             <div class="mechanism-card">
@@ -180,7 +187,7 @@
             
             <div class="mechanism-card">
                 <h3>⚡ Key Features</h3>
-                <p style="line-height: 1.8;">
+                <p style="line-height: 1.8; color:#FFD700;">
                     • <strong>Fair Distribution:</strong> Rewards distributed proportionally to all stakers<br>
                     • <strong>No Lock Period:</strong> Withdraw your LP tokens anytime<br>
                     • <strong>Auto-Compounding:</strong> Optional auto-compound feature for maximum gains<br>
@@ -232,29 +239,36 @@
         <div class="container">
             <h2 class="section-title">Contract Information</h2>
             <div class="contract-info">
-                <h3 style="color: #e84118; margin-bottom: 1rem;">DRAGON Token Contract</h3>
+                <h3 style="color: #FF10F0; margin-bottom: 1rem;">DRAGON Token Contract</h3>
                 <div class="contract-address">
                     <span style="flex: 1; font-family: monospace;">0x1b685B0c771b877d1a4e8F02365a4A809E962c81</span>
                     <button class="copy-btn" onclick="copyAddress('0x1b685B0c771b877d1a4e8F02365a4A809E962c81', this)">Copy</button>
                 </div>
-                <p style="margin-top: 1rem; color: #dcdde1;">
+                <p style="margin-top: 1rem; color: #FFD700;">
                     ⚠️ Always verify the contract address before interacting. Only use official links.
                 </p>
             </div>
-            
             <div class="social-links">
-                <a href="#" class="social-btn" title="Twitter">𝕏</a>
-                <a href="#" class="social-btn" title="Telegram">✈️</a>
-                <a href="#" class="social-btn" title="Discord">💬</a>
-                <a href="#" class="social-btn" title="Medium">M</a>
+                <a href="https://x.com/bnbgold277983" class="social-btn" title="Twitter" target="_blank">
+                    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter">
+                </a>
+                <a href="https://discord.com/channels/1316093079090106472" class="social-btn" title="Discord" target="_blank">
+                    <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord">
+                </a>
+                <a href="https://dexscreener.com/monad/0x1b685B0c771b877d1a4e8F02365a4A809E962c81" class="social-btn" title="DEX Price" target="_blank">
+                    <img src="https://cryptologos.cc/logos/uniswap-uni-logo.png" alt="DEX">
+                </a>
             </div>
         </div>
     </div>
 
     <footer>
+        <div style="text-align:center;margin-bottom:1rem;">
+            <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad Logo" style="width:64px;height:64px;border-radius:50%;">
+        </div>
         <div class="container">
-            <p style="color: #dcdde1;">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
-            <p style="color: #718093; margin-top: 0.5rem; font-size: 0.9rem;">
+            <p style="color: #FFD700;">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
+            <p style="color: #00FFFF; margin-top: 0.5rem; font-size: 0.9rem;">
                 ⚠️ DYOR. Crypto investments carry risk. Not financial advice.
             </p>
         </div>
@@ -292,10 +306,10 @@
             navigator.clipboard.writeText(address).then(() => {
                 const originalText = button.textContent;
                 button.textContent = 'Copied!';
-                button.style.background = '#44bd32';
+                button.style.background = '#00FFFF';
                 setTimeout(() => {
                     button.textContent = originalText;
-                    button.style.background = '#e84118';
+                    button.style.background = '#FF10F0';
                 }, 2000);
             });
         }
@@ -389,7 +403,7 @@
             const status = document.getElementById('mint-status');
             status.textContent = "";
             if (!window.ethereum) {
-              status.style.color = "#e84118";
+              status.style.color = "#FF10F0";
               status.textContent = "MetaMask not found!";
               return;
             }
@@ -401,12 +415,12 @@
 
               const amount = document.getElementById('mint-amount').value;
               if (!amount || isNaN(amount) || Number(amount) <= 0) {
-                status.style.color = "#e84118";
+                status.style.color = "#FF10F0";
                 status.textContent = "Enter a valid amount!";
                 return;
               }
 
-              status.style.color = "#e84118";
+              status.style.color = "#FF10F0";
               status.textContent = "Sending transaction...";
               // Call mintRewards(to, amount)
               const decimals = await contract.decimals();
@@ -415,7 +429,7 @@
               status.style.color = "#44bd32";
               status.textContent = "Success! Tokens minted.";
             } catch (err) {
-              status.style.color = "#e84118";
+              status.style.color = "#FF10F0";
               status.textContent = "Error: " + (err?.info?.error?.message || err.message || "Transaction failed");
             }
           };
