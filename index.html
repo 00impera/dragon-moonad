@@ -23,12 +23,72 @@
     @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
     .copy-btn { padding: 0.5rem 1rem; background: #9D00FF; border: none; border-radius: 5px; color: #fff; cursor: pointer; white-space: nowrap; }
     .copy-btn:hover { background: #FFD700; color: #000; }
+    .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #9D00FF; }
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
+    .stat-card { background: rgba(17,17,17,0.85); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; text-align: center; border: 1px solid #444444; transition: all 0.3s; }
+    .stat-card:hover { transform: translateY(-10px); border-color: #FFD700; box-shadow: 0 10px 30px #FFD70044; }
+    .stat-value { font-size: 2.5rem; font-weight: bold; color: #FFD700; margin-bottom: 0.5rem; }
+    .stat-label { font-size: 1rem; color: #9D00FF; }
     /* Add your other CSS here as needed */
   </style>
 </head>
 <body>
   <div class="stars" id="stars"></div>
-  <!-- ... (your header, hero, about, mechanism, features, contract, etc.) ... -->
+  <nav>
+    <div class="nav-container" style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;">
+      <div class="logo" style="display:flex;align-items:center;gap:1rem;font-size:1.5rem;font-weight:bold;color:#9D00FF;">
+        <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon" loading="lazy" style="width:40px;height:40px;border-radius:50%;">
+        <span>DRAGON MOONAD</span>
+      </div>
+      <ul class="nav-links" style="display:flex;gap:2rem;list-style:none;">
+        <li><a href="#about" style="color:#fff;text-decoration:none;font-weight:500;">About</a></li>
+        <li><a href="#mechanism" style="color:#fff;text-decoration:none;font-weight:500;">How It Works</a></li>
+        <li><a href="#features" style="color:#fff;text-decoration:none;font-weight:500;">Features</a></li>
+        <li><a href="#contract" style="color:#fff;text-decoration:none;font-weight:500;">Contract</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div class="hero" style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding-top:80px;">
+    <div class="container" style="max-width:1200px;margin:0 auto;padding:0 2rem;">
+      <div class="hero-content">
+        <div class="dragon-icon" style="width:150px;height:150px;margin:0 auto 2rem;animation:float 3s ease-in-out infinite;">
+          <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad" loading="lazy" style="width:100%;height:100%;border-radius:50%;box-shadow:0 0 50px #9D00FF88;">
+        </div>
+        <h1 style="font-size:4rem;margin-bottom:1rem;background:linear-gradient(45deg,#9D00FF,#FFD700,#00FFFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">DRAGON MOONAD</h1>
+        <p class="tagline" style="font-size:1.5rem;margin-bottom:2rem;color:#FFD700;">Revolutionary LP Mining Protocol on Monad</p>
+        <p style="font-size: 1.2rem; color: #FFD700; margin-bottom: 2rem;">
+          Stake LP tokens, earn DRAGON rewards every block, and grow your portfolio
+        </p>
+        <div class="cta-buttons" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <a href="#mechanism" class="btn btn-primary" style="padding:1rem 2rem;border-radius:50px;background:linear-gradient(90deg,#9D00FFcc 0%,#00FFFFcc 100%);color:#fff;font-weight:bold;text-decoration:none;">Learn More</a>
+          <a href="#contract" class="btn btn-secondary" style="padding:1rem 2rem;border-radius:50px;background:transparent;color:#9D00FF;border:2px solid #9D00FF;font-weight:bold;text-decoration:none;">View Contract</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="section" id="about">
+    <div class="container" style="max-width:1200px;margin:0 auto;padding:0 2rem;">
+      <h2 class="section-title">Token Overview</h2>
+      <div class="stats">
+        <div class="stat-card">
+          <div class="stat-value">1M</div>
+          <div class="stat-label">Total Supply</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">DRAGON</div>
+          <div class="stat-label">Token Symbol</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">1 DRAGON</div>
+          <div class="stat-label">Reward per Block</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">Monad</div>
+          <div class="stat-label">Blockchain</div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Live Stats Section -->
   <div style="max-width:700px;margin:2rem auto;padding:2rem;background:rgba(17,17,17,0.85);border-radius:16px;">
@@ -89,8 +149,17 @@
     </div>
   </div>
 
-  <!-- ... (your footer, etc.) ... -->
-
+  <footer>
+    <div style="text-align:center;margin-bottom:1rem;">
+      <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad Logo" style="width:64px;height:64px;border-radius:50%;" loading="lazy">
+    </div>
+    <div class="container">
+      <p style="color: #FFD700;">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
+      <p style="color: #00FFFF; margin-top: 0.5rem; font-size: 0.9rem;">
+        ⚠️ DYOR. Crypto investments carry risk. Not financial advice.
+      </p>
+    </div>
+  </footer>
   <script>
     // Star background
     const starsContainer = document.getElementById('stars');
