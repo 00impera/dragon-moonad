@@ -11,63 +11,251 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
   <style>
+    :root {
+      --primary: #6552D0;
+      --secondary: #17203D;
+      --accent: #1ba098;
+      --gold: #FFD700;
+      --neon: #00FFFF;
+      --bg-dark: #051622;
+      --bg-card: #17203D;
+      --text-main: #fff;
+      --text-muted: #deb992;
+      --discord: #5865F2;
+      --twitter: #1da1f2;
+      --telegram: #229ED9;
+    }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #000 0%, #1a0033 100%);
-      color: #FFFFFF;
+      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--secondary) 100%);
+      color: var(--text-main);
+      min-height: 100vh;
       overflow-x: hidden;
     }
     .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s infinite; opacity: 0.7; }
     @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-    .copy-btn { padding: 0.5rem 1rem; background: #9D00FF; border: none; border-radius: 5px; color: #fff; cursor: pointer; white-space: nowrap; }
-    .copy-btn:hover { background: #FFD700; color: #000; }
-    .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #9D00FF; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
-    .stat-card { background: rgba(17,17,17,0.85); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; text-align: center; border: 1px solid #444444; transition: all 0.3s; }
-    .stat-card:hover { transform: translateY(-10px); border-color: #FFD700; box-shadow: 0 10px 30px #FFD70044; }
-    .stat-value { font-size: 2.5rem; font-weight: bold; color: #FFD700; margin-bottom: 0.5rem; }
-    .stat-label { font-size: 1rem; color: #9D00FF; }
-    /* Add your other CSS here as needed */
+    nav {
+      background: var(--bg-card);
+      box-shadow: 0 2px 12px #0002;
+      z-index: 10;
+      position: sticky;
+      top: 0;
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--primary);
+    }
+    .logo img { width: 40px; height: 40px; border-radius: 50%; }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text-main);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 80px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
+    .dragon-icon {
+      width: 150px; height: 150px; margin: 0 auto 2rem;
+      animation: float 3s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-16px);} }
+    .dragon-icon img {
+      width: 100%; height: 100%; border-radius: 50%;
+      box-shadow: 0 0 50px var(--primary);
+    }
+    h1 {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(45deg, var(--primary), var(--gold), var(--neon));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .tagline { font-size: 1.5rem; margin-bottom: 2rem; color: var(--gold); }
+    .cta-buttons {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    }
+    .btn {
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 0.2s, color 0.2s, border 0.2s;
+      border: none;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, var(--primary)cc 0%, var(--neon)cc 100%);
+      color: var(--text-main);
+    }
+    .btn-primary:hover { background: var(--gold); color: var(--secondary); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-secondary:hover { background: var(--primary); color: var(--text-main); }
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      color: var(--primary);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    .stat-card {
+      background: rgba(23,32,61,0.95);
+      backdrop-filter: blur(10px);
+      padding: 2rem;
+      border-radius: 20px;
+      text-align: center;
+      border: 1px solid #444;
+      transition: all 0.3s;
+    }
+    .stat-card:hover {
+      transform: translateY(-10px);
+      border-color: var(--gold);
+      box-shadow: 0 10px 30px #FFD70044;
+    }
+    .stat-value { font-size: 2.5rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; }
+    .stat-label { font-size: 1rem; color: var(--primary); }
+    .socials {
+      display: flex; gap: 1rem; justify-content: center; margin: 2rem 0 0 0;
+    }
+    .social-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      font-size: 1rem;
+      transition: background 0.2s, color 0.2s;
+    }
+    .social-btn.discord { background: var(--discord); }
+    .social-btn.discord:hover { background: #404eed; }
+    .social-btn.twitter { background: var(--twitter); }
+    .social-btn.twitter:hover { background: #0d8ddb; }
+    .social-btn.telegram { background: var(--telegram); }
+    .social-btn.telegram:hover { background: #157ab3; }
+    .copy-btn {
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      border: none;
+      border-radius: 5px;
+      color: #fff;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s, color 0.2s;
+    }
+    .copy-btn:hover { background: var(--gold); color: var(--secondary); }
+    /* Card backgrounds for dashboard */
+    .dashboard-card {
+      background: rgba(23,32,61,0.95);
+      border-radius: 16px;
+      padding: 2rem;
+      margin: 2rem auto;
+      box-shadow: 0 2px 12px #6552D044;
+      border: 1px solid #444;
+    }
+    /* Footer */
+    footer {
+      background: var(--bg-card);
+      margin-top: 3rem;
+      padding: 2rem 0 1rem 0;
+      border-top: 1px solid #222;
+    }
+    footer .container { text-align: center; }
+    footer img { width: 64px; height: 64px; border-radius: 50%; }
+    /* Responsive */
+    @media (max-width: 700px) {
+      .stats { grid-template-columns: 1fr; }
+      .dashboard-card { padding: 1rem; }
+      .nav-container { flex-direction: column; gap: 1rem; }
+      .cta-buttons { flex-direction: column; }
+    }
   </style>
 </head>
 <body>
   <div class="stars" id="stars"></div>
   <nav>
-    <div class="nav-container" style="max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;">
-      <div class="logo" style="display:flex;align-items:center;gap:1rem;font-size:1.5rem;font-weight:bold;color:#9D00FF;">
-        <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon" loading="lazy" style="width:40px;height:40px;border-radius:50%;">
+    <div class="nav-container">
+      <div class="logo">
+        <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon" loading="lazy">
         <span>DRAGON MOONAD</span>
       </div>
-      <ul class="nav-links" style="display:flex;gap:2rem;list-style:none;">
-        <li><a href="#about" style="color:#fff;text-decoration:none;font-weight:500;">About</a></li>
-        <li><a href="#mechanism" style="color:#fff;text-decoration:none;font-weight:500;">How It Works</a></li>
-        <li><a href="#features" style="color:#fff;text-decoration:none;font-weight:500;">Features</a></li>
-        <li><a href="#contract" style="color:#fff;text-decoration:none;font-weight:500;">Contract</a></li>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#mechanism">How It Works</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#contract">Contract</a></li>
       </ul>
     </div>
   </nav>
-  <div class="hero" style="min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding-top:80px;">
-    <div class="container" style="max-width:1200px;margin:0 auto;padding:0 2rem;">
+  <div class="hero">
+    <div class="container">
       <div class="hero-content">
-        <div class="dragon-icon" style="width:150px;height:150px;margin:0 auto 2rem;animation:float 3s ease-in-out infinite;">
-          <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad" loading="lazy" style="width:100%;height:100%;border-radius:50%;box-shadow:0 0 50px #9D00FF88;">
+        <div class="dragon-icon">
+          <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad" loading="lazy">
         </div>
-        <h1 style="font-size:4rem;margin-bottom:1rem;background:linear-gradient(45deg,#9D00FF,#FFD700,#00FFFF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">DRAGON MOONAD</h1>
-        <p class="tagline" style="font-size:1.5rem;margin-bottom:2rem;color:#FFD700;">Revolutionary LP Mining Protocol on Monad</p>
-        <p style="font-size: 1.2rem; color: #FFD700; margin-bottom: 2rem;">
+        <h1>DRAGON MOONAD</h1>
+        <p class="tagline">Revolutionary LP Mining Protocol on Monad</p>
+        <p style="font-size: 1.2rem; color: var(--gold); margin-bottom: 2rem;">
           Stake LP tokens, earn DRAGON rewards every block, and grow your portfolio
         </p>
-        <div class="cta-buttons" style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
-          <a href="#mechanism" class="btn btn-primary" style="padding:1rem 2rem;border-radius:50px;background:linear-gradient(90deg,#9D00FFcc 0%,#00FFFFcc 100%);color:#fff;font-weight:bold;text-decoration:none;">Learn More</a>
-          <a href="#contract" class="btn btn-secondary" style="padding:1rem 2rem;border-radius:50px;background:transparent;color:#9D00FF;border:2px solid #9D00FF;font-weight:bold;text-decoration:none;">View Contract</a>
+        <div class="cta-buttons">
+          <a href="#mechanism" class="btn btn-primary">Learn More</a>
+          <a href="#contract" class="btn btn-secondary">View Contract</a>
+        </div>
+        <div class="socials">
+          <a href="https://discord.gg/yourdiscord" class="social-btn discord" target="_blank" rel="noopener">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" style="width:20px;"> Discord
+          </a>
+          <a href="https://twitter.com/bnbgold277983" class="social-btn twitter" target="_blank" rel="noopener">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/twitter.svg" alt="Twitter" style="width:20px;"> Twitter
+          </a>
+          <a href="https://t.me/MonadFrogsNFT" class="social-btn telegram" target="_blank" rel="noopener">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" alt="Telegram" style="width:20px;"> Telegram
+          </a>
         </div>
       </div>
     </div>
   </div>
   <div class="section" id="about">
-    <div class="container" style="max-width:1200px;margin:0 auto;padding:0 2rem;">
+    <div class="container">
       <h2 class="section-title">Token Overview</h2>
       <div class="stats">
         <div class="stat-card">
@@ -89,23 +277,22 @@
       </div>
     </div>
   </div>
-
   <!-- Live Stats Section -->
-  <div style="max-width:700px;margin:2rem auto;padding:2rem;background:rgba(17,17,17,0.85);border-radius:16px;">
-    <h2 style="color:#FFD700;text-align:center;margin-bottom:1rem;">Live Token Stats</h2>
+  <div class="dashboard-card" style="max-width:700px;">
+    <h2 style="color:var(--gold);text-align:center;margin-bottom:1rem;">Live Token Stats</h2>
     <div style="display:flex;justify-content:space-between;gap:1rem;">
       <div>
-        <div style="color:#9D00FF;">Price</div>
+        <div style="color:var(--primary);">Price</div>
         <div id="statPrice" style="font-size:2rem;font-weight:bold;">—</div>
         <div id="statPriceChange" style="margin-top:0.5rem;">24h: —</div>
       </div>
       <div>
-        <div style="color:#9D00FF;">Liquidity</div>
+        <div style="color:var(--primary);">Liquidity</div>
         <div id="statLiquidity" style="font-size:2rem;font-weight:bold;">—</div>
         <div style="margin-top:0.5rem;">Pool size (USD)</div>
       </div>
       <div>
-        <div style="color:#9D00FF;">Volume</div>
+        <div style="color:var(--primary);">Volume</div>
         <div id="statVolume" style="font-size:2rem;font-weight:bold;">—</div>
         <div style="margin-top:0.5rem;">24h trading volume (USD)</div>
       </div>
@@ -113,49 +300,47 @@
     <div style="display:flex;gap:2rem;margin-top:2rem;">
       <div style="flex:1;">
         <div style="display:flex;justify-content:space-between;">
-          <span style="color:#FFD700;">Price over time</span>
+          <span style="color:var(--gold);">Price over time</span>
           <span id="chartStatusA" style="font-size:0.9em;color:#aaa;">loading…</span>
         </div>
         <canvas id="chartPrice" height="140"></canvas>
       </div>
       <div style="flex:1;">
         <div style="display:flex;justify-content:space-between;">
-          <span style="color:#FFD700;">Liquidity growth</span>
+          <span style="color:var(--gold);">Liquidity growth</span>
           <span id="chartStatusB" style="font-size:0.9em;color:#aaa;">loading…</span>
         </div>
         <canvas id="chartLiquidity" height="140"></canvas>
       </div>
     </div>
-    <button id="refreshBtn" style="margin:2rem auto 0 auto;display:block;padding:0.7rem 2rem;border-radius:8px;background:#9D00FF;color:#fff;font-weight:bold;border:none;cursor:pointer;">Refresh</button>
+    <button id="refreshBtn" class="btn btn-primary" style="margin:2rem auto 0 auto;display:block;">Refresh</button>
   </div>
-
   <!-- Staking Widget -->
-  <div id="staking-widget" style="margin:2rem auto;max-width:350px;background:rgba(17,17,17,0.85);border-radius:16px;padding:1.5rem 1rem;text-align:center;border:1px solid #444444;box-shadow:0 2px 12px #9D00FF44;">
-    <h3 style="color:#9D00FF;margin-bottom:1rem;">Stake DRAGON, Earn Rewards</h3>
-    <button id="connectWalletBtn" style="padding:0.5rem 1.2rem;border-radius:8px;background:#9D00FF;color:#fff;font-weight:bold;border:none;cursor:pointer;">Connect Wallet</button>
-    <span id="walletAddress" style="margin-left:1rem;color:#44bd32;"></span>
-    <button id="disconnectWalletBtn" style="margin-left:1rem;padding:0.5rem 1.2rem;border-radius:8px;background:#ff6b6b;color:#fff;font-weight:bold;border:none;cursor:pointer;display:none;">Disconnect</button>
+  <div id="staking-widget" class="dashboard-card" style="max-width:350px;text-align:center;">
+    <h3 style="color:var(--primary);margin-bottom:1rem;">Stake DRAGON, Earn Rewards</h3>
+    <button id="connectWalletBtn" class="btn btn-primary" style="padding:0.5rem 1.2rem;">Connect Wallet</button>
+    <span id="walletAddress" style="margin-left:1rem;color:var(--accent);"></span>
+    <button id="disconnectWalletBtn" class="btn btn-secondary" style="margin-left:1rem;padding:0.5rem 1.2rem;display:none;">Disconnect</button>
     <div id="stakingUI" style="display:none;margin-top:1rem;">
       <div style="margin-bottom:0.5rem;">Your DRAGON Balance: <span id="dragonBalance">-</span></div>
       <div style="margin-bottom:0.5rem;">Staked: <span id="stakedBalance">-</span></div>
       <div style="margin-bottom:0.5rem;">Rewards: <span id="rewards">-</span></div>
       <div style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:0.5rem;">
-        <input id="stakeAmount" type="number" min="0" placeholder="Amount to stake" style="padding:0.5rem 1rem;border-radius:8px;border:1px solid #9D00FF;width:120px;background:rgba(0,0,0,0.5);color:#fff;">
-        <button id="stakeBtn" style="padding:0.5rem 1rem;border-radius:8px;background:#44bd32;color:#fff;font-weight:bold;border:none;cursor:pointer;">Stake</button>
-        <button id="unstakeBtn" style="padding:0.5rem 1rem;border-radius:8px;background:#FFD700;color:#000;font-weight:bold;border:none;cursor:pointer;">Unstake</button>
-        <button id="claimBtn" style="padding:0.5rem 1rem;border-radius:8px;background:#00FFFF;color:#000;font-weight:bold;border:none;cursor:pointer;">Claim</button>
+        <input id="stakeAmount" type="number" min="0" placeholder="Amount to stake" style="padding:0.5rem 1rem;border-radius:8px;border:1px solid var(--primary);width:120px;background:rgba(0,0,0,0.5);color:#fff;">
+        <button id="stakeBtn" class="btn" style="background:var(--accent);color:#fff;">Stake</button>
+        <button id="unstakeBtn" class="btn" style="background:var(--gold);color:#000;">Unstake</button>
+        <button id="claimBtn" class="btn" style="background:var(--neon);color:#000;">Claim</button>
       </div>
       <div id="stakingStatus" style="margin-top:0.5rem;font-size:0.95em;"></div>
     </div>
   </div>
-
   <footer>
-    <div style="text-align:center;margin-bottom:1rem;">
-      <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad Logo" style="width:64px;height:64px;border-radius:50%;" loading="lazy">
+    <div>
+      <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad Logo" loading="lazy">
     </div>
     <div class="container">
-      <p style="color: #FFD700;">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
-      <p style="color: #00FFFF; margin-top: 0.5rem; font-size: 0.9rem;">
+      <p style="color: var(--gold);">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
+      <p style="color: var(--neon); margin-top: 0.5rem; font-size: 0.9rem;">
         ⚠️ DYOR. Crypto investments carry risk. Not financial advice.
       </p>
     </div>
@@ -183,19 +368,6 @@
         }
       });
     });
-    // Copy address
-    window.copyAddress = function(address, button) {
-      navigator.clipboard.writeText(address).then(() => {
-        const originalText = button.textContent;
-        button.textContent = 'Copied!';
-        button.style.background = '#00FFFF';
-        setTimeout(() => {
-          button.textContent = originalText;
-          button.style.background = '#9D00FF';
-        }, 2000);
-      });
-    }
-
     // === DRAGON Staking Integration ===
     const stakingContractAddress = "0xAEb0120f58EDE94C1DA63F71792F630de8D2cF05";
     const stakingABI = [
@@ -212,9 +384,7 @@
       {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
       {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
     ];
-
     let provider, signer, userAddress;
-
     async function connectWallet() {
       if (!window.ethereum) {
         alert("MetaMask not found!");
@@ -239,7 +409,6 @@
     }
     document.getElementById('connectWalletBtn').onclick = connectWallet;
     document.getElementById('disconnectWalletBtn').onclick = disconnectWallet;
-
     async function updateStakingUI() {
       if (!signer) return;
       const dragon = new ethers.Contract(dragonTokenAddress, dragonABI, provider);
@@ -301,7 +470,6 @@
         status.textContent = "Error: " + (e?.message || e);
       }
     };
-
     // === Live Stats & Chart.js Demo ===
     const state = {
       price: null,
@@ -317,7 +485,6 @@
     const $vol = document.getElementById('statVolume');
     const $refresh = document.getElementById('refreshBtn');
     let priceChart, liqChart;
-
     function formatUSD(n) {
       if (n === null || n === undefined || isNaN(n)) return '—';
       const abs = Math.abs(n);
@@ -326,11 +493,7 @@
       if (abs >= 1_000) return `$${(n/1_000).toFixed(2)}K`;
       return `$${Number(n).toFixed(4)}`;
     }
-
-    function setStatus(el, text) {
-      el.textContent = text;
-    }
-
+    function setStatus(el, text) { el.textContent = text; }
     async function fetchLiveStats() {
       setStatus(document.getElementById('chartStatusA'), 'loading…');
       setStatus(document.getElementById('chartStatusB'), 'loading…');
@@ -367,7 +530,6 @@
         setStatus(document.getElementById('chartStatusB'), 'error');
       }
     }
-
     function renderStats() {
       $price.textContent = formatUSD(state.price);
       const changeVal = state.priceChange24h;
@@ -378,7 +540,6 @@
       $liq.textContent = formatUSD(state.liquidityUSD);
       $vol.textContent = formatUSD(state.volume24hUSD);
     }
-
     function renderCharts() {
       const priceCtx = document.getElementById('chartPrice');
       const liqCtx = document.getElementById('chartLiquidity');
@@ -454,7 +615,6 @@
       priceCtx.parentElement.style.height = '240px';
       liqCtx.parentElement.style.height = '240px';
     }
-
     $refresh.addEventListener('click', fetchLiveStats);
     fetchLiveStats();
     setInterval(fetchLiveStats, 30_000);
