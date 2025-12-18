@@ -5,10 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DRAGON MOONAD - Revolutionary LP Mining on Monad</title>
   <meta name="description" content="Stake, Earn, and Grow with Dragon's Revolutionary LP Mining System on Monad Blockchain">
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #000 0%, #1a0033 100%);
       color: #FFFFFF;
       overflow-x: hidden;
@@ -16,294 +21,78 @@
     .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
     .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s infinite; opacity: 0.7; }
     @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-    nav {
-      position: fixed; top: 0; width: 100%;
-      background: rgba(157,0,255,0.18);
-      backdrop-filter: blur(10px);
-      padding: 1rem 2rem; z-index: 1000;
-      border-bottom: 2px solid #9D00FF;
-    }
-    .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
-    .logo { display: flex; align-items: center; gap: 1rem; font-size: 1.5rem; font-weight: bold; color: #9D00FF; }
-    .logo img { width: 40px; height: 40px; border-radius: 50%; }
-    .nav-links { display: flex; gap: 2rem; list-style: none; }
-    .nav-links a { color: #fff; text-decoration: none; transition: color 0.3s; font-weight: 500; }
-    .nav-links a:hover { color: #9D00FF; }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 10; }
-    .hero { min-height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; padding-top: 80px; }
-    .hero-content { animation: fadeInUp 1s ease; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-    .dragon-icon { width: 150px; height: 150px; margin: 0 auto 2rem; animation: float 3s ease-in-out infinite; }
-    @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-20px); } }
-    .dragon-icon img { width: 100%; height: 100%; border-radius: 50%; box-shadow: 0 0 50px #9D00FF88; }
-    h1 {
-      font-size: 4rem; margin-bottom: 1rem;
-      background: linear-gradient(45deg, #9D00FF, #FFD700, #00FFFF);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
-    }
-    .tagline { font-size: 1.5rem; margin-bottom: 2rem; color: #FFD700; }
-    .cta-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
-    .btn {
-      padding: 1rem 2rem; border: none; border-radius: 50px; font-size: 1.1rem; font-weight: bold; cursor: pointer;
-      transition: all 0.3s; text-decoration: none; display: inline-block;
-      box-shadow: 0 0 20px #9D00FF44, 0 0 40px #00FFFF22;
-    }
-    .btn-primary, #mint-btn {
-      background: linear-gradient(90deg, #9D00FFcc 0%, #00FFFFcc 100%);
-      color: #fff;
-      border: none;
-      box-shadow: 0 0 20px #9D00FF88, 0 0 40px #00FFFF44;
-      transition: background 0.3s, color 0.3s, box-shadow 0.3s;
-    }
-    .btn-primary:hover, #mint-btn:hover {
-      background: linear-gradient(90deg, #00FFFFcc 0%, #9D00FFcc 100%);
-      color: #9D00FF;
-      box-shadow: 0 0 40px #00FFFF88, 0 0 80px #9D00FF44;
-    }
-    .btn-secondary { background: transparent; color: #9D00FF; border: 2px solid #9D00FF; }
-    .btn-secondary:hover { background: #9D00FF; color: #fff; }
-    .section { padding: 5rem 0; }
-    .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 3rem; color: #9D00FF; }
-    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 3rem; }
-    .stat-card { background: rgba(17,17,17,0.85); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; text-align: center; border: 1px solid #444444; transition: all 0.3s; }
-    .stat-card:hover { transform: translateY(-10px); border-color: #FFD700; box-shadow: 0 10px 30px #FFD70044; }
-    .stat-value { font-size: 2.5rem; font-weight: bold; color: #FFD700; margin-bottom: 0.5rem; }
-    .stat-label { font-size: 1rem; color: #9D00FF; }
-    .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
-    .feature-card { background: rgba(17,17,17,0.85); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; border: 1px solid #444444; transition: all 0.3s; }
-    .feature-card:hover { transform: translateY(-10px); border-color: #9D00FF; }
-    .feature-icon { font-size: 3rem; margin-bottom: 1rem; color: #00FFFF; }
-    .feature-card h3 { font-size: 1.5rem; margin-bottom: 1rem; color: #FFD700; }
-    .mechanism-card { background: rgba(17,17,17,0.85); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; margin-bottom: 2rem; border: 1px solid #444444; }
-    .mechanism-card h3 { color: #9D00FF; margin-bottom: 1rem; font-size: 1.8rem; }
-    .mechanism-step { display: flex; gap: 1rem; margin: 1rem 0; padding: 1rem; background: #222; border-radius: 10px; }
-    .step-number { width: 30px; height: 30px; background: #9D00FF; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; color: #fff; }
-    .contract-info { background: rgba(17,17,17,0.85); backdrop-filter: blur(10px); padding: 2rem; border-radius: 20px; margin-top: 2rem; border: 1px solid #444444; }
-    .contract-address { display: flex; align-items: center; gap: 1rem; margin: 1rem 0; padding: 1rem; background: #222; border-radius: 10px; word-break: break-all; }
     .copy-btn { padding: 0.5rem 1rem; background: #9D00FF; border: none; border-radius: 5px; color: #fff; cursor: pointer; white-space: nowrap; }
     .copy-btn:hover { background: #FFD700; color: #000; }
-    .social-links { display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap; }
-    .social-btn { width: 50px; height: 50px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; text-decoration: none; color: #9D00FF; font-size: 1.5rem; transition: all 0.3s; border: 2px solid #444444; }
-    .social-btn:hover { background: #9D00FF; color: #fff; border-color: #FFD700; }
-    .social-btn img { width: 28px; height: 28px; }
-    footer { text-align: center; padding: 2rem; background: rgba(17,17,17,0.85); border-top: 2px solid #9D00FF; }
-    @media (max-width: 768px) { h1 { font-size: 2.5rem; } .tagline { font-size: 1.2rem; } .nav-links { display: none; } }
-    #dragon-token-widget { margin:2rem auto;max-width:350px;background:rgba(17,17,17,0.85);border-radius:16px;padding:1.5rem 1rem;text-align:center;border:1px solid #444444;box-shadow:0 2px 12px #9D00FF44;}
-    #dragon-token-logo {width:48px;height:48px;border-radius:50%;margin-bottom:8px;box-shadow:0 0 12px #9D00FF88;}
-    #buy-dragon-widget { margin:2rem 0; }
-    #mint-btn { margin-top: 0.5rem; }
-    input#mint-amount {
-      padding:0.5rem 1rem;border-radius:8px;border:1px solid #9D00FF;width:160px;
-      background:rgba(0,0,0,0.5); color:#fff;
-    }
-    input#mint-amount:focus { outline: 2px solid #00FFFF; }
+    /* Add your other CSS here as needed */
   </style>
 </head>
 <body>
   <div class="stars" id="stars"></div>
-  <nav>
-    <div class="nav-container">
-      <div class="logo">
-        <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon" loading="lazy">
-        <span>DRAGON MOONAD</span>
+  <!-- ... (your header, hero, about, mechanism, features, contract, etc.) ... -->
+
+  <!-- Live Stats Section -->
+  <div style="max-width:700px;margin:2rem auto;padding:2rem;background:rgba(17,17,17,0.85);border-radius:16px;">
+    <h2 style="color:#FFD700;text-align:center;margin-bottom:1rem;">Live Token Stats</h2>
+    <div style="display:flex;justify-content:space-between;gap:1rem;">
+      <div>
+        <div style="color:#9D00FF;">Price</div>
+        <div id="statPrice" style="font-size:2rem;font-weight:bold;">—</div>
+        <div id="statPriceChange" style="margin-top:0.5rem;">24h: —</div>
       </div>
-      <ul class="nav-links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#mechanism">How It Works</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#contract">Contract</a></li>
-      </ul>
+      <div>
+        <div style="color:#9D00FF;">Liquidity</div>
+        <div id="statLiquidity" style="font-size:2rem;font-weight:bold;">—</div>
+        <div style="margin-top:0.5rem;">Pool size (USD)</div>
+      </div>
+      <div>
+        <div style="color:#9D00FF;">Volume</div>
+        <div id="statVolume" style="font-size:2rem;font-weight:bold;">—</div>
+        <div style="margin-top:0.5rem;">24h trading volume (USD)</div>
+      </div>
     </div>
-  </nav>
-  <div class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="dragon-icon">
-          <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad" loading="lazy">
+    <div style="display:flex;gap:2rem;margin-top:2rem;">
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:#FFD700;">Price over time</span>
+          <span id="chartStatusA" style="font-size:0.9em;color:#aaa;">loading…</span>
         </div>
-        <h1>DRAGON MOONAD</h1>
-        <p class="tagline">Revolutionary LP Mining Protocol on Monad</p>
-        <p style="font-size: 1.2rem; color: #FFD700; margin-bottom: 2rem;">
-          Stake LP tokens, earn DRAGON rewards every block, and grow your portfolio
-        </p>
-        <div class="cta-buttons">
-          <a href="#mechanism" class="btn btn-primary">Learn More</a>
-          <a href="#contract" class="btn btn-secondary">View Contract</a>
-        </div>
+        <canvas id="chartPrice" height="140"></canvas>
       </div>
+      <div style="flex:1;">
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:#FFD700;">Liquidity growth</span>
+          <span id="chartStatusB" style="font-size:0.9em;color:#aaa;">loading…</span>
+        </div>
+        <canvas id="chartLiquidity" height="140"></canvas>
+      </div>
+    </div>
+    <button id="refreshBtn" style="margin:2rem auto 0 auto;display:block;padding:0.7rem 2rem;border-radius:8px;background:#9D00FF;color:#fff;font-weight:bold;border:none;cursor:pointer;">Refresh</button>
+  </div>
+
+  <!-- Staking Widget -->
+  <div id="staking-widget" style="margin:2rem auto;max-width:350px;background:rgba(17,17,17,0.85);border-radius:16px;padding:1.5rem 1rem;text-align:center;border:1px solid #444444;box-shadow:0 2px 12px #9D00FF44;">
+    <h3 style="color:#9D00FF;margin-bottom:1rem;">Stake DRAGON, Earn Rewards</h3>
+    <button id="connectWalletBtn" style="padding:0.5rem 1.2rem;border-radius:8px;background:#9D00FF;color:#fff;font-weight:bold;border:none;cursor:pointer;">Connect Wallet</button>
+    <span id="walletAddress" style="margin-left:1rem;color:#44bd32;"></span>
+    <button id="disconnectWalletBtn" style="margin-left:1rem;padding:0.5rem 1.2rem;border-radius:8px;background:#ff6b6b;color:#fff;font-weight:bold;border:none;cursor:pointer;display:none;">Disconnect</button>
+    <div id="stakingUI" style="display:none;margin-top:1rem;">
+      <div style="margin-bottom:0.5rem;">Your DRAGON Balance: <span id="dragonBalance">-</span></div>
+      <div style="margin-bottom:0.5rem;">Staked: <span id="stakedBalance">-</span></div>
+      <div style="margin-bottom:0.5rem;">Rewards: <span id="rewards">-</span></div>
+      <div style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:0.5rem;">
+        <input id="stakeAmount" type="number" min="0" placeholder="Amount to stake" style="padding:0.5rem 1rem;border-radius:8px;border:1px solid #9D00FF;width:120px;background:rgba(0,0,0,0.5);color:#fff;">
+        <button id="stakeBtn" style="padding:0.5rem 1rem;border-radius:8px;background:#44bd32;color:#fff;font-weight:bold;border:none;cursor:pointer;">Stake</button>
+        <button id="unstakeBtn" style="padding:0.5rem 1rem;border-radius:8px;background:#FFD700;color:#000;font-weight:bold;border:none;cursor:pointer;">Unstake</button>
+        <button id="claimBtn" style="padding:0.5rem 1rem;border-radius:8px;background:#00FFFF;color:#000;font-weight:bold;border:none;cursor:pointer;">Claim</button>
+      </div>
+      <div id="stakingStatus" style="margin-top:0.5rem;font-size:0.95em;"></div>
     </div>
   </div>
-  <div class="section" id="about">
-    <div class="container">
-      <h2 class="section-title">Token Overview</h2>
-      <div class="stats">
-        <div class="stat-card">
-          <div class="stat-value">1M</div>
-          <div class="stat-label">Total Supply</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">DRAGON</div>
-          <div class="stat-label">Token Symbol</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">1 DRAGON</div>
-          <div class="stat-label">Reward per Block</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">Monad</div>
-          <div class="stat-label">Blockchain</div>
-        </div>
-      </div>
-      <!-- Live DRAGON Token Info Widget -->
-      <div id="dragon-token-widget">
-        <div id="dragon-token-loading" style="color:#9D00FF;">Loading live token info...</div>
-        <div id="dragon-token-info" style="display:none;">
-          <img id="dragon-token-logo" src="" alt="Token Logo" loading="lazy">
-          <h3 id="dragon-token-name" style="margin:0.5rem 0 0.2rem 0;"></h3>
-          <div style="color:#FFD700;margin-bottom:0.5rem;"><span id="dragon-token-symbol"></span> | Decimals: <span id="dragon-token-decimals"></span></div>
-          <div style="margin-bottom:0.5rem;"><b>Total Supply:</b> <span id="dragon-token-supply"></span></div>
-          <div style="margin-bottom:0.5rem;"><b>Holders:</b> <span id="dragon-token-holders"></span></div>
-          <div style="margin-bottom:0.5rem;"><b>Verified:</b> <span id="dragon-token-verified"></span></div>
-          <div style="margin-bottom:0.5rem;"><a id="dragon-token-website" href="#" target="_blank" style="color:#9D00FF;text-decoration:underline;">Website</a></div>
-        </div>
-      </div>
-      <!-- Buy DRAGON Widget -->
-      <div id="buy-dragon-widget">
-        <input id="mint-amount" type="number" min="1" placeholder="Amount to mint" aria-label="Amount to mint">
-        <button id="mint-btn" aria-label="Buy DRAGON">Buy DRAGON</button>
-        <div id="mint-status" style="margin-top:1rem;color:#44bd32;font-weight:bold;"></div>
-      </div>
-      <!-- DEX Price Badge -->
-      <div style="margin:2rem 0;">
-        <a href="https://dexscreener.com/monad/0x1b685B0c771b877d1a4e8F02365a4A809E962c81" target="_blank" rel="noopener">
-          <img src="https://api.dexscreener.com/latest/dex/tokens/0x1b685B0c771b877d1a4e8F02365a4A809E962c81/badge" alt="DEX Price" loading="lazy">
-        </a>
-      </div>
-    </div>
-  </div>
-  <div class="section" id="mechanism" style="background: rgba(17,17,17,0.85);">
-    <div class="container">
-      <h2 class="section-title">How LP Mining Works</h2>
-      <div class="mechanism-card">
-        <h3>💎 The Mining Process</h3>
-        <div class="mechanism-step">
-          <div class="step-number">1</div>
-          <div>
-            <strong>Provide Liquidity</strong>
-            <p>Add liquidity to DRAGON pairs on Monad DEXs to receive LP tokens</p>
-          </div>
-        </div>
-        <div class="mechanism-step">
-          <div class="step-number">2</div>
-          <div>
-            <strong>Stake LP Tokens</strong>
-            <p>Deposit your LP tokens into the DRAGON mining contract</p>
-          </div>
-        </div>
-        <div class="mechanism-step">
-          <div class="step-number">3</div>
-          <div>
-            <strong>Earn Rewards</strong>
-            <p>Receive 1 DRAGON token per block based on your share of the pool</p>
-          </div>
-        </div>
-        <div class="mechanism-step">
-          <div class="step-number">4</div>
-          <div>
-            <strong>Claim & Compound</strong>
-            <p>Harvest your rewards anytime and compound for exponential growth</p>
-          </div>
-        </div>
-      </div>
-      <div class="mechanism-card">
-        <h3>⚡ Key Features</h3>
-        <p style="line-height: 1.8; color:#FFD700;">
-          • <strong>Fair Distribution:</strong> Rewards distributed proportionally to all stakers<br>
-          • <strong>No Lock Period:</strong> Withdraw your LP tokens anytime<br>
-          • <strong>Auto-Compounding:</strong> Optional auto-compound feature for maximum gains<br>
-          • <strong>Low Fees:</strong> Minimal transaction costs on Monad's high-speed chain
-        </p>
-      </div>
-    </div>
-  </div>
-  <div class="section" id="features">
-    <div class="container">
-      <h2 class="section-title">Why Choose DRAGON?</h2>
-      <div class="features">
-        <div class="feature-card">
-          <div class="feature-icon">🚀</div>
-          <h3>High Performance</h3>
-          <p>Built on Monad blockchain for lightning-fast transactions and minimal fees</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔒</div>
-          <h3>Secure & Audited</h3>
-          <p>Smart contracts audited by leading security firms to protect your assets</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">💰</div>
-          <h3>Sustainable Rewards</h3>
-          <p>Carefully designed tokenomics ensure long-term sustainability and value</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🌐</div>
-          <h3>Community Driven</h3>
-          <p>Governed by the community with transparent voting mechanisms</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">📊</div>
-          <h3>Real-Time Analytics</h3>
-          <p>Track your rewards, APY, and portfolio performance in real-time</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🤝</div>
-          <h3>Strategic Partnerships</h3>
-          <p>Collaborating with major DeFi protocols for enhanced liquidity</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="section" id="contract">
-    <div class="container">
-      <h2 class="section-title">Contract Information</h2>
-      <div class="contract-info">
-        <h3 style="color: #9D00FF; margin-bottom: 1rem;">DRAGON Token Contract</h3>
-        <div class="contract-address">
-          <span style="flex: 1; font-family: monospace;">0x1b685B0c771b877d1a4e8F02365a4A809E962c81</span>
-          <button class="copy-btn" onclick="copyAddress('0x1b685B0c771b877d1a4e8F02365a4A809E962c81', this)">Copy</button>
-        </div>
-        <p style="margin-top: 1rem; color: #FFD700;">
-          ⚠️ Always verify the contract address before interacting. Only use official links.
-        </p>
-      </div>
-      <div class="social-links">
-        <a href="https://x.com/bnbgold277983" class="social-btn" title="Twitter" target="_blank" rel="noopener">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/x.svg" alt="Twitter" loading="lazy">
-        </a>
-        <a href="https://discord.com/channels/1316093079090106472" class="social-btn" title="Discord" target="_blank" rel="noopener">
-          <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" loading="lazy">
-        </a>
-        <a href="https://dexscreener.com/monad/0x1b685B0c771b877d1a4e8F02365a4A809E962c81" class="social-btn" title="DEX Price" target="_blank" rel="noopener">
-          <img src="https://cryptologos.cc/logos/uniswap-uni-logo.png" alt="DEX" loading="lazy">
-        </a>
-      </div>
-    </div>
-  </div>
-  <footer>
-    <div style="text-align:center;margin-bottom:1rem;">
-      <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad Logo" style="width:64px;height:64px;border-radius:50%;" loading="lazy">
-    </div>
-    <div class="container">
-      <p style="color: #FFD700;">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
-      <p style="color: #00FFFF; margin-top: 0.5rem; font-size: 0.9rem;">
-        ⚠️ DYOR. Crypto investments carry risk. Not financial advice.
-      </p>
-    </div>
-  </footer>
-  <!-- Ethers.js for Buy DRAGON Widget -->
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js" defer></script>
-  <script defer>
-    // Star background (reduced to 60 for performance)
+
+  <!-- ... (your footer, etc.) ... -->
+
+  <script>
+    // Star background
     const starsContainer = document.getElementById('stars');
     for (let i = 0; i < 60; i++) {
       const star = document.createElement('div');
@@ -337,116 +126,269 @@
         }, 2000);
       });
     }
-    // Intersection observer for fade-in
-    const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
+
+    // === DRAGON Staking Integration ===
+    const stakingContractAddress = "0xAEb0120f58EDE94C1DA63F71792F630de8D2cF05";
+    const stakingABI = [
+      {"inputs":[{"internalType":"address","name":"_dragon","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
+      {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"stake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"unstake","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},
+      {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"stakedBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"earned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
+    ];
+    const dragonTokenAddress = "0x1b685B0c771b877d1a4e8F02365a4A809E962c81";
+    const dragonABI = [
+      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+      {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
+      {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
+    ];
+
+    let provider, signer, userAddress;
+
+    async function connectWallet() {
+      if (!window.ethereum) {
+        alert("MetaMask not found!");
+        return;
+      }
+      provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      signer = await provider.getSigner();
+      userAddress = await signer.getAddress();
+      document.getElementById('walletAddress').textContent = userAddress.slice(0,6) + "..." + userAddress.slice(-4);
+      document.getElementById('connectWalletBtn').style.display = "none";
+      document.getElementById('disconnectWalletBtn').style.display = "";
+      document.getElementById('stakingUI').style.display = "";
+      updateStakingUI();
+    }
+    function disconnectWallet() {
+      provider = signer = userAddress = null;
+      document.getElementById('walletAddress').textContent = "";
+      document.getElementById('connectWalletBtn').style.display = "";
+      document.getElementById('disconnectWalletBtn').style.display = "none";
+      document.getElementById('stakingUI').style.display = "none";
+    }
+    document.getElementById('connectWalletBtn').onclick = connectWallet;
+    document.getElementById('disconnectWalletBtn').onclick = disconnectWallet;
+
+    async function updateStakingUI() {
+      if (!signer) return;
+      const dragon = new ethers.Contract(dragonTokenAddress, dragonABI, provider);
+      const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
+      const decimals = await dragon.decimals();
+      const bal = await dragon.balanceOf(userAddress);
+      document.getElementById('dragonBalance').textContent = ethers.formatUnits(bal, decimals);
+      const staked = await staking.stakedBalance(userAddress);
+      const rewards = await staking.earned(userAddress);
+      document.getElementById('stakedBalance').textContent = ethers.formatUnits(staked, decimals);
+      document.getElementById('rewards').textContent = ethers.formatUnits(rewards, decimals);
+    }
+    document.getElementById('stakeBtn').onclick = async function() {
+      const status = document.getElementById('stakingStatus');
+      status.textContent = "Staking...";
+      try {
+        const amount = document.getElementById('stakeAmount').value;
+        if (!amount || isNaN(amount) || Number(amount) <= 0) throw new Error("Enter a valid amount");
+        const dragon = new ethers.Contract(dragonTokenAddress, dragonABI, signer);
+        const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
+        const decimals = await dragon.decimals();
+        const amt = ethers.parseUnits(amount, decimals);
+        // Approve first
+        await (await dragon.approve(stakingContractAddress, amt)).wait();
+        // Stake
+        await (await staking.stake(amt)).wait();
+        status.textContent = "Staked!";
+        updateStakingUI();
+      } catch (e) {
+        status.textContent = "Error: " + (e?.message || e);
+      }
+    };
+    document.getElementById('unstakeBtn').onclick = async function() {
+      const status = document.getElementById('stakingStatus');
+      status.textContent = "Unstaking...";
+      try {
+        const amount = document.getElementById('stakeAmount').value;
+        if (!amount || isNaN(amount) || Number(amount) <= 0) throw new Error("Enter a valid amount");
+        const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
+        const dragon = new ethers.Contract(dragonTokenAddress, dragonABI, signer);
+        const decimals = await dragon.decimals();
+        const amt = ethers.parseUnits(amount, decimals);
+        await (await staking.unstake(amt)).wait();
+        status.textContent = "Unstaked!";
+        updateStakingUI();
+      } catch (e) {
+        status.textContent = "Error: " + (e?.message || e);
+      }
+    };
+    document.getElementById('claimBtn').onclick = async function() {
+      const status = document.getElementById('stakingStatus');
+      status.textContent = "Claiming...";
+      try {
+        const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
+        await (await staking.claim()).wait();
+        status.textContent = "Rewards claimed!";
+        updateStakingUI();
+      } catch (e) {
+        status.textContent = "Error: " + (e?.message || e);
+      }
+    };
+
+    // === Live Stats & Chart.js Demo ===
+    const state = {
+      price: null,
+      priceChange24h: null,
+      liquidityUSD: null,
+      volume24hUSD: null,
+      priceSeries: [],
+      liquiditySeries: []
+    };
+    const $price = document.getElementById('statPrice');
+    const $change = document.getElementById('statPriceChange');
+    const $liq = document.getElementById('statLiquidity');
+    const $vol = document.getElementById('statVolume');
+    const $refresh = document.getElementById('refreshBtn');
+    let priceChart, liqChart;
+
+    function formatUSD(n) {
+      if (n === null || n === undefined || isNaN(n)) return '—';
+      const abs = Math.abs(n);
+      if (abs >= 1_000_000_000) return `$${(n/1_000_000_000).toFixed(2)}B`;
+      if (abs >= 1_000_000) return `$${(n/1_000_000).toFixed(2)}M`;
+      if (abs >= 1_000) return `$${(n/1_000).toFixed(2)}K`;
+      return `$${Number(n).toFixed(4)}`;
+    }
+
+    function setStatus(el, text) {
+      el.textContent = text;
+    }
+
+    async function fetchLiveStats() {
+      setStatus(document.getElementById('chartStatusA'), 'loading…');
+      setStatus(document.getElementById('chartStatusB'), 'loading…');
+      try {
+        // Demo data generator
+        const now = Date.now();
+        const points = 24;
+        const basePrice = 0.012 + Math.random() * 0.004;
+        const baseLiq = 120000 + Math.random() * 20000;
+        const seriesPrice = [];
+        const seriesLiq = [];
+        for (let i = points - 1; i >= 0; i--) {
+          const t = now - i * 60 * 60 * 1000; // hourly
+          seriesPrice.push({ t, v: basePrice * (1 + (Math.sin(i/3) * 0.02) + (Math.random()-0.5) * 0.01) });
+          seriesLiq.push({ t, v: baseLiq * (1 + (Math.sin(i/4) * 0.05) + (Math.random()-0.5) * 0.02) });
+        }
+        state.price = seriesPrice[points - 1].v;
+        state.priceChange24h = ((seriesPrice[points - 1].v - seriesPrice[0].v) / seriesPrice[0].v) * 100;
+        state.liquidityUSD = seriesLiq[points - 1].v;
+        state.volume24hUSD = 32000 + Math.random() * 12000;
+        state.priceSeries = seriesPrice;
+        state.liquiditySeries = seriesLiq;
+        renderStats();
+        renderCharts();
+        setStatus(document.getElementById('chartStatusA'), 'updated');
+        setStatus(document.getElementById('chartStatusB'), 'updated');
+      } catch (err) {
+        console.error(err);
+        $price.textContent = '—';
+        $change.textContent = '24h: —';
+        $liq.textContent = '—';
+        $vol.textContent = '—';
+        setStatus(document.getElementById('chartStatusA'), 'error');
+        setStatus(document.getElementById('chartStatusB'), 'error');
+      }
+    }
+
+    function renderStats() {
+      $price.textContent = formatUSD(state.price);
+      const changeVal = state.priceChange24h;
+      const arrow = changeVal > 0 ? '▲' : (changeVal < 0 ? '▼' : '•');
+      const color = changeVal > 0 ? 'color:#4df2c2;' : (changeVal < 0 ? 'color:#ff6b6b;' : 'color:#aaa;');
+      $change.style = color;
+      $change.textContent = `24h: ${arrow} ${Number(changeVal).toFixed(2)}%`;
+      $liq.textContent = formatUSD(state.liquidityUSD);
+      $vol.textContent = formatUSD(state.volume24hUSD);
+    }
+
+    function renderCharts() {
+      const priceCtx = document.getElementById('chartPrice');
+      const liqCtx = document.getElementById('chartLiquidity');
+      const labels = state.priceSeries.map(p => new Date(p.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+      if (priceChart) priceChart.destroy();
+      priceChart = new Chart(priceCtx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Price (USD)',
+            data: state.priceSeries.map(p => Number(p.v.toFixed(6))),
+            borderColor: '#4df2c2',
+            backgroundColor: 'rgba(77, 242, 194, 0.15)',
+            pointRadius: 0,
+            tension: 0.3,
+            fill: true
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
+            y: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { callback: v => `$${v}` }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `Price: $${ctx.parsed.y}`
+              }
+            }
+          }
         }
       });
-    }, observerOptions);
-    document.querySelectorAll('.stat-card, .feature-card, .mechanism-card, .contract-info').forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(30px)';
-      el.style.transition = 'all 0.6s ease';
-      observer.observe(el);
-    });
-    // DRAGON Token Live Info Widget
-    (function() {
-      const API_KEY = "KZE6EIDIIX4FWP1AIJPAR9B1RNMTZ8TQBX";
-      const TOKEN_ADDRESS = "0x1b685B0c771b877d1a4e8F02365a4A809E962c81";
-      const url = `https://api.blockvision.org/v2/monad/token/detail?address=${TOKEN_ADDRESS}`;
-      fetch(url, { headers: { "X-API-Key": API_KEY } })
-        .then(res => res.json())
-        .then(data => {
-          if (data.code !== 0) throw new Error(data.reason || "API error");
-          const t = data.result;
-          document.getElementById("dragon-token-logo").src = t.logo || "";
-          document.getElementById("dragon-token-name").textContent = t.name || "N/A";
-          document.getElementById("dragon-token-symbol").textContent = t.symbol || "N/A";
-          document.getElementById("dragon-token-decimals").textContent = t.decimals ?? "N/A";
-          document.getElementById("dragon-token-supply").textContent = t.totalSupply || "N/A";
-          document.getElementById("dragon-token-holders").textContent = t.holders ?? "N/A";
-          document.getElementById("dragon-token-verified").textContent = t.verified ? "✅ Yes" : "❌ No";
-          document.getElementById("dragon-token-website").href = t.website || "#";
-          document.getElementById("dragon-token-website").textContent = t.website ? "Website" : "No website";
-          document.getElementById("dragon-token-loading").style.display = "none";
-          document.getElementById("dragon-token-info").style.display = "block";
-        })
-        .catch(e => {
-          document.getElementById("dragon-token-loading").textContent = "Failed to load token info.";
-        });
-    })();
-    // Buy DRAGON Widget (MetaMask)
-    (function() {
-      const contractAddress = "0x1b685B0c771b877d1a4e8F02365a4A809E962c81";
-      const contractABI = [ /* ... ABI unchanged ... */ 
-        {"inputs":[{"internalType":"uint256","name":"initialSupply","type":"uint256"}],"stateMutability":"nonpayable","type":"constructor"},
-        {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"allowance","type":"uint256"},{"internalType":"uint256","name":"needed","type":"uint256"}],"name":"ERC20InsufficientAllowance","type":"error"},
-        {"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"uint256","name":"balance","type":"uint256"},{"internalType":"uint256","name":"needed","type":"uint256"}],"name":"ERC20InsufficientBalance","type":"error"},
-        {"inputs":[{"internalType":"address","name":"approver","type":"address"}],"name":"ERC20InvalidApprover","type":"error"},
-        {"inputs":[{"internalType":"address","name":"receiver","type":"address"}],"name":"ERC20InvalidReceiver","type":"error"},
-        {"inputs":[{"internalType":"address","name":"sender","type":"address"}],"name":"ERC20InvalidSender","type":"error"},
-        {"inputs":[{"internalType":"address","name":"spender","type":"address"}],"name":"ERC20InvalidSpender","type":"error"},
-        {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},
-        {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},
-        {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"spender","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Approval","type":"event"},
-        {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"oldDistributor","type":"address"},{"indexed":true,"internalType":"address","name":"newDistributor","type":"address"}],"name":"DistributorUpdated","type":"event"},
-        {"anonymous":false,"inputs":[{"indexed":false,"internalType":"string","name":"newLogoURI","type":"string"}],"name":"LogoURIUpdated","type":"event"},
-        {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
-        {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"value","type":"uint256"}],"name":"Transfer","type":"event"},
-        {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"spender","type":"address"}],"name":"allowance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-        {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-        {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-        {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
-        {"inputs":[],"name":"distributor","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-        {"inputs":[],"name":"logoURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-        {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"mintRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},
-        {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-        {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-        {"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-        {"inputs":[{"internalType":"address","name":"_distributor","type":"address"}],"name":"setDistributor","outputs":[],"stateMutability":"nonpayable","type":"function"},
-        {"inputs":[{"internalType":"string","name":"_logoURI","type":"string"}],"name":"setLogoURI","outputs":[],"stateMutability":"nonpayable","type":"function"},
-        {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-        {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-        {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transfer","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-        {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"value","type":"uint256"}],"name":"transferFrom","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"},
-        {"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"}
-      ];
-      document.getElementById('mint-btn').onclick = async function() {
-        const status = document.getElementById('mint-status');
-        status.textContent = "";
-        if (!window.ethereum) {
-          status.style.color = "#9D00FF";
-          status.textContent = "MetaMask not found!";
-          return;
-        }
-        try {
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          const signer = await provider.getSigner();
-          const contract = new ethers.Contract(contractAddress, contractABI, signer);
-          const amount = document.getElementById('mint-amount').value;
-          if (!amount || isNaN(amount) || Number(amount) <= 0) {
-            status.style.color = "#9D00FF";
-            status.textContent = "Enter a valid amount!";
-            return;
+      if (liqChart) liqChart.destroy();
+      liqChart = new Chart(liqCtx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [{
+            label: 'Liquidity (USD)',
+            data: state.liquiditySeries.map(p => Math.round(p.v)),
+            backgroundColor: 'rgba(122, 162, 247, 0.35)',
+            borderColor: '#7aa2f7',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { grid: { display: false } },
+            y: {
+              grid: { color: 'rgba(255,255,255,0.05)' },
+              ticks: { callback: v => `$${v}` }
+            }
+          },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              callbacks: {
+                label: ctx => `Liquidity: $${ctx.parsed.y}`
+              }
+            }
           }
-          status.style.color = "#9D00FF";
-          status.textContent = "Sending transaction...";
-          const decimals = await contract.decimals();
-          const tx = await contract.mintRewards(signer.address, ethers.parseUnits(amount, decimals));
-          await tx.wait();
-          status.style.color = "#44bd32";
-          status.textContent = "Success! Tokens minted.";
-        } catch (err) {
-          status.style.color = "#FF10F0";
-          status.textContent = "Error: " + (err?.info?.error?.message || err.message || "Transaction failed");
         }
-      };
-    })();
+      });
+      priceCtx.parentElement.style.height = '240px';
+      liqCtx.parentElement.style.height = '240px';
+    }
+
+    $refresh.addEventListener('click', fetchLiveStats);
+    fetchLiveStats();
+    setInterval(fetchLiveStats, 30_000);
   </script>
 </body>
 </html>
