@@ -12,15 +12,17 @@
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
   <style>
     :root {
-      --primary: #6552D0;
-      --secondary: #17203D;
-      --accent: #1ba098;
+      --primary: #ff2d55;
+      --secondary: #18181b;
+      --accent: #ffb300;
       --gold: #FFD700;
       --neon: #00FFFF;
-      --bg-dark: #051622;
-      --bg-card: #17203D;
+      --bg-dark: #0a0a0f;
+      --bg-card: rgba(24,24,27,0.85);
       --text-main: #fff;
-      --text-muted: #deb992;
+      --text-muted: #ffb3b3;
+      --banner-bg: rgba(255,45,85,0.12);
+      --banner-border: #ff2d55;
       --discord: #5865F2;
       --twitter: #1da1f2;
       --telegram: #229ED9;
@@ -115,6 +117,7 @@
     .btn-primary {
       background: linear-gradient(90deg, var(--primary)cc 0%, var(--neon)cc 100%);
       color: var(--text-main);
+      box-shadow: 0 2px 8px #ff2d5522;
     }
     .btn-primary:hover { background: var(--gold); color: var(--secondary); }
     .btn-secondary {
@@ -136,12 +139,12 @@
       margin-top: 3rem;
     }
     .stat-card {
-      background: rgba(23,32,61,0.95);
+      background: rgba(24,24,27,0.85);
       backdrop-filter: blur(10px);
       padding: 2rem;
       border-radius: 20px;
       text-align: center;
-      border: 1px solid #444;
+      border: 1.5px solid var(--primary);
       transition: all 0.3s;
     }
     .stat-card:hover {
@@ -180,16 +183,51 @@
       cursor: pointer;
       white-space: nowrap;
       transition: background 0.2s, color 0.2s;
+      margin-left: 0.5rem;
     }
     .copy-btn:hover { background: var(--gold); color: var(--secondary); }
     /* Card backgrounds for dashboard */
     .dashboard-card {
-      background: rgba(23,32,61,0.95);
-      border-radius: 16px;
+      background: var(--bg-card);
+      border-radius: 18px;
       padding: 2rem;
       margin: 2rem auto;
-      box-shadow: 0 2px 12px #6552D044;
-      border: 1px solid #444;
+      box-shadow: 0 2px 24px #ff2d5522;
+      border: 1.5px solid var(--primary);
+    }
+    /* Buy Banner */
+    #buyDragonBanner {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      z-index: 1000;
+      background: var(--banner-bg);
+      border: 2px solid var(--banner-border);
+      border-radius: 16px;
+      box-shadow: 0 4px 32px #ff2d5522;
+      padding: 1.2rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--primary);
+      backdrop-filter: blur(6px);
+    }
+    #buyDragonBanner button {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      box-shadow: 0 2px 8px #ff2d5522;
+      transition: background 0.2s, color 0.2s;
+    }
+    #buyDragonBanner button:hover {
+      background: var(--gold);
+      color: var(--primary);
     }
     /* Footer */
     footer {
@@ -206,10 +244,23 @@
       .dashboard-card { padding: 1rem; }
       .nav-container { flex-direction: column; gap: 1rem; }
       .cta-buttons { flex-direction: column; }
+      #buyDragonBanner {
+        position: static;
+        margin: 1rem auto;
+        width: 90vw;
+        justify-content: center;
+      }
     }
   </style>
 </head>
 <body>
+  <!-- Buy DRAGON Banner -->
+  <div id="buyDragonBanner">
+    <span>🔥 Buy <b>DRAGON</b> Token</span>
+    <button onclick="window.open('https://app.uniswap.org/#/swap?outputCurrency=0x1b685B0c771b877d1a4e8F02365a4A809E962c81', '_blank')">
+      Buy Now
+    </button>
+  </div>
   <div class="stars" id="stars"></div>
   <nav>
     <div class="nav-container">
@@ -275,6 +326,14 @@
           <div class="stat-label">Blockchain</div>
         </div>
       </div>
+      <!-- Contract Address for Buyers -->
+      <div style="margin:2rem auto 0 auto;max-width:600px;text-align:center;">
+        <span style="color:var(--primary);font-weight:600;">DRAGON Contract:</span>
+        <span id="dragonContract" style="font-family:monospace;color:var(--accent);margin:0 0.5rem;">
+          0x1b685B0c771b877d1a4e8F02365a4A809E962c81
+        </span>
+        <button class="copy-btn" onclick="navigator.clipboard.writeText('0x1b685B0c771b877d1a4e8F02365a4A809E962c81')">Copy</button>
+      </div>
     </div>
   </div>
   <!-- Live Stats Section -->
@@ -326,7 +385,7 @@
       <div style="margin-bottom:0.5rem;">Staked: <span id="stakedBalance">-</span></div>
       <div style="margin-bottom:0.5rem;">Rewards: <span id="rewards">-</span></div>
       <div style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:0.5rem;">
-        <input id="stakeAmount" type="number" min="0" placeholder="Amount to stake" style="padding:0.5rem 1rem;border-radius:8px;border:1px solid var(--primary);width:120px;background:rgba(0,0,0,0.5);color:#fff;">
+        <input id="stakeAmount" type="number" min="0" placeholder="Amount to stake" style="padding:0.5rem 1rem;border-radius:8px;border:1.5px solid var(--primary);width:120px;background:rgba(0,0,0,0.5);color:#fff;">
         <button id="stakeBtn" class="btn" style="background:var(--accent);color:#fff;">Stake</button>
         <button id="unstakeBtn" class="btn" style="background:var(--gold);color:#000;">Unstake</button>
         <button id="claimBtn" class="btn" style="background:var(--neon);color:#000;">Claim</button>
@@ -587,8 +646,8 @@
           datasets: [{
             label: 'Liquidity (USD)',
             data: state.liquiditySeries.map(p => Math.round(p.v)),
-            backgroundColor: 'rgba(122, 162, 247, 0.35)',
-            borderColor: '#7aa2f7',
+            backgroundColor: 'rgba(255,45,85,0.25)',
+            borderColor: '#ff2d55',
             borderWidth: 1
           }]
         },
