@@ -31,7 +31,7 @@ Now with a live dashboard, wallet connect, staking, rewards, and real-time stats
 - **Website / Dashboard:** [https://00impera.github.io/dragon-moonad](https://00impera.github.io/dragon-moonad)
 - **Twitter:** [@bnbgold277983](https://x.com/bnbgold277983)
 - **Telegram:** [MonadFrogsNFT](https://t.me/MonadFrogsNFT_bot/app)
-- **Discord:** [Community](https://discord.com/channels/1316093079090106472)
+- **Discord:** [Community](https://discord.gg/xnDAuzd8)
 
 ---
 
