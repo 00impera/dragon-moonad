@@ -1,682 +1,4093 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DRAGON MOONAD - Revolutionary LP Mining on Monad</title>
-  <meta name="description" content="Stake, Earn, and Grow with Dragon's Revolutionary LP Mining System on Monad Blockchain">
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Monad DEX — Modern UI</title>
   <style>
-    :root {
-      --primary: #ff2d55;
-      --secondary: #18181b;
-      --accent: #ffb300;
-      --gold: #FFD700;
-      --neon: #00FFFF;
-      --bg-dark: #0a0a0f;
-      --bg-card: rgba(24,24,27,0.85);
-      --text-main: #fff;
-      --text-muted: #ffb3b3;
-      --banner-bg: rgba(255,45,85,0.12);
-      --banner-border: #ff2d55;
-      --discord: #5865F2;
-      --twitter: #1da1f2;
-      --telegram: #229ED9;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, var(--bg-dark) 0%, var(--secondary) 100%);
-      color: var(--text-main);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-    .stars { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-    .star { position: absolute; background: white; border-radius: 50%; animation: twinkle 3s infinite; opacity: 0.7; }
-    @keyframes twinkle { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-    nav {
-      background: var(--bg-card);
-      box-shadow: 0 2px 12px #0002;
-      z-index: 10;
-      position: sticky;
-      top: 0;
-    }
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-    }
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      font-size: 1.5rem;
-      font-weight: bold;
-      color: var(--primary);
-    }
-    .logo img { width: 40px; height: 40px; border-radius: 50%; }
-    .nav-links {
-      display: flex;
-      gap: 2rem;
-      list-style: none;
-    }
-    .nav-links a {
-      color: var(--text-main);
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.2s;
-    }
-    .nav-links a:hover { color: var(--gold); }
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding-top: 80px;
-    }
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 2rem; }
-    .dragon-icon {
-      width: 150px; height: 150px; margin: 0 auto 2rem;
-      animation: float 3s ease-in-out infinite;
-    }
-    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-16px);} }
-    .dragon-icon img {
-      width: 100%; height: 100%; border-radius: 50%;
-      box-shadow: 0 0 50px var(--primary);
-    }
-    h1 {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-      background: linear-gradient(45deg, var(--primary), var(--gold), var(--neon));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-    .tagline { font-size: 1.5rem; margin-bottom: 2rem; color: var(--gold); }
-    .cta-buttons {
-      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
-    }
-    .btn {
-      padding: 1rem 2rem;
-      border-radius: 50px;
-      font-weight: bold;
-      text-decoration: none;
-      transition: background 0.2s, color 0.2s, border 0.2s;
-      border: none;
-      cursor: pointer;
-      display: inline-block;
-    }
-    .btn-primary {
-      background: linear-gradient(90deg, var(--primary)cc 0%, var(--neon)cc 100%);
-      color: var(--text-main);
-      box-shadow: 0 2px 8px #ff2d5522;
-    }
-    .btn-primary:hover { background: var(--gold); color: var(--secondary); }
-    .btn-secondary {
-      background: transparent;
-      color: var(--primary);
-      border: 2px solid var(--primary);
-    }
-    .btn-secondary:hover { background: var(--primary); color: var(--text-main); }
-    .section-title {
-      text-align: center;
-      font-size: 2.5rem;
-      margin-bottom: 3rem;
-      color: var(--primary);
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 2rem;
-      margin-top: 3rem;
-    }
-    .stat-card {
-      background: rgba(24,24,27,0.85);
-      backdrop-filter: blur(10px);
-      padding: 2rem;
-      border-radius: 20px;
-      text-align: center;
-      border: 1.5px solid var(--primary);
-      transition: all 0.3s;
-    }
-    .stat-card:hover {
-      transform: translateY(-10px);
-      border-color: var(--gold);
-      box-shadow: 0 10px 30px #FFD70044;
-    }
-    .stat-value { font-size: 2.5rem; font-weight: bold; color: var(--gold); margin-bottom: 0.5rem; }
-    .stat-label { font-size: 1rem; color: var(--primary); }
-    .socials {
-      display: flex; gap: 1rem; justify-content: center; margin: 2rem 0 0 0;
-    }
-    .social-btn {
-      display: flex; align-items: center; gap: 0.5rem;
-      padding: 0.6rem 1.2rem;
-      border-radius: 8px;
-      font-weight: 600;
-      color: #fff;
-      text-decoration: none;
-      border: none;
-      font-size: 1rem;
-      transition: background 0.2s, color 0.2s;
-    }
-    .social-btn.discord { background: var(--discord); }
-    .social-btn.discord:hover { background: #404eed; }
-    .social-btn.twitter { background: var(--twitter); }
-    .social-btn.twitter:hover { background: #0d8ddb; }
-    .social-btn.telegram { background: var(--telegram); }
-    .social-btn.telegram:hover { background: #157ab3; }
-    .copy-btn {
-      padding: 0.5rem 1rem;
-      background: var(--primary);
-      border: none;
-      border-radius: 5px;
-      color: #fff;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: background 0.2s, color 0.2s;
-      margin-left: 0.5rem;
-    }
-    .copy-btn:hover { background: var(--gold); color: var(--secondary); }
-    /* Card backgrounds for dashboard */
-    .dashboard-card {
-      background: var(--bg-card);
-      border-radius: 18px;
-      padding: 2rem;
-      margin: 2rem auto;
-      box-shadow: 0 2px 24px #ff2d5522;
-      border: 1.5px solid var(--primary);
-    }
-    /* Buy Banner */
-    #buyDragonBanner {
-      position: fixed;
-      top: 24px;
-      right: 24px;
-      z-index: 1000;
-      background: var(--banner-bg);
-      border: 2px solid var(--banner-border);
-      border-radius: 16px;
-      box-shadow: 0 4px 32px #ff2d5522;
-      padding: 1.2rem 2rem;
-      display: flex;
-      align-items: center;
-      gap: 1.2rem;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--primary);
-      backdrop-filter: blur(6px);
-    }
-    #buyDragonBanner button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 0.7rem 1.5rem;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 700;
-      box-shadow: 0 2px 8px #ff2d5522;
-      transition: background 0.2s, color 0.2s;
-    }
-    #buyDragonBanner button:hover {
-      background: var(--gold);
-      color: var(--primary);
-    }
-    /* Footer */
-    footer {
-      background: var(--bg-card);
-      margin-top: 3rem;
-      padding: 2rem 0 1rem 0;
-      border-top: 1px solid #222;
-    }
-    footer .container { text-align: center; }
-    footer img { width: 64px; height: 64px; border-radius: 50%; }
-    /* Responsive */
-    @media (max-width: 700px) {
-      .stats { grid-template-columns: 1fr; }
-      .dashboard-card { padding: 1rem; }
-      .nav-container { flex-direction: column; gap: 1rem; }
-      .cta-buttons { flex-direction: column; }
-      #buyDragonBanner {
-        position: static;
-        margin: 1rem auto;
-        width: 90vw;
-        justify-content: center;
-      }
-    }
-  </style>
+/* ============================================
+   MONAD DEX - DESIGN SYSTEM VARIABLES
+   Option 4: Modern Dark Theme Overhaul
+   ============================================ */
+
+:root {
+  /* ==================
+     COLOR PALETTE
+     ================== */
+
+  /* Deep blacks with slight color tint */
+  --bg-primary: #0A0E14;      /* Deep blue-black - main background */
+  --bg-secondary: #14181F;    /* Lighter surface - cards base */
+  --bg-elevated: #1C2128;     /* Cards/modals - highest elevation */
+  --bg-input: #0F1419;        /* Input fields background */
+
+  /* Neon accents */
+  --cyan-500: #00E5FF;        /* Primary - main accent color */
+  --cyan-400: #1AEBFF;        /* Hover - lighter variant */
+  --cyan-300: #4DF0FF;        /* Active states */
+  --cyan-600: #00C4E0;        /* Darker variant */
+  --purple-500: #B400FF;      /* Secondary accent */
+  --purple-400: #CC33FF;      /* Purple hover */
+
+  /* Semantic colors */
+  --success: #4CFFB0;         /* Success states, positive values */
+  --warning: #FFD84A;         /* Warning states */
+  --error: #FF3864;           /* Error states, negative values */
+  --info: #00E5FF;            /* Info messages */
+
+  /* Text colors */
+  --text-primary: #F5F9FF;    /* Main text - high contrast */
+  --text-secondary: #C2D1E5;  /* Secondary text - medium contrast */
+  --text-muted: #8B9BB3;      /* Muted text - labels, hints */
+  --text-disabled: #5A6B85;   /* Disabled state text */
+
+  /* Border colors */
+  --border-primary: rgba(255, 255, 255, 0.12);   /* Default borders */
+  --border-secondary: rgba(255, 255, 255, 0.06); /* Subtle borders */
+  --border-accent: rgba(0, 229, 255, 0.3);       /* Accent borders */
+  --border-glow: rgba(0, 229, 255, 0.15);        /* Glowing borders */
+
+ /* Shadow colors */
+--shadow-sm: rgba(0, 0, 0, 0.3);
+--shadow-md: rgba(0, 0, 0, 0.4);
+--shadow-lg: rgba(0, 0, 0, 0.5);
+--shadow-xl: rgba(0, 0, 0, 0.6);
+--shadow-glow-cyan: rgba(0, 229, 255, 0.25);
+--shadow-glow-purple: rgba(180, 0, 255, 0.25);
+
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+
+  /* ==================
+     SPACING SYSTEM
+     8px grid
+     ================== */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-7: 56px;
+  --space-8: 64px;
+  --space-9: 72px;
+  --space-10: 80px;
+
+  /* Component-specific spacing */
+  --container-padding: var(--space-4);
+  --card-padding: var(--space-3);
+  --input-padding-y: var(--space-2);
+  --input-padding-x: var(--space-3);
+  --button-padding-y: var(--space-2);
+  --button-padding-x: var(--space-4);
+
+  /* ==================
+     TYPOGRAPHY
+     Fluid sizing with clamp()
+     ================== */
+
+  /* Font families */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', 'Roboto Mono', Menlo, Monaco, 'Courier New', monospace;
+
+  /* Font sizes - fluid responsive */
+  --text-xs: clamp(11px, 1vw, 12px);
+  --text-sm: clamp(13px, 1.2vw, 14px);
+  --text-base: clamp(14px, 1.5vw, 16px);
+  --text-lg: clamp(16px, 1.8vw, 18px);
+  --text-xl: clamp(18px, 2vw, 20px);
+  --text-2xl: clamp(20px, 2.5vw, 24px);
+  --text-3xl: clamp(24px, 3vw, 28px);
+  --text-4xl: clamp(28px, 3.5vw, 36px);
+  --text-5xl: clamp(32px, 4vw, 48px);
+
+  /* Font weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-black: 900;
+
+  /* Line heights */
+  --leading-tight: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Letter spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+
+  /* ==================
+     BORDERS & RADIUS
+     ================== */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* ==================
+     EFFECTS & FILTERS
+     ================== */
+  --blur-sm: blur(8px);
+  --blur-md: blur(16px);
+  --blur-lg: blur(24px);
+
+  --backdrop-blur: blur(20px) saturate(180%);
+
+  /* ==================
+     Z-INDEX LAYERS
+     ================== */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-fixed: 300;
+  --z-modal-backdrop: 400;
+  --z-modal: 500;
+  --z-popover: 600;
+  --z-tooltip: 700;
+
+  /* ==================
+     TRANSITIONS
+     ================== */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 500ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ==================
+     COMPONENT SIZES
+     Visual hierarchy
+     ================== */
+
+  /* Header */
+  --header-height: 72px;
+  --logo-size: 64px;
+
+  /* Cards */
+  --card-min-height: 120px;
+  --chart-height: 400px;
+
+  /* Buttons */
+  --button-height-sm: 36px;
+  --button-height-md: 44px;
+  --button-height-lg: 52px;
+  --button-height-xl: 60px;
+
+  /* Inputs */
+  --input-height: 56px;
+  --token-logo-size: 48px;
+
+  /* Sidebar */
+  --sidebar-width: 380px;
+
+  /* ==================
+     ANIMATIONS
+     ================== */
+  --animation-spin: spin 0.6s linear infinite;
+  --animation-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animation-bounce: bounce 1s infinite;
+  --animation-glow: glow 2s ease-in-out infinite;
+}
+
+/* ==================
+   DARK MODE OVERRIDES
+   (future-proof)
+   ================== */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* If you want light mode support later, add overrides here */
+    /* For now, we're dark-only */
+  }
+}
+
+/* ==================
+   REDUCED MOTION
+   Accessibility
+   ================== */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0.01ms;
+    --transition-base: 0.01ms;
+    --transition-slow: 0.01ms;
+    --transition-bounce: 0.01ms;
+  }
+}
+/* ============================================
+   MONAD DEX - BASE STYLES
+   Reset, body, typography, global elements
+   ============================================ */
+
+/* ==================
+   CSS RESET
+   ================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* ==================
+   BODY
+   ================== */
+body {
+  margin: 0;
+  padding: var(--container-padding);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+
+  /* Complex gradient background */
+  background-image:
+    radial-gradient(circle at 10% 10%, rgba(0, 229, 255, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 90% 90%, rgba(180, 0, 255, 0.06) 0%, transparent 50%),
+    linear-gradient(135deg, var(--bg-primary) 0%, #0D1117 40%, var(--bg-secondary) 100%);
+  background-attachment: fixed;
+  background-size: cover;
+
+  /* Prevent text selection on UI elements (optional) */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Allow text selection in inputs and content areas */
+input, textarea, pre, [contenteditable] {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+/* ==================
+   CONTAINER
+   ================== */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0;
+}
+
+/* ==================
+   TYPOGRAPHY
+   ================== */
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+h1 {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-black);
+  background: linear-gradient(135deg, var(--text-primary) 0%, var(--cyan-400) 50%, var(--text-primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 15px var(--shadow-glow-cyan);
+}
+
+h2 {
+  font-size: var(--text-3xl);
+  font-weight: var(--font-bold);
+}
+
+h3 {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+}
+
+h4 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+}
+
+h5 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-semibold);
+}
+
+h6 {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+}
+
+/* Paragraphs */
+p {
+  margin: 0;
+  line-height: var(--leading-relaxed);
+}
+
+/* Strong emphasis */
+strong {
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+/* Text utilities */
+.small {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: var(--leading-normal);
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+}
+
+/* ==================
+   LINKS
+   ================== */
+a {
+  color: var(--cyan-500);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--cyan-400);
+  text-decoration: underline;
+}
+
+a:focus-visible {
+  outline: 3px solid var(--border-accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==================
+   INPUTS & SELECTS
+   ================== */
+input, select, textarea {
+  font-family: inherit;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  background: transparent;
+  border: 0;
+  outline: none;
+  transition: all var(--transition-base);
+}
+
+input::placeholder {
+  color: var(--text-muted);
+  opacity: 0.6;
+}
+
+input:focus::placeholder {
+  opacity: 0.4;
+}
+
+/* Number input - remove spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+/* Select dropdown */
+select {
+  cursor: pointer;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  border: 1px solid var(--border-secondary);
+  transition: all var(--transition-base);
+}
+
+select:hover {
+  border-color: var(--border-primary);
+}
+
+select:focus {
+  border-color: var(--border-accent);
+  box-shadow: 0 0 0 3px var(--shadow-glow-cyan);
+}
+
+/* Option styling */
+select option {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* ==================
+   FOCUS STATES
+   Accessibility
+   ================== */
+:focus-visible {
+  outline: 3px solid var(--border-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline-offset: 4px;
+}
+
+/* ==================
+   SCROLLBARS
+   Custom styling
+   ================== */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--cyan-600) 0%, var(--purple-500) 100%);
+  border-radius: var(--radius-md);
+  border: 2px solid var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--cyan-500) 0%, var(--purple-400) 100%);
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--cyan-600) var(--bg-secondary);
+}
+
+/* ==================
+   SELECTION
+   ================== */
+::selection {
+  background: var(--cyan-500);
+  color: var(--bg-primary);
+}
+
+::-moz-selection {
+  background: var(--cyan-500);
+  color: var(--bg-primary);
+}
+
+/* ==================
+   IMAGES & MEDIA
+   ================== */
+img, svg, video, canvas {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+img {
+  border-style: none;
+}
+
+/* ==================
+   LISTS
+   ================== */
+ul, ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==================
+   TABLES
+   ================== */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%;
+}
+
+/* ==================
+   BUTTONS RESET
+   ================== */
+button {
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* ==================
+   PRE & CODE
+   ================== */
+pre, code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+pre {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  line-height: var(--leading-relaxed);
+}
+
+code {
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-input);
+  color: var(--cyan-400);
+}
+
+/* ==================
+   HR
+   ================== */
+hr {
+  border: 0;
+  height: 1px;
+  background: var(--border-secondary);
+  margin: var(--space-4) 0;
+}
+
+/* ==================
+   FIELDSET
+   ================== */
+fieldset {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  margin: var(--space-2) 0;
+}
+
+legend {
+  padding: 0 var(--space-2);
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+}
+
+/* ==================
+   RESPONSIVE BASE
+   ================== */
+@media (max-width: 1024px) {
+  body {
+    padding: var(--space-3);
+  }
+
+  .container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    padding: var(--space-2);
+  }
+
+  h1 {
+    font-size: var(--text-3xl);
+  }
+}
+
+/* ==================
+   PRINT STYLES
+   ================== */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  a {
+    text-decoration: underline;
+  }
+
+  button {
+    display: none;
+  }
+}
+/* ============================================
+   MONAD DEX - COMPONENTS
+   Buttons, cards, inputs, charts, etc.
+   ============================================ */
+
+/* ==================
+   HEADER
+   ================== */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-height: var(--header-height);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+
+  /* Glassmorphism effect */
+  background: var(--glass-bg);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 8px 32px var(--shadow-lg),
+    0 0 0 1px rgba(0, 229, 255, 0.02);
+
+  transition: all var(--transition-base);
+}
+
+header:hover {
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 12px 40px var(--shadow-xl),
+    0 0 40px rgba(0, 229, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Logo container */
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.logo {
+  width: var(--logo-size);
+  height: var(--logo-size);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, #E6EEF3, #BFC9D2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 12px var(--shadow-md),
+    0 0 20px rgba(0, 229, 255, 0.1);
+  transition: all var(--transition-base);
+}
+
+.logo:hover {
+  transform: scale(1.05) rotate(5deg);
+  box-shadow:
+    0 6px 20px var(--shadow-lg),
+    0 0 30px rgba(0, 229, 255, 0.2);
+}
+
+/* Header title section */
+.header-title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Header controls */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* ==================
+   BUTTONS
+   ================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--button-padding-y) var(--button-padding-x);
+  min-height: var(--button-height-md);
+  border-radius: var(--radius-lg);
+  font-size: var(--text-base);
+  font-weight: var(--font-bold);
+  text-align: center;
+  cursor: pointer;
+  border: 0;
+  transition: all var(--transition-base);
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+  will-change: transform, box-shadow;
+}
+
+/* Primary button - Neon glow effect */
+.btn-primary {
+  background: linear-gradient(135deg, var(--cyan-500) 0%, var(--cyan-600) 100%);
+  color: var(--bg-primary);
+  border: 1px solid var(--cyan-400);
+  box-shadow:
+    0 4px 16px var(--shadow-glow-cyan),
+    0 0 20px rgba(0, 229, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--cyan-400) 0%, var(--cyan-500) 100%);
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 8px 24px var(--shadow-glow-cyan),
+    0 0 40px rgba(0, 229, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.btn-primary:active {
+  transform: translateY(-1px) scale(0.98);
+  box-shadow:
+    0 4px 12px var(--shadow-glow-cyan),
+    0 0 20px rgba(0, 229, 255, 0.4);
+}
+
+/* Ghost button - Transparent with border */
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-primary);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 2px 8px var(--shadow-sm);
+}
+
+.btn-ghost:hover {
+  background: var(--glass-bg);
+  border-color: var(--border-accent);
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 4px 16px var(--shadow-md),
+    0 0 20px rgba(0, 229, 255, 0.15);
+}
+
+.btn-ghost:active {
+  transform: translateY(0);
+  background: rgba(0, 229, 255, 0.05);
+}
+
+/* Secondary button - Purple accent */
+.btn-secondary {
+  background: linear-gradient(135deg, var(--purple-500) 0%, var(--purple-400) 100%);
+  color: var(--text-primary);
+  border: 1px solid var(--purple-400);
+  box-shadow:
+    0 4px 16px var(--shadow-glow-purple),
+    0 0 20px rgba(180, 0, 255, 0.3);
+}
+
+.btn-secondary:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 8px 24px var(--shadow-glow-purple),
+    0 0 40px rgba(180, 0, 255, 0.5);
+}
+
+/* Button sizes */
+.btn-sm {
+  min-height: var(--button-height-sm);
+  padding: calc(var(--space-1) + 2px) var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.btn-lg {
+  min-height: var(--button-height-lg);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-lg);
+}
+
+.btn-xl {
+  min-height: var(--button-height-xl);
+  padding: var(--space-4) var(--space-6);
+  font-size: var(--text-xl);
+}
+
+/* Disabled state */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* Loading state */
+.btn.loading {
+  color: transparent;
+  position: relative;
+  pointer-events: none;
+}
+
+.btn.loading::after {
+  content: "";
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -10px;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: var(--animation-spin);
+}
+
+/* ==================
+   CARDS
+   ================== */
+.card {
+  background: var(--glass-bg);
+  backdrop-filter: var(--backdrop-blur);
+  padding: var(--card-padding);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    inset 0 1px 0 var(--glass-highlight),
+    0 8px 32px var(--shadow-lg);
+  transition: all var(--transition-base);
+  position: relative;
+}
+
+.card:hover {
+  border-color: rgba(0, 229, 255, 0.15);
+  box-shadow:
+    inset 0 2px 0 var(--glass-highlight),
+    0 12px 40px var(--shadow-xl),
+    0 0 30px rgba(0, 229, 255, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Card header */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.card-title {
+  font-size: var(--text-xl);
+  font-weight: var(--font-bold);
+  color: var(--text-primary);
+}
+
+/* Emphasized card (like swap card) */
+.card-emphasized {
+  border: 2px solid var(--border-accent);
+  box-shadow:
+    inset 0 2px 0 var(--glass-highlight),
+    0 12px 40px var(--shadow-xl),
+    0 0 40px rgba(0, 229, 255, 0.25);
+}
+
+.card-emphasized:hover {
+  box-shadow:
+    inset 0 2px 0 var(--glass-highlight),
+    0 16px 50px var(--shadow-xl),
+    0 0 60px rgba(0, 229, 255, 0.35);
+}
+
+/* Chrome rim effect */
+.chrome-rim {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.005));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* ==================
+   MAIN GRID LAYOUT
+   ================== */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1fr var(--sidebar-width);
+  gap: var(--space-4);
+  align-items: start;
+}
+
+/* ==================
+   TOKEN INPUT
+   ================== */
+.token-input {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.2));
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-secondary);
+  transition: all var(--transition-base);
+  min-height: var(--input-height);
+}
+
+.token-input:hover {
+  border-color: var(--border-primary);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.25));
+}
+
+.token-input:focus-within {
+  border-color: var(--border-accent);
+  box-shadow:
+    0 0 0 3px var(--shadow-glow-cyan),
+    0 4px 12px var(--shadow-md);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
+}
+
+/* Token logo */
+.token-logo {
+  width: var(--token-logo-size);
+  height: var(--token-logo-size);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-primary);
+  box-shadow: 0 2px 8px var(--shadow-md);
+  transition: all var(--transition-base);
+}
+
+.token-logo:hover {
+  transform: scale(1.1);
+  border-color: var(--border-accent);
+  box-shadow: 0 4px 12px var(--shadow-glow-cyan);
+}
+
+/* Input field inside token-input */
+.token-input input[type="number"],
+.token-input input[type="text"] {
+  flex: 1;
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+/* Select inside token-input */
+.token-input select {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  background: transparent;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+}
+
+/* ==================
+   BADGES & INDICATORS
+   ================== */
+.price-badge {
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--cyan-300);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.3));
+  border: 1px solid var(--border-glow);
+  box-shadow:
+    0 4px 12px var(--shadow-md),
+    0 0 20px rgba(0, 229, 255, 0.2);
+}
+
+.neon-pulse {
+  position: relative;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.1), rgba(0, 184, 255, 0.05));
+  border: 1px solid var(--border-glow);
+  color: var(--cyan-300);
+  animation: var(--animation-glow);
+}
+
+.stat {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--cyan-300);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(0, 229, 255, 0.05), rgba(0, 0, 0, 0.2));
+  border: 1px solid var(--border-secondary);
+  display: inline-block;
+}
+
+/* ==================
+   CHART
+   ================== */
+.chart-placeholder {
+  height: var(--chart-height);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
+  border: 1px solid var(--border-secondary);
+  margin-bottom: var(--space-3);
+  padding: var(--space-2);
+  overflow: hidden;
+  position: relative;
+}
+
+.chart-placeholder::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--cyan-500) 50%,
+    transparent 100%);
+  opacity: 0.5;
+}
+
+#priceChartCanvas {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: var(--radius-md);
+}
+
+/* ==================
+   LOG DISPLAY
+   ================== */
+pre#log {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.7));
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--info);
+  max-height: 300px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
+  border: 1px solid var(--border-glow);
+  font-family: var(--font-mono);
+}
+
+.log-entry {
+  margin-bottom: var(--space-1);
+  padding: var(--space-1) 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+}
+
+.log-entry:last-child {
+  border-bottom: none;
+}
+
+.log-time {
+  color: var(--text-muted);
+  margin-right: var(--space-2);
+}
+
+/* ==================
+   SWAP FLIP BUTTON
+   ================== */
+#swapFlip {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-2xl);
+  background: var(--glass-bg);
+  border: 2px solid var(--border-primary);
+  transition: all var(--transition-base);
+}
+
+#swapFlip:hover {
+  transform: rotate(180deg) scale(1.1);
+  border-color: var(--border-accent);
+  background: rgba(0, 229, 255, 0.1);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+}
+
+#swapFlip:active {
+  transform: rotate(180deg) scale(0.95);
+}
+
+/* ==================
+   LABEL STYLES
+   ================== */
+label {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+/* ==================
+   SLIPPAGE INPUT
+   ================== */
+#slippage {
+  width: 140px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  background: var(--bg-input);
+  font-size: var(--text-base);
+  transition: all var(--transition-base);
+}
+
+#slippage:focus {
+  border-color: var(--border-accent);
+  box-shadow: 0 0 0 3px var(--shadow-glow-cyan);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* ==================
+   BUTTON GROUPS
+   ================== */
+.button-group {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* ==================
+   RESPONSIVE
+   ================== */
+@media (max-width: 1200px) {
+  .main-grid {
+    grid-template-columns: 1fr 340px;
+  }
+}
+
+@media (max-width: 980px) {
+  .main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  header {
+    flex-direction: column;
+    gap: var(--space-3);
+    align-items: flex-start;
+  }
+
+  .header-controls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+/* Desktop/tablet styles (default) */
+.logo {
+  width: 56px;
+  height: 56px;
+}
+
+@media (max-width: 640px) {
+  .card {
+    padding: var(--space-2);
+  }
+  .token-input {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+  .btn {
+    min-height: var(--button-height-sm);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-sm);
+  }
+  .chart-placeholder {
+    height: 280px;
+  }
+}
+/* ==================
+   WALLET DISPLAY
+   ================== */
+#walletDisplay {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin-bottom: var(--space-1);
+}
+
+/* ==================
+   CHAIN SELECTOR
+   ================== */
+#chainSelect {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--bg-input);
+  border: 1px solid var(--border-secondary);
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  transition: all var(--transition-base);
+}
+
+#chainSelect:hover {
+  border-color: var(--border-primary);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+#chainSelect:focus {
+  border-color: var(--border-accent);
+  box-shadow: 0 0 0 3px var(--shadow-glow-cyan);
+}
+/* ============================================
+   MONAD DEX - UTILITIES
+   Animations, keyframes, helper classes
+   ============================================ */
+
+/* ==================
+   KEYFRAME ANIMATIONS
+   ================== */
+
+/* Spin animation - for loading states */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulse animation - for live indicators */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.05);
+  }
+}
+
+/* Glow animation - for neon effects */
+@keyframes glow {
+  0%, 100% {
+    box-shadow:
+      0 0 10px rgba(0, 229, 255, 0.2),
+      0 0 20px rgba(0, 229, 255, 0.1),
+      inset 0 0 10px rgba(0, 229, 255, 0.05);
+  }
+  50% {
+    box-shadow:
+      0 0 20px rgba(0, 229, 255, 0.4),
+      0 0 40px rgba(0, 229, 255, 0.2),
+      inset 0 0 15px rgba(0, 229, 255, 0.1);
+  }
+}
+
+/* Pulse glow - for emphasized elements */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(0, 229, 255, 0.6);
+  }
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Fade in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade in from left */
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Fade in from right */
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Scale in */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Shimmer effect - for loading placeholders */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+/* Slide down */
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Slide up */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Gradient animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* ==================
+   ANIMATION CLASSES
+   ================== */
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.4s ease-out forwards;
+}
+
+.animate-fade-in-right {
+  animation: fadeInRight 0.4s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s ease-out forwards;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.3s ease-out forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s ease-out forwards;
+}
+
+/* Staggered animation delays */
+.animate-delay-100 {
+  animation-delay: 100ms;
+}
+
+.animate-delay-200 {
+  animation-delay: 200ms;
+}
+
+.animate-delay-300 {
+  animation-delay: 300ms;
+}
+
+.animate-delay-500 {
+  animation-delay: 500ms;
+}
+
+/* ==================
+   UTILITY CLASSES
+   ================== */
+
+/* Display utilities */
+.hidden {
+  display: none !important;
+}
+
+.block {
+  display: block !important;
+}
+
+.inline-block {
+  display: inline-block !important;
+}
+
+.flex {
+  display: flex !important;
+}
+
+.inline-flex {
+  display: inline-flex !important;
+}
+
+.grid {
+  display: grid !important;
+}
+
+/* Flex utilities */
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-start {
+  align-items: flex-start;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.items-end {
+  align-items: flex-end;
+}
+
+.justify-start {
+  justify-content: flex-start;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-end {
+  justify-content: flex-end;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+
+/* Text utilities */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-primary {
+  color: var(--text-primary) !important;
+}
+
+.text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
+}
+
+.text-warning {
+  color: var(--warning) !important;
+}
+
+.text-error {
+  color: var(--error) !important;
+}
+
+.text-cyan {
+  color: var(--cyan-500) !important;
+}
+
+/* Font weight utilities */
+.font-normal {
+  font-weight: var(--font-normal);
+}
+
+.font-medium {
+  font-weight: var(--font-medium);
+}
+
+.font-semibold {
+  font-weight: var(--font-semibold);
+}
+
+.font-bold {
+  font-weight: var(--font-bold);
+}
+
+/* Spacing utilities */
+.m-0 { margin: 0; }
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-3 { margin-bottom: var(--space-3); }
+.mb-4 { margin-bottom: var(--space-4); }
+
+.ml-auto { margin-left: auto; }
+.mr-auto { margin-right: auto; }
+
+.p-0 { padding: 0; }
+.p-1 { padding: var(--space-1); }
+.p-2 { padding: var(--space-2); }
+.p-3 { padding: var(--space-3); }
+.p-4 { padding: var(--space-4); }
+
+/* Width utilities */
+.w-full {
+  width: 100%;
+}
+
+.w-auto {
+  width: auto;
+}
+
+/* Opacity utilities */
+.opacity-0 {
+  opacity: 0;
+}
+
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.opacity-75 {
+  opacity: 0.75;
+}
+
+.opacity-100 {
+  opacity: 1;
+}
+
+/* Cursor utilities */
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+/* Overflow utilities */
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.overflow-x-auto {
+  overflow-x: auto;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+/* Position utilities */
+.relative {
+  position: relative;
+}
+
+.absolute {
+  position: absolute;
+}
+
+.fixed {
+  position: fixed;
+}
+
+.sticky {
+  position: sticky;
+}
+
+/* Border utilities */
+.border-none {
+  border: none;
+}
+
+.rounded-sm {
+  border-radius: var(--radius-sm);
+}
+
+.rounded-md {
+  border-radius: var(--radius-md);
+}
+
+.rounded-lg {
+  border-radius: var(--radius-lg);
+}
+
+.rounded-full {
+  border-radius: var(--radius-full);
+}
+
+/* Shadow utilities */
+.shadow-sm {
+  box-shadow: 0 2px 8px var(--shadow-sm);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 16px var(--shadow-md);
+}
+
+.shadow-lg {
+  box-shadow: 0 8px 32px var(--shadow-lg);
+}
+
+.shadow-glow-cyan {
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+}
+
+.shadow-glow-purple {
+  box-shadow: 0 0 25px rgba(180, 0, 255, 0.3);
+}
+
+/* Gradient backgrounds */
+.bg-gradient-cyan {
+  background: linear-gradient(135deg, var(--cyan-500) 0%, var(--cyan-600) 100%);
+}
+
+.bg-gradient-purple {
+  background: linear-gradient(135deg, var(--purple-500) 0%, var(--purple-400) 100%);
+}
+
+.bg-glass {
+  background: var(--glass-bg);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid var(--glass-border);
+}
+
+/* ==================
+   LOADING STATES
+   ================== */
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02) 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+.skeleton {
+  background: var(--bg-secondary);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  animation: shimmer 2s infinite;
+}
+
+/* ==================
+   ACCESSIBILITY
+   ================== */
+
+/* Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Focus visible utility */
+.focus-ring:focus-visible {
+  outline: 3px solid var(--border-accent);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* ==================
+   RESPONSIVE UTILITIES
+   ================== */
+
+@media (max-width: 640px) {
+  .hidden-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 641px) {
+  .visible-mobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 980px) {
+  .hidden-tablet {
+    display: none !important;
+  }
+}
+
+@media (min-width: 981px) {
+  .visible-tablet {
+    display: none !important;
+  }
+}
+
+/* ==================
+   PRINT UTILITIES
+   ================== */
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* ==================
+   POINTER EVENTS
+   ================== */
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.pointer-events-auto {
+  pointer-events: auto;
+}
+
+/* ==================
+   TRANSFORMS
+   ================== */
+
+.scale-95 {
+  transform: scale(0.95);
+}
+
+.scale-100 {
+  transform: scale(1);
+}
+
+.scale-105 {
+  transform: scale(1.05);
+}
+
+.scale-110 {
+  transform: scale(1.1);
+}
+
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+/* ==================
+   TRANSITION UTILITIES
+   ================== */
+
+.transition-none {
+  transition: none;
+}
+
+.transition-all {
+  transition: all var(--transition-base);
+}
+
+.transition-fast {
+  transition: all var(--transition-fast);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow);
+}
+
+/* ==================
+   TRUNCATE TEXT
+   ================== */
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ==================
+   HOVER UTILITIES
+   ================== */
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+}
+
+.hover-scale:hover {
+  transform: scale(1.05);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 50px rgba(0, 229, 255, 0.4);
+}
+</style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-  <!-- Buy DRAGON Banner -->
-  <div id="buyDragonBanner">
-    <span>🔥 Buy <b>DRAGON</b> Token</span>
-    <button onclick="window.open('https://app.uniswap.org/#/swap?outputCurrency=0x1b685B0c771b877d1a4e8F02365a4A809E962c81', '_blank')">
-      Buy Now
-    </button>
+  <div class="container">
+
+    <!-- Mobile Wallet Notice -->
+    <div id="mobileNotice" style="display: none; background: rgba(180, 0, 255, 0.1); 
+                                   border: 1px solid rgba(180, 0, 255, 0.3); 
+                                   border-radius: 12px; padding: 16px; margin-bottom: 16px; 
+                                   text-align: center;">
+      <div style="margin-bottom: 8px; font-weight: 600; color: var(--purple-400);">
+        📱 Mobile Wallet Required
+      </div>
+      <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">
+        To use this DEX on mobile, please open it in MetaMask's in-app browser
+      </div>
+      <button id="openInMetaMask" class="btn btn-secondary">
+        Open in MetaMask
+      </button>
+    </div>
+
+    <!-- ==================
+         HEADER / TOP BAR
+         ================== -->
+    <header role="banner" aria-label="Application Header">
+
+      <!-- Left side: Logo + Title + Price -->
+      <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <!-- Logo -->
+          <div style="width: 48px; height: 48px; border-radius: 10px;
+                      background: linear-gradient(180deg, #e6eef3, #c9d6df);
+                      display: flex; align-items: center; justify-content: center;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L20 6V12C20 18 12 22 12 22C12 22 4 18 4 12V6L12 2Z" fill="#E8F6FB"/>
+              <path d="M12 3.5L19 7V12C19 17.1 12 20.5 12 20.5S5 17.1 5 12V7L12 3.5Z"
+                    stroke="#00E5FF" stroke-opacity="0.9" stroke-width="0.6" />
+            </svg>
+          </div>
+
+           <!-- Title section -->
+             <div>
+              <h1>
+               <span class="monad">MONAD</span>
+                —
+               <span class="dex">DEX</span>
+               <span class="usdc">USDC</span>
+               ↔
+               <span class="bitcoinflash">BITCOIN FLASH</span>
+              (<span class="bfl">BFL</span>)
+              </h1>
+            <div class="small">Pair: 0x57489A99...5d62 — Network: Monad (143)</div>
+          </div>
+
+        <!-- Current price badge -->
+        <div id="priceDisplay" class="price-badge" style="margin-left: 6px;">
+          price: n/a
+        </div>
+      </div>
+
+      <!-- Right side: Controls -->
+      <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+
+        <!-- Chain selector -->
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <label class="small" for="chainSelector" style="margin-bottom: 6px;">Chain</label>
+          <select id="chainSelector" class="chrome-rim">
+            <option value="monad" selected>Monad (EVM) — 143</option>
+            <option value="ethereum">Ethereum (EVM)</option>
+            <option value="optimism">Optimism</option>
+            <option value="polygon">Polygon</option>
+          </select>
+        </div>
+
+        <!-- Gas tracker -->
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <div class="small" style="margin-bottom: 6px;">Gas</div>
+          <div id="gasTracker" class="neon-pulse" title="Network gas & mempool activity">
+            <span style="font-weight: 700;">●</span>
+            <span id="gasPrice" style="margin-left: 8px;">0.0 gwei</span>
+          </div>
+        </div>
+
+        <!-- Wallet connection -->
+        <div style="display: flex; flex-direction: column; align-items: flex-end;">
+          <div id="walletDisplay" class="small">Not connected</div>
+          <button id="connectWallet" class="btn btn-primary" style="margin-top: 6px;">
+            Connect Wallet
+          </button>
+        </div>
+
+        <!-- RPC display -->
+        <div class="small" style="margin-left: 8px; min-width: 180px; text-align: right;">
+          RPC: <span id="rpcUrl">hidden</span>
+        </div>
+
+      </div>
+    </header>
+
+    <!-- ==================
+         MAIN CONTENT GRID
+         ================== -->
+    <main class="main-grid" role="main" aria-label="Trading Interface">
+
+      <!-- LEFT COLUMN: Chart + Swap + Liquidity -->
+      <section>
+
+        <!-- PRICE CHART CARD -->
+        <div class="card" style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>Price Chart</strong>
+              <div class="small">Live candles • Neon view</div>
+            </div>
+            <div class="small">Market: USDC/BFL</div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <!-- Chart canvas -->
+            <div class="chart-placeholder chrome-rim" style="margin-bottom: 12px;">
+              <canvas id="priceChart" width="1200" height="360"></canvas>
+            </div>
+
+            <!-- Timeframe selector -->
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <button class="btn btn-ghost timeframe-btn active" data-timeframe="1H">1H</button>
+              <button class="btn btn-ghost timeframe-btn" data-timeframe="24H">24H</button>
+              <button class="btn btn-ghost timeframe-btn" data-timeframe="7D">7D</button>
+              <button class="btn btn-ghost timeframe-btn" data-timeframe="30D">30D</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SWAP CARD (emphasized) -->
+        <div class="card card-emphasized" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>Swap</strong>
+              <div class="small">Direct pair transfer → swap (no router)</div>
+            </div>
+            <div class="small">Slippage: <span id="slippageDisplay">0.5%</span></div>
+          </div>
+
+          <!-- From token -->
+          <div style="margin-top: 12px;">
+            <label class="small">From</label>
+            <div class="token-input">
+              <img id="fromLogo" class="token-logo" src="https://files.catbox.moe/ujzf30.gif" alt="USDC logo" />
+              <input id="fromAmount" type="number" placeholder="0.0" step="any" />
+              <select id="toToken">
+              <option value="BFL">BFL</option>
+              <option value="USDC">USDC</option>
+              <option value="MDX">MDX</option>
+              <option value="GOLD">GOLD</option>
+              <option value="DRAGON">DRAGON</option>
+              </select>
+              <div style="margin-left: auto;" class="small">Balance: <span id="fromBalance">-</span></div>
+            </div>
+          </div>
+
+          <!-- Swap direction button -->
+          <div style="text-align: center; margin: 12px 0;">
+            <button id="swapFlip" class="btn btn-ghost swap-flip-btn">
+              ⇅
+            </button>
+          </div>
+
+          <!-- To token -->
+          <div>
+            <label class="small">To (estimate)</label>
+            <div class="token-input">
+              <img id="toLogo" class="token-logo" src="https://files.catbox.moe/lk7mrk.png" alt="BFL logo" />
+              <input id="toAmount" type="text" placeholder="0.0" readonly />
+             <select id="fromToken">
+             <option value="USDC">USDC</option>
+             <option value="BFL">BFL</option>
+             <option value="MDX">MDX</option>
+             <option value="GOLD">GOLD</option>
+             <option value="DRAGON">DRAGON</option>
+             </select>
+             
+              <div style="margin-left: auto;" class="small">Balance: <span id="toBalance">-</span></div>
+            </div>
+          </div>
+
+          <!-- Slippage -->
+          <div style="margin-top: 12px;">
+            <label class="small" for="slippageTolerance">Slippage tolerance (%)</label>
+            <input id="slippageTolerance" type="number" step="0.1" value="0.5"
+                   style="width: 120px; padding: 6px; border-radius: 8px;
+                          border: 1px solid var(--border-primary);" />
+          </div>
+
+        <!-- Action buttons -->
+<div style="margin-top: 12px; display: flex; gap: 8px;">
+  <button id="approveBtn" class="btn btn-ghost">Approve</button>
+  <button id="swapBtn" class="btn btn-primary">Swap</button>
+  <button id="refreshBalances" class="btn btn-ghost" title="Refresh balances & reserves">
+    🔄
+  </button>
+</div>
+
+<!-- Swap Path Indicator -->
+<div id="swapPathInfo" style="margin-top: 12px; padding: 8px 12px; 
+                              border-radius: 8px; border: 1px solid var(--border-secondary);
+                              background: rgba(0, 229, 255, 0.05); display: none;">
+  <div class="small" style="color: var(--cyan-300);">
+    <span style="margin-right: 8px;">🔄</span>
+    <span id="swapPathText">Route: Loading...</span>
   </div>
-  <div class="stars" id="stars"></div>
-  <nav>
-    <div class="nav-container">
-      <div class="logo">
-        <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon" loading="lazy">
-        <span>DRAGON MOONAD</span>
-      </div>
-      <ul class="nav-links">
-        <li><a href="#about">About</a></li>
-        <li><a href="#mechanism">How It Works</a></li>
-        <li><a href="#features">Features</a></li>
-        <li><a href="#contract">Contract</a></li>
-      </ul>
-    </div>
-  </nav>
-  <div class="hero">
-    <div class="container">
-      <div class="hero-content">
-        <div class="dragon-icon">
-          <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad" loading="lazy">
+</div>
+
+<!-- Logs -->
+<div style="margin-top: 12px;">
+  <div class="small">Logs</div>
+  <pre id="logDisplay" style="background: linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.62));
+                               padding: 10px; border-radius: 8px; max-height: 200px;
+                               overflow: auto; white-space: pre-wrap; font-size: 12px;
+                               border: 1px solid rgba(0,230,255,0.04);">Ready.</pre>
+</div>
+
+        <!-- LIQUIDITY CARD -->
+        <div class="card" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>Liquidity & Utility</strong>
+              <div class="small">Mint BFL, add liquidity</div>
+            </div>
+          </div>
+
+          <!-- Mint BFL section -->
+          <div style="margin-top: 12px;">
+            <div class="small">Mint BFL (owner-only)</div>
+            <div style="display: flex; gap: 8px; margin-top: 6px;">
+              <input id="mintAmount" type="number" step="any" placeholder="amount"
+                     style="flex: 1; padding: 8px; border-radius: 8px;
+                            border: 1px solid var(--border-primary);" />
+              <button id="mintBfl" class="btn btn-primary">Mint BFL</button>
+            </div>
+          </div>
+
+          <!-- Add liquidity section -->
+          <div style="margin-top: 12px;">
+            <div class="small">Add liquidity (transfer → mint)</div>
+            <div style="display: flex; gap: 8px; margin-top: 6px;">
+              <input id="liquidityUSDC" type="number" step="any" placeholder="USDC amount"
+                     style="flex: 1; padding: 8px; border-radius: 8px;
+                            border: 1px solid var(--border-primary);" />
+              <input id="liquidityBFL" type="number" step="any" placeholder="BFL amount"
+                     style="flex: 1; padding: 8px; border-radius: 8px;
+                            border: 1px solid var(--border-primary);" />
+            </div>
+            <button id="addLiquidity" class="btn btn-primary" style="margin-top: 8px;">
+              Add Liquidity
+            </button>
+          </div>
         </div>
-        <h1>DRAGON MOONAD</h1>
-        <p class="tagline">Revolutionary LP Mining Protocol on Monad</p>
-        <p style="font-size: 1.2rem; color: var(--gold); margin-bottom: 2rem;">
-          Stake LP tokens, earn DRAGON rewards every block, and grow your portfolio
-        </p>
-        <div class="cta-buttons">
-          <a href="#mechanism" class="btn btn-primary">Learn More</a>
-          <a href="#contract" class="btn btn-secondary">View Contract</a>
+
+      </section>
+
+      <!-- RIGHT COLUMN: Sidebar -->
+      <aside>
+
+        <!-- PORTFOLIO CARD -->
+        <div class="card chrome-rim" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>Portfolio</strong>
+              <div class="small">Overview</div>
+            </div>
+            <div class="small">Net P/L</div>
+          </div>
+
+           <div style="margin-top: 12px;" class="small">
+            Total value: <span id="portfolioValue" class="stat">-</span>
+           </div>
+         <div style="margin-top: 8px;" class="small">
+         USDC: <span id="balanceUSDC" class="stat">-</span>
+       </div>
+        <div style="margin-top: 6px;" class="small">
+        BFL: <span id="balanceBFL" class="stat">-</span>
+       </div>
+       <div style="margin-top: 6px;" class="small">
+        MDX: <span id="balanceMDX" class="stat">-</span>
+       </div>
+      <div style="margin-top: 6px;" class="small">
+       GOLD: <span id="balanceGOLD" class="stat">-</span>
+       </div>
+        <div style="margin-top: 6px;" class="small">
+        DRAGON: <span id="balanceDRAGON" class="stat">-</span>
+         </div>
+
+          <button id="refreshPortfolio" class="btn btn-ghost" style="margin-top: 12px; width: 100%;">
+            Refresh Balances
+          </button>
         </div>
-        <div class="socials">
-          <a href="https://discord.gg/xnDAuzd8" class="social-btn discord" target="_blank" rel="noopener">
-            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/discord.svg" alt="Discord" style="width:20px;"> Discord
-          </a>
-          <a href="https://twitter.com/bnbgold277983" class="social-btn twitter" target="_blank" rel="noopener">
-            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/twitter.svg" alt="Twitter" style="width:20px;"> Twitter
-          </a>
-          <a href="https://t.me/MonadFrogsNFT" class="social-btn telegram" target="_blank" rel="noopener">
-            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/telegram.svg" alt="Telegram" style="width:20px;"> Telegram
-          </a>
+
+        <!-- RECENT TRANSACTIONS CARD -->
+        <div class="card chrome-rim" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>Recent Transactions</strong>
+            <div class="small">On-chain</div>
+          </div>
+          <div id="recentTxs" style="margin-top: 12px;" class="small">
+            <div>-</div>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-  <div class="section" id="about">
-    <div class="container">
-      <h2 class="section-title">Token Overview</h2>
-      <div class="stats">
-        <div class="stat-card">
-          <div class="stat-value">1M</div>
-          <div class="stat-label">Total Supply</div>
+
+        <!-- FAVORITE PAIRS CARD -->
+        <div class="card chrome-rim" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>Favorite Pairs</strong>
+            <div class="small">Quick select</div>
+          </div>
+
+         <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+         <button class="btn btn-ghost pair-btn" data-pair="USDC-BFL" style="width: 100%;">
+           USDC / BFL
+          </button>
+          <button class="btn btn-ghost pair-btn" data-pair="BFL-USDC" style="width: 100%;">
+           BFL / USDC
+          <button>
+          <button class="btn btn-ghost pair-btn" data-pair="USDC-MDX" style="width: 100%;">
+           USDC / MDX
+          </button>
+          <button class="btn btn-ghost pair-btn" data-pair="USDC-GOLD" style="width: 100%;">
+           USDC / GOLD
+          </button>
+          <button class="btn btn-ghost pair-btn" data-pair="USDC-DRAGON" style="width: 100%;">
+           USDC / DRAGON
+          </button>
+          </div>
+
+        <!-- CHAIN ACTIVITY CARD -->
+        <div class="card chrome-rim" style="margin-bottom: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <strong>Chain Activity</strong>
+              <div class="small">Gas • Blocks • Mempool</div>
+            </div>
+            <div class="small">Live</div>
+          </div>
+
+          <div style="margin-top: 12px;">
+            <div class="small">Latest block: <span id="currentBlock" class="stat">-</span></div>
+            <div class="small" style="margin-top: 8px;">
+              Mempool txs: <span id="mempoolSize" class="stat">-</span>
+            </div>
+          </div>
         </div>
-        <div class="stat-card">
-          <div class="stat-value">DRAGON</div>
-          <div class="stat-label">Token Symbol</div>
+
+        <!-- PAIR RESERVES CARD -->
+        <div class="card chrome-rim">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>Pair Reserves</strong>
+            <div class="small">Pair: 0x5748...5d62</div>
+          </div>
+
+          <div style="margin-top: 12px;" class="small">
+            token0: <span id="token0Address" class="stat">-</span>
+          </div>
+          <div style="margin-top: 6px;" class="small">
+            reserve0: <span id="reserve0Amount" class="stat">-</span>
+          </div>
+          <div style="margin-top: 10px;" class="small">
+            token1: <span id="token1Address" class="stat">-</span>
+          </div>
+          <div style="margin-top: 6px;" class="small">
+            reserve1: <span id="reserve1Amount" class="stat">-</span>
+          </div>
+
+          <button id="refreshReserves" class="btn btn-ghost" style="margin-top: 12px; width: 100%;">
+            Refresh Reserves
+          </button>
         </div>
-        <div class="stat-card">
-          <div class="stat-value">1 DRAGON</div>
-          <div class="stat-label">Reward per Block</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value">Monad</div>
-          <div class="stat-label">Blockchain</div>
-        </div>
-      </div>
-      <!-- Contract Address for Buyers -->
-      <div style="margin:2rem auto 0 auto;max-width:600px;text-align:center;">
-        <span style="color:var(--primary);font-weight:600;">DRAGON Contract:</span>
-        <span id="dragonContract" style="font-family:monospace;color:var(--accent);margin:0 0.5rem;">
-          0x1b685B0c771b877d1a4e8F02365a4A809E962c81
-        </span>
-        <button class="copy-btn" onclick="navigator.clipboard.writeText('0x1b685B0c771b877d1a4e8F02365a4A809E962c81')">Copy</button>
-      </div>
-    </div>
-  </div>
-  <!-- Live Stats Section -->
-  <div class="dashboard-card" style="max-width:700px;">
-    <h2 style="color:var(--gold);text-align:center;margin-bottom:1rem;">Live Token Stats</h2>
-    <div style="display:flex;justify-content:space-between;gap:1rem;">
-      <div>
-        <div style="color:var(--primary);">Price</div>
-        <div id="statPrice" style="font-size:2rem;font-weight:bold;">—</div>
-        <div id="statPriceChange" style="margin-top:0.5rem;">24h: —</div>
-      </div>
-      <div>
-        <div style="color:var(--primary);">Liquidity</div>
-        <div id="statLiquidity" style="font-size:2rem;font-weight:bold;">—</div>
-        <div style="margin-top:0.5rem;">Pool size (USD)</div>
-      </div>
-      <div>
-        <div style="color:var(--primary);">Volume</div>
-        <div id="statVolume" style="font-size:2rem;font-weight:bold;">—</div>
-        <div style="margin-top:0.5rem;">24h trading volume (USD)</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:2rem;margin-top:2rem;">
-      <div style="flex:1;">
-        <div style="display:flex;justify-content:space-between;">
-          <span style="color:var(--gold);">Price over time</span>
-          <span id="chartStatusA" style="font-size:0.9em;color:#aaa;">loading…</span>
-        </div>
-        <canvas id="chartPrice" height="140"></canvas>
-      </div>
-      <div style="flex:1;">
-        <div style="display:flex;justify-content:space-between;">
-          <span style="color:var(--gold);">Liquidity growth</span>
-          <span id="chartStatusB" style="font-size:0.9em;color:#aaa;">loading…</span>
-        </div>
-        <canvas id="chartLiquidity" height="140"></canvas>
-      </div>
-    </div>
-    <button id="refreshBtn" class="btn btn-primary" style="margin:2rem auto 0 auto;display:block;">Refresh</button>
-  </div>
-  <!-- Staking Widget -->
-  <div id="staking-widget" class="dashboard-card" style="max-width:350px;text-align:center;">
-    <h3 style="color:var(--primary);margin-bottom:1rem;">Stake DRAGON, Earn Rewards</h3>
-    <button id="connectWalletBtn" class="btn btn-primary" style="padding:0.5rem 1.2rem;">Connect Wallet</button>
-    <span id="walletAddress" style="margin-left:1rem;color:var(--accent);"></span>
-    <button id="disconnectWalletBtn" class="btn btn-secondary" style="margin-left:1rem;padding:0.5rem 1.2rem;display:none;">Disconnect</button>
-    <div id="stakingUI" style="display:none;margin-top:1rem;">
-      <div style="margin-bottom:0.5rem;">Your DRAGON Balance: <span id="dragonBalance">-</span></div>
-      <div style="margin-bottom:0.5rem;">Staked: <span id="stakedBalance">-</span></div>
-      <div style="margin-bottom:0.5rem;">Rewards: <span id="rewards">-</span></div>
-      <div style="display:flex;gap:0.5rem;justify-content:center;margin-bottom:0.5rem;">
-        <input id="stakeAmount" type="number" min="0" placeholder="Amount to stake" style="padding:0.5rem 1rem;border-radius:8px;border:1.5px solid var(--primary);width:120px;background:rgba(0,0,0,0.5);color:#fff;">
-        <button id="stakeBtn" class="btn" style="background:var(--accent);color:#fff;">Stake</button>
-        <button id="unstakeBtn" class="btn" style="background:var(--gold);color:#000;">Unstake</button>
-        <button id="claimBtn" class="btn" style="background:var(--neon);color:#000;">Claim</button>
-      </div>
-      <div id="stakingStatus" style="margin-top:0.5rem;font-size:0.95em;"></div>
-    </div>
-  </div>
-  <footer>
-    <div>
-      <img src="https://files.catbox.moe/byzt1g.png" alt="Dragon Moonad Logo" loading="lazy">
-    </div>
-    <div class="container">
-      <p style="color: var(--gold);">© 2025 DRAGON MOONAD. Powered by Monad Blockchain.</p>
-      <p style="color: var(--neon); margin-top: 0.5rem; font-size: 0.9rem;">
-        ⚠️ DYOR. Crypto investments carry risk. Not financial advice.
-      </p>
-    </div>
-  </footer>
-  <script>
-    // Star background
-    const starsContainer = document.getElementById('stars');
-    for (let i = 0; i < 60; i++) {
-      const star = document.createElement('div');
-      star.className = 'star';
-      star.style.width = (Math.random() * 2 + 1) + 'px';
-      star.style.height = star.style.width;
-      star.style.left = Math.random() * 100 + '%';
-      star.style.top = Math.random() * 100 + '%';
-      star.style.animationDelay = Math.random() * 3 + 's';
-      starsContainer.appendChild(star);
+        
+  <!-- Load ethers.js first -->
+<script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
+
+<!-- Single main script tag -->
+<script>
+(function() {
+"use strict";
+
+
+/* ==================== UTILITY FUNCTIONS ==================== */
+
+/* Debounce helper - prevents excessive function calls */
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+/* Logging helper */
+function log(msg, level = "info") {
+  console.log(msg);
+  const logEl = $("logDisplay");
+  if (logEl) {
+    const timestamp = new Date().toLocaleTimeString();
+    const prefix = level === "error" ? "❌" : level === "warning" ? "⚠️" : "ℹ️";
+    logEl.textContent += `\n${prefix} [${timestamp}] ${msg}`;
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+}
+
+function getErrorMessage(error) {
+  if (!error) return "Unknown error";
+  if (error.reason) return error.reason;
+  if (error.message) {
+    const msg = error.message;
+    if (msg.includes("user rejected") || msg.includes("User denied")) {
+      return "Transaction cancelled by user";
     }
-    // Smooth scroll
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (msg.includes("insufficient funds")) {
+      return "Insufficient funds for transaction";
+    }
+    return msg;
+  }
+  return String(error);
+}
+
+/* DOM selector helper */
+function $(id) {
+  return document.getElementById(id);
+}
+
+   function parseAmount(amount, decimals) {
+  if (!amount) return 0n;
+  try {
+    return ethers.parseUnits(String(amount), decimals);
+  } catch (err) {
+    console.error("parseAmount error:", err);
+    return 0n;
+  }
+}
+    /* DOM selector helper */
+
+
+function formatAmount(amount, decimals) {
+  try {
+    return ethers.formatUnits(amount.toString(), decimals);
+  } catch {
+    return "0";
+  }
+}
+
+    /* Get token decimals */
+    async function getDecimals(tokenAddr, provider) {
+      try {
+        const contract = new ethers.Contract(tokenAddr, ABIS.ERC20, provider);
+        return await contract.decimals();
+      } catch {
+        return 18;
+      }
+    }
+
+    /* Format number for display */
+    function formatNumber(num) {
+      if (!num) return "0";
+      const n = typeof num === "string" ? parseFloat(num) : num;
+      return n.toLocaleString(undefined, { maximumFractionDigits: 6 });
+    }
+
+    /* Get token logo URL */
+   function getTokenLogo(address) {
+  const addr = address.toLowerCase();
+  if (addr === ADDRESSES.USDC.toLowerCase()) {
+    return "https://files.catbox.moe/ujzf30.gif";
+  }
+  if (addr === ADDRESSES.BFL.toLowerCase()) {
+    return "https://files.catbox.moe/lk7mrk.png";
+  }
+  if (addr === ADDRESSES.MDX.toLowerCase()) {
+    return "https://files.catbox.moe/g3f9h8.png";
+  }
+  if (addr === ADDRESSES.GOLD.toLowerCase()) {
+    return "https://files.catbox.moe/phcdln.png";
+  }
+  if (addr === ADDRESSES.DRAGON.toLowerCase()) {
+    return "https://files.catbox.moe/bb1fsy.png";
+  }
+  return "https://files.catbox.moe/ujzf30.gif";
+}
+
+    /* Check if valid number */
+    function isValidNumber(val) {
+      if (!val) return false;
+      const num = parseFloat(val);
+      return !isNaN(num) && num > 0;
+    }
+
+    /* Check if pending request error */
+    function isPendingRequest(error) {
+      const msg = String(error.message || error).toLowerCase();
+      return msg.includes("already pending") || msg.includes("request already");
+    }
+
+    /* Prefer injected signer */
+    async function preferInjectedSignerIfAvailable() {
+      if (window.ethereum && signer) {
+        try {
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          signer = await provider.getSigner();
+        } catch (err) {
+          console.debug("Could not switch to injected signer:", err);
         }
-      });
+      }
+    }
+
+    /* Check if error is user rejection */
+    function isUserRejection(error) {
+      if (!error) return false;
+      const msg = String(error.message || error).toLowerCase();
+      return msg.includes("user rejected") ||
+             msg.includes("user denied") ||
+             msg.includes("user cancelled") ||
+             error.code === 4001 ||
+             error.code === "ACTION_REJECTED";
+    }
+
+    /* Shorten address for display */
+    function shortenAddress(address) {
+      if (!address) return "";
+      return address.slice(0, 6) + "..." + address.slice(-4);
+    }
+    /* Get token address by symbol */
+    function getTokenAddress(symbol) {
+      if (!symbol) return null;
+      const upperSymbol = symbol.toUpperCase();
+
+      if (upperSymbol.startsWith("0X") && upperSymbol.length === 42) {
+        return upperSymbol;
+      }
+
+      if (TOKENS_MAP && TOKENS_MAP[upperSymbol]) {
+        return TOKENS_MAP[upperSymbol];
+      }
+
+      return ADDRESSES[upperSymbol] || null;
+    }
+
+    /* ========================================================== */
+
+const CONFIG = {
+  ALCHEMY_RPC: "https://monad-mainnet.g.alchemy.com/v2/Uwb7T0DbXMQHjiJBNf9_b005qYjLmJqk",
+  CHAIN_ID: 143,
+  POLL_MS: 15000,
+  WEB3AUTH_CLIENT_ID: "BAsUqhgvieRUFYc8vZwFEUWTn4ThFZCrToMc76Vi-_Jgu1C26Udu3B4ESLjx1d2-kb8ca9hFUdR0U3D_45PgfPc"
+};
+
+const ADDRESSES = {
+  USDC: "0x754704bc059f8c67012fed69bc8a327a5aafb603",
+  BFL: "0x7d7e0112d2763c98238af7cebeae33d53f3f76dd",
+  MDX: "0x66238b63532509a9c9c2440de341fd2335794a07",
+  GOLD: "0x3E459BeA2A3Efab22Ce12358E672dD31A9594D34",
+  DRAGON: "0x1b685B0c771b877d1a4e8F02365a4A809E962c81",
+  PAIR_USDC_BFL: "0x57489a99059a41464fe9322864e3b241d96c5d62",
+  ROUTER: "0x7139332aa7C461bfC6463586D0fbf5A7cdEf5324"  
+};
+
+const TOKENS_MAP = {
+  "USDC": ADDRESSES.USDC,
+  "BFL": ADDRESSES.BFL,
+  "MDX": ADDRESSES.MDX,
+  "GOLD": ADDRESSES.GOLD,
+  "DRAGON": ADDRESSES.DRAGON
+};
+
+CONFIG.TOKENS = TOKENS_MAP;
+
+// Alias for backward compatibility
+ADDRESSES.PAIR = ADDRESSES.PAIR_USDC_BFL;
+
+const ABIS = {
+  ERC20: [
+    "function balanceOf(address account) view returns (uint256)",
+    "function decimals() view returns (uint8)",
+    "function symbol() view returns (string)",
+    "function name() view returns (string)",
+    "function approve(address spender, uint256 value) returns (bool)",
+    "function allowance(address owner, address spender) view returns (uint256)",
+    "function transfer(address to, uint256 amount) returns (bool)",
+    "function transferFrom(address from, address to, uint256 amount) returns (bool)",
+    "function totalSupply() view returns (uint256)"
+  ],
+  PAIR: [
+    "function getReserves() view returns (uint112, uint112)",
+    "function token0() view returns (address)",
+    "function token1() view returns (address)",
+    "function balanceOf(address account) view returns (uint256)",
+    "function approve(address spender, uint256 value) returns (bool)",
+    "function transfer(address to, uint256 amount) returns (bool)",
+    "function swap(uint256 amount0Out, uint256 amount1Out, address to, bytes data)",
+    "function mint(address to) returns (uint256 liquidity)",
+    "function burn(address to) returns (uint256 amount0, uint256 amount1)",
+    "function decimals() view returns (uint8)",
+    "function symbol() view returns (string)",
+    "function name() view returns (string)",
+    "function totalSupply() view returns (uint256)",
+    "function transferFrom(address from, address to, uint256 amount) returns (bool)"
+  ],
+  ROUTER: [
+    "function swapExactTokensForTokens(uint amountIn, uint amountOutMin, address[] calldata path, address to, uint deadline) returns (uint[] memory amounts)",
+    "function addLiquidity(address tokenA, address tokenB, uint amountADesired, uint amountBDesired, uint amountAMin, uint amountBMin, address to, uint deadline) returns (uint amountA, uint amountB, uint liquidity)",
+    "function removeLiquidity(address tokenA, address tokenB, uint liquidity, uint amountAMin, uint amountBMin, address to, uint deadline) returns (uint amountA, uint amountB)",
+    "function getAmountsOut(uint amountIn, address[] memory path) view returns (uint[] memory amounts)",
+    "function quote(uint amountA, uint reserveA, uint reserveB) pure returns (uint amountB)",
+    "function factory() view returns (address)",
+    "function WETH() view returns (address)"
+  ]
+};
+// Create read provider with fallback
+let readProvider;
+async function initReadProvider() {
+  try {
+    const provider = new ethers.JsonRpcProvider(CONFIG.ALCHEMY_RPC, {
+      name: "monad",
+      chainId: CONFIG.CHAIN_ID
     });
-    // === DRAGON Staking Integration ===
-    const stakingContractAddress = "0xAEb0120f58EDE94C1DA63F71792F630de8D2cF05";
-    const stakingABI = [
-      {"inputs":[{"internalType":"address","name":"_dragon","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},
-      {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"stake","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"unstake","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"claim","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"user","type":"address"}],"name":"stakedBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"earned","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"}
-    ];
-    const dragonTokenAddress = "0x1b685B0c771b877d1a4e8F02365a4A809E962c81";
-    const dragonABI = [
-      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"decimals","outputs":[{"internalType":"uint8","name":"","type":"uint8"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"spender","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"approve","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"nonpayable","type":"function"}
-    ];
-    let provider, signer, userAddress;
-    async function connectWallet() {
-      if (!window.ethereum) {
-        alert("MetaMask not found!");
+    await provider.getBlockNumber();
+    readProvider = provider;
+    window.readProvider = provider;
+    console.info("✅ Connected to RPC:", CONFIG.ALCHEMY_RPC);
+    return provider;
+  } catch (err) {
+    console.error("RPC connection failed:", err);
+    throw new Error("RPC connection failed: " + err.message);
+  }
+}
+
+window.CONFIG = CONFIG;
+window.ADDRESSES = ADDRESSES;
+window.ABIS = ABIS;
+window.readProvider = readProvider;
+window.initReadProvider = initReadProvider;
+
+console.info("✅ Config loaded:", CONFIG);
+
+/* ============================================
+   MONAD DEX - WALLET MANAGEMENT
+   ============================================ */
+
+let walletProvider = null;
+let signer = null;
+let userAddress = null;
+let web3auth = null;
+let isConnecting = false;
+
+// Helper to get read provider
+function getReadProvider() {
+  return window.readProvider || readProvider;
+}
+
+// Check if wallet is connected
+function isWalletConnected() {
+  return !!userAddress;
+}
+
+// Get current signer
+function getSigner() {
+  return signer;
+}
+
+// Get current user address
+function getUserAddress() {
+  return userAddress;
+}
+
+// Update wallet UI
+function updateWalletUI() {
+  const display = document.getElementById('walletDisplay');
+  const btn = document.getElementById('connectWallet');
+
+  if (!display || !btn) return;
+
+  if (userAddress) {
+    display.textContent = shortenAddress(userAddress);
+    btn.textContent = "Disconnect";
+    btn.onclick = disconnectWallet;
+    btn.classList.remove("btn-primary");
+    btn.classList.add("btn-ghost");
+  } else {
+    display.textContent = "Not connected";
+    btn.textContent = "Connect Wallet";
+    btn.onclick = connectWallet;
+    btn.classList.remove("btn-ghost");
+    btn.classList.add("btn-primary");
+  }
+}
+
+// Disconnect wallet
+async function disconnectWallet() {
+  try {
+    if (web3auth && web3auth.connected) {
+      await web3auth.logout();
+    }
+
+    walletProvider = signer = userAddress = null;
+    updateWalletUI();
+
+    ["balanceUSDC", "balanceBFL", "fromBalance", "toBalance", "portfolioValue"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = "-";
+    });
+
+    log("Wallet disconnected", "info");
+  } catch (err) {
+    log("Disconnect error: " + getErrorMessage(err), "error");
+  }
+}
+
+// Detect if user is on mobile
+function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Connect wallet
+async function connectWallet() {
+  if (isConnecting) {
+    log("Connection already in progress", "debug");
+    return;
+  }
+
+  isConnecting = true;
+  const btn = document.getElementById('connectWallet');
+  if (btn) {
+    btn.disabled = true;
+    btn.classList.add("loading");
+  }
+
+  try {
+    log("Connecting wallet...", "info");
+    
+    // Check if we're on mobile
+    const mobile = isMobile();
+    
+    // On mobile, try to deep link to MetaMask if no provider is found
+    if (mobile && !window.ethereum) {
+      log("Opening MetaMask mobile app...", "info");
+      
+      // Get current page URL
+      const dappUrl = window.location.href.replace(/\/$/, '');
+      
+      // Create MetaMask deep link
+      const metamaskAppDeepLink = `https://metamask.app.link/dapp/${dappUrl.replace(/^https?:\/\//, '')}`;
+      
+      // Show instructions
+      const shouldOpen = confirm(
+        "MetaMask wallet not detected.\n\n" +
+        "Please install MetaMask mobile app, then click OK to open this page in MetaMask browser.\n\n" +
+        "Or, if you already have MetaMask installed, open the app and browse to this page."
+      );
+      
+      if (shouldOpen) {
+        // Open MetaMask app
+        window.location.href = metamaskAppDeepLink;
+      }
+      
+      throw new Error("Please open this page in MetaMask mobile browser");
+    }
+
+    // Desktop or mobile with injected wallet
+    if (window.ethereum) {
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts"
+      });
+
+      if (accounts && accounts.length > 0) {
+        walletProvider = new ethers.BrowserProvider(window.ethereum);
+        signer = await walletProvider.getSigner();
+        userAddress = await signer.getAddress();
+
+        log("✓ Connected: " + shortenAddress(userAddress), "info");
+        updateWalletUI();
+        await loadBalances();
         return;
       }
-      provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = await provider.getSigner();
-      userAddress = await signer.getAddress();
-      document.getElementById('walletAddress').textContent = userAddress.slice(0,6) + "..." + userAddress.slice(-4);
-      document.getElementById('connectWalletBtn').style.display = "none";
-      document.getElementById('disconnectWalletBtn').style.display = "";
-      document.getElementById('stakingUI').style.display = "";
-      updateStakingUI();
-    }
-    function disconnectWallet() {
-      provider = signer = userAddress = null;
-      document.getElementById('walletAddress').textContent = "";
-      document.getElementById('connectWalletBtn').style.display = "";
-      document.getElementById('disconnectWalletBtn').style.display = "none";
-      document.getElementById('stakingUI').style.display = "none";
-    }
-    document.getElementById('connectWalletBtn').onclick = connectWallet;
-    document.getElementById('disconnectWalletBtn').onclick = disconnectWallet;
-    async function updateStakingUI() {
-      if (!signer) return;
-      const dragon = new ethers.Contract(dragonTokenAddress, dragonABI, provider);
-      const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
-      const decimals = await dragon.decimals();
-      const bal = await dragon.balanceOf(userAddress);
-      document.getElementById('dragonBalance').textContent = ethers.formatUnits(bal, decimals);
-      const staked = await staking.stakedBalance(userAddress);
-      const rewards = await staking.earned(userAddress);
-      document.getElementById('stakedBalance').textContent = ethers.formatUnits(staked, decimals);
-      document.getElementById('rewards').textContent = ethers.formatUnits(rewards, decimals);
-    }
-    document.getElementById('stakeBtn').onclick = async function() {
-      const status = document.getElementById('stakingStatus');
-      status.textContent = "Staking...";
-      try {
-        const amount = document.getElementById('stakeAmount').value;
-        if (!amount || isNaN(amount) || Number(amount) <= 0) throw new Error("Enter a valid amount");
-        const dragon = new ethers.Contract(dragonTokenAddress, dragonABI, signer);
-        const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
-        const decimals = await dragon.decimals();
-        const amt = ethers.parseUnits(amount, decimals);
-        // Approve first
-        await (await dragon.approve(stakingContractAddress, amt)).wait();
-        // Stake
-        await (await staking.stake(amt)).wait();
-        status.textContent = "Staked!";
-        updateStakingUI();
-      } catch (e) {
-        status.textContent = "Error: " + (e?.message || e);
-      }
-    };
-    document.getElementById('unstakeBtn').onclick = async function() {
-      const status = document.getElementById('stakingStatus');
-      status.textContent = "Unstaking...";
-      try {
-        const amount = document.getElementById('stakeAmount').value;
-        if (!amount || isNaN(amount) || Number(amount) <= 0) throw new Error("Enter a valid amount");
-        const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
-        const dragon = new ethers.Contract(dragonTokenAddress, dragonABI, signer);
-        const decimals = await dragon.decimals();
-        const amt = ethers.parseUnits(amount, decimals);
-        await (await staking.unstake(amt)).wait();
-        status.textContent = "Unstaked!";
-        updateStakingUI();
-      } catch (e) {
-        status.textContent = "Error: " + (e?.message || e);
-      }
-    };
-    document.getElementById('claimBtn').onclick = async function() {
-      const status = document.getElementById('stakingStatus');
-      status.textContent = "Claiming...";
-      try {
-        const staking = new ethers.Contract(stakingContractAddress, stakingABI, signer);
-        await (await staking.claim()).wait();
-        status.textContent = "Rewards claimed!";
-        updateStakingUI();
-      } catch (e) {
-        status.textContent = "Error: " + (e?.message || e);
-      }
-    };
-    // === Live Stats & Chart.js Demo ===
-    const state = {
-      price: null,
-      priceChange24h: null,
-      liquidityUSD: null,
-      volume24hUSD: null,
-      priceSeries: [],
-      liquiditySeries: []
-    };
-    const $price = document.getElementById('statPrice');
-    const $change = document.getElementById('statPriceChange');
-    const $liq = document.getElementById('statLiquidity');
-    const $vol = document.getElementById('statVolume');
-    const $refresh = document.getElementById('refreshBtn');
-    let priceChart, liqChart;
-    function formatUSD(n) {
-      if (n === null || n === undefined || isNaN(n)) return '—';
-      const abs = Math.abs(n);
-      if (abs >= 1_000_000_000) return `$${(n/1_000_000_000).toFixed(2)}B`;
-      if (abs >= 1_000_000) return `$${(n/1_000_000).toFixed(2)}M`;
-      if (abs >= 1_000) return `$${(n/1_000).toFixed(2)}K`;
-      return `$${Number(n).toFixed(4)}`;
-    }
-    function setStatus(el, text) { el.textContent = text; }
-    async function fetchLiveStats() {
-      setStatus(document.getElementById('chartStatusA'), 'loading…');
-      setStatus(document.getElementById('chartStatusB'), 'loading…');
-      try {
-        // Demo data generator
-        const now = Date.now();
-        const points = 24;
-        const basePrice = 0.012 + Math.random() * 0.004;
-        const baseLiq = 120000 + Math.random() * 20000;
-        const seriesPrice = [];
-        const seriesLiq = [];
-        for (let i = points - 1; i >= 0; i--) {
-          const t = now - i * 60 * 60 * 1000; // hourly
-          seriesPrice.push({ t, v: basePrice * (1 + (Math.sin(i/3) * 0.02) + (Math.random()-0.5) * 0.01) });
-          seriesLiq.push({ t, v: baseLiq * (1 + (Math.sin(i/4) * 0.05) + (Math.random()-0.5) * 0.02) });
-        }
-        state.price = seriesPrice[points - 1].v;
-        state.priceChange24h = ((seriesPrice[points - 1].v - seriesPrice[0].v) / seriesPrice[0].v) * 100;
-        state.liquidityUSD = seriesLiq[points - 1].v;
-        state.volume24hUSD = 32000 + Math.random() * 12000;
-        state.priceSeries = seriesPrice;
-        state.liquiditySeries = seriesLiq;
-        renderStats();
-        renderCharts();
-        setStatus(document.getElementById('chartStatusA'), 'updated');
-        setStatus(document.getElementById('chartStatusB'), 'updated');
-      } catch (err) {
-        console.error(err);
-        $price.textContent = '—';
-        $change.textContent = '24h: —';
-        $liq.textContent = '—';
-        $vol.textContent = '—';
-        setStatus(document.getElementById('chartStatusA'), 'error');
-        setStatus(document.getElementById('chartStatusB'), 'error');
+    } else if (!mobile) {
+      // Desktop without wallet - show install instructions
+      const shouldInstall = confirm(
+        "No wallet detected.\n\n" +
+        "Click OK to install MetaMask browser extension."
+      );
+      
+      if (shouldInstall) {
+        window.open("https://metamask.io/download/", "_blank");
       }
     }
-    function renderStats() {
-      $price.textContent = formatUSD(state.price);
-      const changeVal = state.priceChange24h;
-      const arrow = changeVal > 0 ? '▲' : (changeVal < 0 ? '▼' : '•');
-      const color = changeVal > 0 ? 'color:#4df2c2;' : (changeVal < 0 ? 'color:#ff6b6b;' : 'color:#aaa;');
-      $change.style = color;
-      $change.textContent = `24h: ${arrow} ${Number(changeVal).toFixed(2)}%`;
-      $liq.textContent = formatUSD(state.liquidityUSD);
-      $vol.textContent = formatUSD(state.volume24hUSD);
+
+    throw new Error("No wallet found");
+
+  } catch (err) {
+    if (!isUserRejection(err)) {
+      log("Connection error: " + getErrorMessage(err), "error");
     }
-    function renderCharts() {
-      const priceCtx = document.getElementById('chartPrice');
-      const liqCtx = document.getElementById('chartLiquidity');
-      const labels = state.priceSeries.map(p => new Date(p.t).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-      if (priceChart) priceChart.destroy();
-      priceChart = new Chart(priceCtx, {
-        type: 'line',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Price (USD)',
-            data: state.priceSeries.map(p => Number(p.v.toFixed(6))),
-            borderColor: '#4df2c2',
-            backgroundColor: 'rgba(77, 242, 194, 0.15)',
-            pointRadius: 0,
-            tension: 0.3,
-            fill: true
-          }]
+    walletProvider = signer = userAddress = null;
+    updateWalletUI();
+
+  } finally {
+    isConnecting = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.classList.remove("loading");
+    }
+  }
+}
+
+// Load balances
+async function loadBalances() {
+  if (!userAddress) return;
+
+  try {
+    const provider = window.readProvider;
+    const usdcContract = new ethers.Contract(ADDRESSES.USDC, ABIS.ERC20, provider);
+    const bflContract = new ethers.Contract(ADDRESSES.BFL, ABIS.ERC20, provider);
+    const mdxContract = new ethers.Contract(ADDRESSES.MDX, ABIS.ERC20, provider);
+    const goldContract = new ethers.Contract(ADDRESSES.GOLD, ABIS.ERC20, provider);
+    const dragonContract = new ethers.Contract(ADDRESSES.DRAGON, ABIS.ERC20, provider);
+
+    const [usdcBal, bflBal, mdxBal, goldBal, dragonBal] = await Promise.all([
+      usdcContract.balanceOf(userAddress),
+      bflContract.balanceOf(userAddress),
+      mdxContract.balanceOf(userAddress),
+      goldContract.balanceOf(userAddress),
+      dragonContract.balanceOf(userAddress)
+    ]);
+
+    const usdcFormatted = formatAmount(usdcBal, 6);
+    const bflFormatted = formatAmount(bflBal, 18);
+    const mdxFormatted = formatAmount(mdxBal, 18);
+    const goldFormatted = formatAmount(goldBal, 18);
+    const dragonFormatted = formatAmount(dragonBal, 18);
+
+    // Update all balance displays
+    const els = {
+      balanceUSDC: usdcFormatted,
+      balanceBFL: bflFormatted,
+      balanceMDX: mdxFormatted,
+      balanceGOLD: goldFormatted,
+      balanceDRAGON: dragonFormatted,
+      fromBalance: usdcFormatted,
+      toBalance: bflFormatted,
+      portfolioValue: `$${formatNumber(usdcFormatted)}`
+    };
+
+    Object.entries(els).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    });
+
+    log("✓ Balances loaded", "info");
+  } catch (err) {
+    log("Balance error: " + getErrorMessage(err), "error");
+  }
+}
+
+// Update token logos
+function updateTokenLogos() {
+  const fromToken = document.getElementById("fromToken")?.value;
+  const toToken = document.getElementById("toToken")?.value;
+
+  if (!fromToken || !toToken) return;
+
+  const fromAddr = getTokenAddress(fromToken);
+  const toAddr = getTokenAddress(toToken);
+
+  const fromLogo = $("fromLogo");
+  const toLogo = $("toLogo");
+
+  if (fromLogo && fromAddr) {
+    fromLogo.src = getTokenLogo(fromAddr);
+    fromLogo.alt = fromToken + " logo";
+  }
+
+  if (toLogo && toAddr) {
+    toLogo.src = getTokenLogo(toAddr);
+    toLogo.alt = toToken + " logo";
+  }
+}
+
+
+// Export functions globally
+window.connectWallet = connectWallet;
+window.disconnectWallet = disconnectWallet;
+window.autoConnectWallet = autoConnectWallet;
+window.loadBalances = loadBalances;
+window.getSigner = getSigner;
+window.getUserAddress = getUserAddress;
+window.getReadProvider = getReadProvider;
+window.isWalletConnected = isWalletConnected;
+window.updateWalletUI = updateWalletUI;
+window.updateTokenLogos = updateTokenLogos;
+
+console.info("✅ Wallet module loaded");
+
+/* ============================================
+   MONAD DEX - SWAP LOGIC
+   Pair reserves, calculations, approvals, swaps
+   ============================================ */
+
+/* ==================
+   GLOBAL STATE
+   ================== */
+let pairCache = {
+  token0: null,
+  token1: null,
+  reserve0: 0n,
+  reserve1: 0n,
+  dec0: 18,
+  dec1: 18
+};
+
+let txInProgress = false;
+
+/* ==================
+   PAIR RESERVES
+   ================== */
+
+/**
+ * Load pair reserves from contract
+ */
+async function loadPairReserves() {
+  try {
+    const pair = new ethers.Contract(
+      ADDRESSES.PAIR_USDC_BFL,
+      ABIS.PAIR,
+      window.readProvider
+    );
+
+        const [token0, token1, reserves] = await Promise.race([
+          Promise.all([pair.token0(), pair.token1(), pair.getReserves()]),
+          new Promise((_, reject) => setTimeout(() => reject(new Error("Pair load timeout")), 8000))
+        ]);
+
+    const dec0 = await getDecimals(token0, window.readProvider);
+    const dec1 = await getDecimals(token1, window.readProvider);
+
+    pairCache = {
+      token0: token0.toLowerCase(),
+      token1: token1.toLowerCase(),
+      reserve0: BigInt(reserves[0].toString()),
+      reserve1: BigInt(reserves[1].toString()),
+      dec0,
+      dec1
+    };
+
+    updatePairUI();
+    updatePrice();
+    log("Pair reserves loaded", "debug");
+  } catch (err) {
+    log("Pair load error: " + getErrorMessage(err), "error");
+    console.error("loadPairReserves error:", err);
+  }
+}
+
+/**
+ * Update pair reserves UI
+ */
+function updatePairUI() {
+  if ($("token0Address")) {
+    $("token0Address").textContent = pairCache.token0 ? shortenAddress(pairCache.token0, 6) : "-";
+  }
+  if ($("token1Address")) {
+    $("token1Address").textContent = pairCache.token1 ? shortenAddress(pairCache.token1, 6) : "-";
+  }
+  if ($("reserve0Amount")) {
+    $("reserve0Amount").textContent = formatAmount(pairCache.reserve0, pairCache.dec0);
+  }
+  if ($("reserve1Amount")) {
+    $("reserve1Amount").textContent = formatAmount(pairCache.reserve1, pairCache.dec1);
+  }
+}
+
+/* ==================
+   PRICE CALCULATION
+   ================== */
+
+/**
+ * Calculate and update current price
+ * @returns {number|null} Price in USDC
+ */
+function updatePrice() {
+  if (pairCache.reserve0 === 0n || pairCache.reserve1 === 0n) {
+    if ($("priceDisplay")) {
+      $("priceDisplay").textContent = "price: n/a";
+    }
+    return null;
+  }
+
+  const usdcAddr = ADDRESSES.USDC.toLowerCase();
+  let priceUSDC;
+
+  try {
+    if (pairCache.token0 === usdcAddr) {
+      // token0 is USDC, token1 is BFL
+      // Convert to numbers for calculation
+      const r0 = parseFloat(ethers.formatUnits(pairCache.reserve0.toString(), pairCache.dec0));
+      const r1 = parseFloat(ethers.formatUnits(pairCache.reserve1.toString(), pairCache.dec1));
+      priceUSDC = r0 / r1; // USDC per BFL
+    } else {
+      // token1 is USDC, token0 is BFL
+      const r0 = parseFloat(ethers.formatUnits(pairCache.reserve0.toString(), pairCache.dec0));
+      const r1 = parseFloat(ethers.formatUnits(pairCache.reserve1.toString(), pairCache.dec1));
+      priceUSDC = r1 / r0; // USDC per BFL
+    }
+
+    if ($("priceDisplay")) {
+      $("priceDisplay").textContent = `price: $${priceUSDC.toFixed(6)}`;
+    }
+
+    // Add to price history for chart
+    if (typeof updateChart === "function") {
+      updateChart(priceUSDC);
+    }
+
+    return priceUSDC;
+  } catch (err) {
+    console.error("updatePrice error:", err);
+    if ($("priceDisplay")) {
+      $("priceDisplay").textContent = "price: error";
+    }
+    return null;
+  }
+}
+
+
+/* ==================
+   SWAP CALCULATIONS
+   ================== */
+
+/**
+ * Calculate output amount for given input
+ * Uses Uniswap V2 formula: x * y = k with 0.3% fee
+ * @param {string|number} amountIn - Input amount
+ * @param {string} fromToken - From token symbol
+ * @param {string} toToken - To token symbol
+ * @returns {BigInt} Output amount in wei
+ */
+function calculateOutput(amountIn, fromToken, toToken) {
+  if (!amountIn || Number(amountIn) <= 0) return 0n;
+
+  const fromAddr = getTokenAddress(fromToken);
+  const toAddr = getTokenAddress(toToken);
+
+  if (!fromAddr || !toAddr) {
+    console.warn("Token address not found:", fromToken, toToken);
+    return 0n;
+  }
+
+  if (fromAddr.toLowerCase() === toAddr.toLowerCase()) return 0n;
+
+  if (!pairCache.token0 || pairCache.reserve0 === 0n || pairCache.reserve1 === 0n) {
+    return 0n;
+  }
+
+  let reserveIn, reserveOut, decIn, decOut;
+  const fromAddrLower = fromAddr.toLowerCase();
+  const toAddrLower = toAddr.toLowerCase();
+
+  if (fromAddrLower === pairCache.token0) {
+    reserveIn = pairCache.reserve0;
+    reserveOut = pairCache.reserve1;
+    decIn = pairCache.dec0;
+    decOut = pairCache.dec1;
+  } else if (fromAddrLower === pairCache.token1) {
+    reserveIn = pairCache.reserve1;
+    reserveOut = pairCache.reserve0;
+    decIn = pairCache.dec1;
+    decOut = pairCache.dec0;
+  } else {
+    console.warn("Token not in pair:", fromToken);
+    return 0n;
+  }
+
+  const amountInBig = parseAmount(amountIn, decIn);
+  const amountInWithFee = amountInBig * 997n;
+  const numerator = amountInWithFee * reserveOut;
+  const denominator = (reserveIn * 1000n) + amountInWithFee;
+
+  return numerator / denominator;
+}
+
+/**
+ * Update output estimate when input changes - WITH MULTI-HOP ROUTING
+ * Calculates expected output amount based on selected tokens and input
+ */
+async function updateOutputEstimate() {
+  try {
+    // Get input values
+    const fromToken = $("fromToken")?.value;
+    const toToken = $("toToken")?.value;
+    const amountIn = $("fromAmount")?.value;
+
+    // Validate input amount
+    if (!isValidNumber(amountIn)) {
+      if ($("toAmount")) $("toAmount").value = "";
+      return;
+    }
+
+    // Get token addresses
+    const fromAddr = getTokenAddress(fromToken);
+    const toAddr = getTokenAddress(toToken);
+    
+    if (!fromAddr || !toAddr) {
+      log("Invalid token addresses", "error");
+      if ($("toAmount")) $("toAmount").value = "";
+      return;
+    }
+
+    // Prevent same-token swaps
+    if (fromAddr.toLowerCase() === toAddr.toLowerCase()) {
+      log("Cannot swap same token", "warning");
+      if ($("toAmount")) $("toAmount").value = "";
+      return;
+    }
+
+    // Get token decimals
+    const fromDec = await getDecimals(fromAddr, window.readProvider);
+    const toDec = await getDecimals(toAddr, window.readProvider);
+    const amountInBig = parseAmount(amountIn, fromDec);
+
+    // Initialize router contract
+    const router = new ethers.Contract(
+      ADDRESSES.ROUTER,
+      ABIS.ROUTER,
+      window.readProvider
+    );
+
+    const usdcAddr = ADDRESSES.USDC.toLowerCase();
+    const bflAddr = ADDRESSES.BFL.toLowerCase();
+    
+    // ✨ BUILD SMART PATH - Route through USDC/BFL if needed
+    let path;
+    
+    const fromAddrLower = fromAddr.toLowerCase();
+    const toAddrLower = toAddr.toLowerCase();
+
+    // Check for direct pair (USDC ↔ BFL only)
+    const isDirect = (
+      (fromAddrLower === usdcAddr && toAddrLower === bflAddr) ||
+      (fromAddrLower === bflAddr && toAddrLower === usdcAddr)
+    );
+
+    if (isDirect) {
+      // Direct swap: USDC ↔ BFL
+      path = [fromAddr, toAddr];
+      log("✓ Direct swap: " + fromToken + " → " + toToken, "debug");
+    } else if (fromAddrLower === usdcAddr) {
+      // From USDC to other token: USDC → BFL → Target
+      path = [fromAddr, ADDRESSES.BFL, toAddr];
+      log("✓ Multi-hop: " + fromToken + " → BFL → " + toToken, "debug");
+    } else if (toAddrLower === usdcAddr) {
+      // To USDC from other token: Source → BFL → USDC
+      path = [fromAddr, ADDRESSES.BFL, toAddr];
+      log("✓ Multi-hop: " + fromToken + " → BFL → " + toToken, "debug");
+    } else if (fromAddrLower === bflAddr) {
+      // From BFL to other: BFL → USDC → Target
+      path = [fromAddr, ADDRESSES.USDC, toAddr];
+      log("✓ Multi-hop: " + fromToken + " → USDC → " + toToken, "debug");
+    } else if (toAddrLower === bflAddr) {
+      // To BFL from other: Source → USDC → BFL
+      path = [fromAddr, ADDRESSES.USDC, toAddr];
+      log("✓ Multi-hop: " + fromToken + " → USDC → " + toToken, "debug");
+    } else {
+      // Both non-USDC/BFL: Source → USDC → Target (shortest path)
+      path = [fromAddr, ADDRESSES.USDC, toAddr];
+      log("✓ Multi-hop: " + fromToken + " → USDC → " + toToken, "debug");
+    }
+
+    // Get amounts out from router
+    const amounts = await router.getAmountsOut(amountInBig, path);
+    const output = amounts[amounts.length - 1]; // Last amount in the path
+
+    // Update UI with formatted output
+    if ($("toAmount")) {
+      $("toAmount").value = formatAmount(output, toDec);
+    }
+
+    // Display swap path visually
+    displaySwapPath(fromToken, toToken, path);
+
+  } catch (err) {
+    console.error("updateOutputEstimate error:", err);
+    log("Could not estimate output: " + getErrorMessage(err), "warning");
+    if ($("toAmount")) $("toAmount").value = "";
+  }
+}
+// Debounced version for input events
+const debouncedUpdateOutput = debounce(updateOutputEstimate, 300);
+
+/* ==================
+   TOKEN APPROVAL
+   ================== */
+
+/**
+ * Approve token spending
+ */
+async function handleApprove() {
+  if (!getSigner() || !getUserAddress()) {
+    log("Please connect wallet first", "warning");
+    return;
+  }
+
+  if (txInProgress) {
+    log("Another transaction is in progress — please wait", "warning");
+    return;
+  }
+
+  const fromToken = $("fromToken")?.value;
+  const amountIn = $("fromAmount")?.value;
+
+  if (!isValidNumber(amountIn)) {
+    log("Enter amount to approve", "warning");
+    return;
+  }
+
+  const approveBtn = $("approveBtn");
+  txInProgress = true;
+  if (approveBtn) {
+    approveBtn.disabled = true;
+    approveBtn.classList.add("loading");
+  }
+
+  try {
+    log("Approving " + fromToken + "...", "info");
+
+    // Ensure using injected signer if available
+    await preferInjectedSignerIfAvailable();
+
+    const tokenAddr = getTokenAddress(fromToken);
+    const decimals = await getDecimals(tokenAddr, window.readProvider);
+    const amount = parseAmount(amountIn, decimals);
+
+    const tokenContract = new ethers.Contract(tokenAddr, ABIS.ERC20, getSigner());
+
+   const tx = await tokenContract.approve(ADDRESSES.ROUTER, amount); 
+    log("Approval pending: " + tx.hash.slice(0, 10) + "...", "debug");
+
+    await tx.wait();
+
+    log("✅ Approved " + formatNumber(amountIn) + " " + fromToken, "info");
+
+  } catch (err) {
+    if (!isUserRejection(err) && !isPendingRequest(err)) {
+      log("Approval failed: " + getErrorMessage(err), "error");
+    } else if (isPendingRequest(err)) {
+      log(getErrorMessage(err), "warning");
+    }
+    console.error("handleApprove error:", err);
+
+  } finally {
+    txInProgress = false;
+    if (approveBtn) {
+      approveBtn.disabled = false;
+      approveBtn.classList.remove("loading");
+    }
+  }
+}
+
+/* ==================
+   SWAP EXECUTION
+   ================== */
+
+/**
+ * Execute swap using Router with Multi-Hop Support
+ */
+async function handleSwap() {
+  if (txInProgress) {
+    log("Transaction already in progress — please wait", "warning");
+    return;
+  }
+
+  if (!getSigner() || !getUserAddress()) {
+    log("Please connect wallet first", "warning");
+    return;
+  }
+
+  const swapBtn = $("swapBtn");
+  txInProgress = true;
+  if (swapBtn) {
+    swapBtn.disabled = true;
+    swapBtn.classList.add("loading");
+  }
+
+  try {
+    const fromToken = $("fromToken")?.value;
+    const toToken = $("toToken")?.value;
+    const amountIn = $("fromAmount")?.value;
+    const slippage = parseFloat($("slippageTolerance")?.value) || 0.5;
+
+    if (!isValidNumber(amountIn)) {
+      log("Enter swap amount", "warning");
+      return;
+    }
+
+    if (fromToken === toToken) {
+      log("Select different tokens", "warning");
+      return;
+    }
+
+    log("Initiating swap: " + formatNumber(amountIn) + " " + fromToken + " → " + toToken, "info");
+
+    const fromAddr = getTokenAddress(fromToken);
+    const toAddr = getTokenAddress(toToken);
+    
+    if (!fromAddr || !toAddr) {
+      log("Invalid token addresses", "error");
+      return;
+    }
+
+    const fromDec = await getDecimals(fromAddr, window.readProvider);
+    const toDec = await getDecimals(toAddr, window.readProvider);
+    const amountInBig = parseAmount(amountIn, fromDec);
+
+    // ✨ BUILD SMART PATH - Route through USDC/BFL if needed
+    const router = new ethers.Contract(ADDRESSES.ROUTER, ABIS.ROUTER, window.readProvider);
+    const usdcAddr = ADDRESSES.USDC;
+    const bflAddr = ADDRESSES.BFL;
+
+    let path;
+
+    // Check if direct pair exists (USDC ↔ BFL only)
+    const isDirect = (
+      (fromAddr.toLowerCase() === usdcAddr.toLowerCase() && toAddr.toLowerCase() === bflAddr.toLowerCase()) ||
+      (fromAddr.toLowerCase() === bflAddr.toLowerCase() && toAddr.toLowerCase() === usdcAddr.toLowerCase())
+    );
+
+    if (isDirect) {
+      // Direct swap: USDC ↔ BFL
+      path = [fromAddr, toAddr];
+      log(`✓ Direct swap path: ${fromToken} → ${toToken}`, "info");
+    } else if (fromAddr.toLowerCase() === usdcAddr.toLowerCase()) {
+      // From USDC to other token: USDC → BFL → Target
+      path = [fromAddr, bflAddr, toAddr];
+      log(`✓ Multi-hop path: ${fromToken} → BFL → ${toToken}`, "info");
+    } else if (toAddr.toLowerCase() === usdcAddr.toLowerCase()) {
+      // To USDC from other token: Source → BFL → USDC
+      path = [fromAddr, bflAddr, toAddr];
+      log(`✓ Multi-hop path: ${fromToken} → BFL → ${toToken}`, "info");
+    } else {
+      // Both non-USDC: Source → USDC → Target
+      path = [fromAddr, usdcAddr, toAddr];
+      log(`✓ Multi-hop path: ${fromToken} → USDC → ${toToken}`, "info");
+    }
+
+    // Show warning for multi-hop swaps
+    if (path.length > 2) {
+      log(`⚠️ Multi-hop swap: ${path.length - 1} hops - Higher slippage expected`, "warning");
+    }
+
+    // Get expected output amounts
+    const amounts = await router.getAmountsOut(amountInBig, path);
+    const expectedOut = amounts[amounts.length - 1]; // Last amount in the path
+
+    // Calculate minimum output with slippage
+    // Use higher slippage tolerance for multi-hop swaps
+    const effectiveSlippage = path.length > 2 ? slippage * 1.5 : slippage;
+    const minOut = (expectedOut * BigInt(Math.floor((100 - effectiveSlippage) * 100))) / 10000n;
+
+    log("Expected output: " + formatAmount(expectedOut, toDec) + " " + toToken, "debug");
+    log("Minimum output (with " + effectiveSlippage.toFixed(1) + "% slippage): " + formatAmount(minOut, toDec) + " " + toToken, "debug");
+
+    // Ensure using injected signer if available
+    await preferInjectedSignerIfAvailable();
+
+    // ✨ STEP 1: Approve Router (not pair)
+    log("Checking allowance...", "debug");
+    const tokenContract = new ethers.Contract(fromAddr, ABIS.ERC20, getSigner());
+    const allowance = await tokenContract.allowance(getUserAddress(), ADDRESSES.ROUTER);
+
+    if (allowance < amountInBig) {
+      log("Approving Router...", "info");
+      const approveTx = await tokenContract.approve(ADDRESSES.ROUTER, amountInBig);
+      await approveTx.wait();
+      log("✅ Router approved", "info");
+    }
+
+    // ✨ STEP 2: Execute swap through Router
+    log("Executing swap via Router...", "debug");
+    const routerWithSigner = new ethers.Contract(ADDRESSES.ROUTER, ABIS.ROUTER, getSigner());
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes
+
+    const swapTx = await routerWithSigner.swapExactTokensForTokens(
+      amountInBig,
+      minOut,
+      path,
+      getUserAddress(),
+      deadline
+    );
+
+    log("Swap pending: " + swapTx.hash.slice(0, 10) + "...", "debug");
+    const receipt = await swapTx.wait();
+
+    log("✅ Swap complete! Got ~" + formatAmount(expectedOut, toDec) + " " + toToken, "info");
+    log("Transaction: " + swapTx.hash, "debug");
+
+log("✅ Swap complete! Got ~" + formatAmount(expectedOut, toDec) + " " + toToken, "info");
+    log("Transaction: " + swapTx.hash, "debug");
+
+    // Refresh balances and reserves
+    await Promise.all([
+      loadBalances(),
+      loadPairReserves()
+    ]);
+
+    // Clear input
+    if ($("fromAmount")) $("fromAmount").value = "";
+    if ($("toAmount")) $("toAmount").value = "";
+
+  } catch (err) {
+    if (!isUserRejection(err) && !isPendingRequest(err)) {
+      const errorMsg = getErrorMessage(err);
+      
+      // Provide helpful error messages
+      if (errorMsg.includes("INSUFFICIENT_OUTPUT_AMOUNT")) {
+        log("❌ Swap failed: Slippage too low. Try increasing slippage tolerance.", "error");
+      } else if (errorMsg.includes("INSUFFICIENT_LIQUIDITY")) {
+        log("❌ Swap failed: Not enough liquidity in pool.", "error");
+      } else if (errorMsg.includes("INSUFFICIENT_INPUT_AMOUNT")) {
+        log("❌ Swap failed: Amount too small.", "error");
+      } else if (errorMsg.includes("EXPIRED")) {
+        log("❌ Swap failed: Transaction expired. Please try again.", "error");
+      } else {
+        log("Swap failed: " + errorMsg, "error");
+      }
+    }
+    console.error("handleSwap error:", err);
+
+  } finally {
+    txInProgress = false;
+    if (swapBtn) {
+      swapBtn.disabled = false;
+      swapBtn.classList.remove("loading");
+    }
+  }
+}
+/* ==================
+   SWAP FLIP
+   ================== */
+/**
+ * Flip from/to tokens
+ */
+function handleSwapFlip() {
+  const fromTokenEl = $("fromToken");
+  const toTokenEl = $("toToken");
+  const fromAmountEl = $("fromAmount");
+  const toAmountEl = $("toAmount");
+  if (!fromTokenEl || !toTokenEl) return;
+  const fromVal = fromTokenEl.value;
+  const toVal = toTokenEl.value;
+  fromTokenEl.value = toVal;
+  toTokenEl.value = fromVal;
+  updateTokenLogos();
+  if (fromAmountEl) fromAmountEl.value = "";
+  if (toAmountEl) toAmountEl.value = "";
+  if (isWalletConnected()) loadBalances();
+  log("Swapped token direction", "debug");
+}
+
+/**
+ * Display swap route to user with proper multi-hop visualization
+ */
+function displaySwapPath(fromToken, toToken, path) {
+  const pathInfo = document.getElementById("swapPathInfo");
+  const pathText = document.getElementById("swapPathText");
+  
+  if (!pathInfo || !pathText) {
+    console.warn("Path display elements not found");
+    return;
+  }
+  
+  // Direct swap - hide path info
+  if (path.length <= 2) {
+    pathInfo.style.display = "none";
+    console.log("Direct swap - hiding path info");
+    return;
+  }
+  
+  // Multi-hop swap - show path
+  pathInfo.style.display = "block";
+  
+  // Build token symbol array
+  const tokenSymbols = [fromToken];
+  
+  for (let i = 1; i < path.length - 1; i++) {
+    const addr = path[i].toLowerCase();
+    let symbol = "???";
+    
+    if (addr === ADDRESSES.USDC.toLowerCase()) symbol = "USDC";
+    else if (addr === ADDRESSES.BFL.toLowerCase()) symbol = "BFL";
+    else if (addr === ADDRESSES.MDX.toLowerCase()) symbol = "MDX";
+    else if (addr === ADDRESSES.GOLD.toLowerCase()) symbol = "GOLD";
+    else if (addr === ADDRESSES.DRAGON.toLowerCase()) symbol = "DRAGON";
+    
+    tokenSymbols.push(symbol);
+  }
+  
+  tokenSymbols.push(toToken);
+  
+  const hopCount = path.length - 1;
+  const hopLabel = hopCount === 1 ? "hop" : "hops";
+  const routeText = `Route: ${tokenSymbols.join(" → ")} (${hopCount} ${hopLabel})`;
+  
+  pathText.textContent = routeText;
+  console.log("Displaying route:", routeText);
+}
+
+/* ==================
+   LIQUIDITY FUNCTIONS (STUBS)
+   ================== */
+/**
+ * Mint BFL (owner only)
+ */
+async function handleMintBFL() {
+  log("Mint BFL action is not enabled in this build.", "warning");
+}
+
+/**
+ * Add liquidity
+ */
+async function handleAddLiquidity() {
+  log("Add liquidity action is not enabled in this build.", "warning");
+}
+
+/**
+ * Auto-connect wallet if previously connected
+ */
+async function autoConnectWallet() {
+  try {
+    if (window.ethereum) {
+      const accounts = await window.ethereum.request({
+        method: "eth_accounts"
+      });
+      
+      if (accounts && accounts.length > 0) {
+        walletProvider = new ethers.BrowserProvider(window.ethereum);
+        signer = await walletProvider.getSigner();
+        userAddress = await signer.getAddress();
+        
+        log("✓ Auto-connected: " + shortenAddress(userAddress), "debug");
+        updateWalletUI();
+        await loadBalances();
+      }
+    }
+  } catch (err) {
+    console.debug("Auto-connect failed:", err);
+  }
+}
+
+/* ==================
+   REFRESH FUNCTIONS
+   ================== */
+/**
+ * Refresh all data (balances + reserves)
+ */
+async function refreshAll() {
+  try {
+    log("Refreshing all data...", "debug");
+    await Promise.all([
+      loadBalances(),
+      loadPairReserves()
+    ]);
+    log("✓ Data refreshed", "info");
+  } catch (err) {
+    log("Refresh failed: " + getErrorMessage(err), "error");
+  }
+}
+
+/* ==================
+   FLIP SWAP TOKENS
+   ================== */
+/* ==================
+   EXPORT FUNCTIONS
+   ================== */
+/**
+ * Get current pair cache
+ * @returns {Object} Pair cache object
+ */
+function getPairCache() {
+  return pairCache;
+}
+
+console.info("✅ Swap module loaded");
+
+/* ============================================
+   MONAD DEX - PRICE CHART
+   Chart.js integration with historical data
+   ============================================ */
+
+/* ==================
+   GLOBAL STATE
+   ================== */
+let priceChart = null;
+let chartData = {
+  labels: [],
+  prices: []
+};
+let currentTimeframe = '1H'; // '1H', '24H', '7D', '30D'
+
+/* ==================
+   CHART INITIALIZATION
+   ================== */
+function initChart() {
+  const ctx = document.getElementById('priceChart');
+  if (!ctx) {
+    console.error('Chart canvas not found');
+    return;
+  }
+
+  // Generate initial mock data
+  generateMockData(currentTimeframe);
+
+  // Create gradient
+  const ctx2d = ctx.getContext("2d");
+
+// Neon green and neon purple for the line
+const lineGradient = ctx2d.createLinearGradient(0, 0, 0, 400);
+lineGradient.addColorStop(0, "#39FF14"); // Neon green at the top
+lineGradient.addColorStop(1, "#B400FF"); // Neon purple at the bottom
+
+// Neon green and neon purple for the fill (with transparency)
+const fillGradient = ctx2d.createLinearGradient(0, 0, 0, 400);
+fillGradient.addColorStop(0, "rgba(57, 255, 20, 0.3)"); // Neon green, semi-transparent
+fillGradient.addColorStop(1, "rgba(180, 0, 255, 0.05)"); // Neon purple, more transparent
+
+priceChart = new Chart(ctx, {
+  type: "line",
+  data: {
+    labels: chartData.labels,
+    datasets: [
+      {
+        label: "USDC Price",
+        data: chartData.prices,
+        borderColor: lineGradient, // Neon green → neon purple line
+        backgroundColor: fillGradient, // Neon green → neon purple fill
+        borderWidth: 2,
+        fill: true,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: "#39FF14", // Neon green on hover
+        pointHoverBorderColor: "#B400FF", // Neon purple border on hover
+        pointHoverBorderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: {
+        intersect: false,
+        mode: 'index'
+      },
+      plugins: {
+        legend: {
+          display: false
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { grid: { color: 'rgba(255,255,255,0.05)' } },
-            y: {
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { callback: v => `$${v}` }
-            }
-          },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ctx => `Price: $${ctx.parsed.y}`
-              }
+        tooltip: {
+          backgroundColor: 'rgba(0, 0, 0, 0.9)',
+          titleColor: 'rgb(0, 255, 255)',
+          bodyColor: '#fff',
+          borderColor: 'rgb(0, 255, 255)',
+          borderWidth: 1,
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: function(context) {
+              return `$${context.parsed.y.toFixed(6)} USDC`;
             }
           }
         }
-      });
-      if (liqChart) liqChart.destroy();
-      liqChart = new Chart(liqCtx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Liquidity (USD)',
-            data: state.liquiditySeries.map(p => Math.round(p.v)),
-            backgroundColor: 'rgba(255,45,85,0.25)',
-            borderColor: '#ff2d55',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            x: { grid: { display: false } },
-            y: {
-              grid: { color: 'rgba(255,255,255,0.05)' },
-              ticks: { callback: v => `$${v}` }
-            }
+      },
+      scales: {
+        x: {
+          grid: {
+            color: 'rgba(255, 255, 255, 0.05)',
+            drawBorder: false
           },
-          plugins: {
-            legend: { display: false },
-            tooltip: {
-              callbacks: {
-                label: ctx => `Liquidity: $${ctx.parsed.y}`
-              }
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.6)',
+            maxTicksLimit: 8,
+            font: {
+              size: 11
+            }
+          }
+        },
+        y: {
+          position: 'right',
+          grid: {
+            color: 'rgba(255, 255, 255, 0.05)',
+            drawBorder: false
+          },
+          ticks: {
+            color: 'rgba(255, 255, 255, 0.6)',
+            callback: function(value) {
+              return '$' + value.toFixed(6);
+            },
+            font: {
+              size: 11
             }
           }
         }
-      });
-      priceCtx.parentElement.style.height = '240px';
-      liqCtx.parentElement.style.height = '240px';
+      }
     }
-    $refresh.addEventListener('click', fetchLiveStats);
-    fetchLiveStats();
-    setInterval(fetchLiveStats, 30_000);
-  </script>
-</body>
+  });
+
+  log('Chart initialized');
+}
+
+/* ==================
+   MOCK DATA GENERATION
+   ================== */
+function generateMockData(timeframe) {
+  const now = Date.now();
+  let dataPoints, interval, startPrice;
+
+  // Base price from current reserves (if available)
+  startPrice = 0.000123; // Default fallback
+
+  switch(timeframe) {
+    case '1H':
+      dataPoints = 60;
+      interval = 60 * 1000; // 1 minute
+      break;
+    case '24H':
+      dataPoints = 96;
+      interval = 15 * 60 * 1000; // 15 minutes
+      break;
+    case '7D':
+      dataPoints = 84;
+      interval = 2 * 60 * 60 * 1000; // 2 hours
+      break;
+    case '30D':
+      dataPoints = 60;
+      interval = 12 * 60 * 60 * 1000; // 12 hours
+      break;
+    default:
+      dataPoints = 60;
+      interval = 60 * 1000;
+  }
+
+  chartData.labels = [];
+  chartData.prices = [];
+
+  // Generate realistic price movement
+  let price = startPrice;
+  const volatility = 0.02; // 2% volatility
+
+  for (let i = 0; i < dataPoints; i++) {
+    const timestamp = now - (dataPoints - i) * interval;
+    const date = new Date(timestamp);
+
+    // Format label based on timeframe
+    let label;
+    if (timeframe === '1H') {
+      label = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } else if (timeframe === '24H') {
+      label = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    } else if (timeframe === '7D') {
+      label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit' });
+    } else {
+      label = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    }
+
+    // Random walk with slight upward bias
+    const change = (Math.random() - 0.48) * volatility;
+    price = price * (1 + change);
+
+    // Keep price in reasonable range
+    price = Math.max(price, startPrice * 0.8);
+    price = Math.min(price, startPrice * 1.2);
+
+    chartData.labels.push(label);
+    chartData.prices.push(price);
+  }
+
+  // Ensure last price matches current reserve price if available
+  if (window.currentPrice) {
+    chartData.prices[chartData.prices.length - 1] = parseFloat(window.currentPrice);
+  }
+}
+
+/* ==================
+   UPDATE CHART
+   ================== */
+function updateChart(newPrice) {
+  if (!priceChart) return;
+
+  const now = new Date();
+  let label;
+
+  if (currentTimeframe === '1H' || currentTimeframe === '24H') {
+    label = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+  } else if (currentTimeframe === '7D') {
+    label = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit' });
+  } else {
+    label = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  // Add new data point
+  chartData.labels.push(label);
+  chartData.prices.push(newPrice);
+
+  // Keep only recent data (sliding window)
+  const maxPoints = currentTimeframe === '1H' ? 60 :
+                    currentTimeframe === '24H' ? 96 :
+                    currentTimeframe === '7D' ? 84 : 60;
+
+  if (chartData.labels.length > maxPoints) {
+    chartData.labels.shift();
+    chartData.prices.shift();
+  }
+
+  // Update chart
+  priceChart.data.labels = chartData.labels;
+  priceChart.data.datasets[0].data = chartData.prices;
+  priceChart.update('none'); // Update without animation for performance
+}
+
+/* ==================
+   CHANGE TIMEFRAME
+   ================== */
+function changeTimeframe(timeframe) {
+  currentTimeframe = timeframe;
+
+  // Update button states
+  document.querySelectorAll(".timeframe-btn").forEach(btn => {
+    btn.classList.remove("active");
+  });
+  document.querySelector(`[data-timeframe="${timeframe}"]`)?.classList.add("active");
+
+  // Regenerate data
+  generateMockData(timeframe);
+
+  // Update chart
+  if (priceChart) {
+    priceChart.data.labels = chartData.labels;
+    priceChart.data.datasets[0].data = chartData.prices;
+    priceChart.update();
+  }
+
+  log(`Timeframe changed to ${timeframe}`);
+}
+
+/* ==================
+   PERIODIC UPDATES
+   ================== */
+function startChartUpdates() {
+  // Update chart every 30 seconds with current price
+  setInterval(async () => {
+        if (!readProvider) return;  // Skip if provider not ready
+    try {
+      // Get current price from reserves
+      const price = await getCurrentPriceFromReserves();
+      if (price) {
+        updateChart(price);
+      }
+    } catch (error) {
+      console.error('Error updating chart:', error);
+    }
+  }, 30000); // 30 seconds
+}
+
+/* ==================
+   GET CURRENT PRICE
+   ================== */
+async function getCurrentPriceFromReserves() {
+  try {
+    if (!window.ethereum) return null;
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const pairContract = new ethers.Contract(
+      CONFIG.ADDRESSES.PAIR_USDC_BFL,
+      CONFIG.ABIS.PAIR,
+      provider
+    );
+
+    const reserves = await pairContract.getReserves();
+    const token0 = await pairContract.token0();
+
+    let reserve0 = reserves[0];
+    let reserve1 = reserves[1];
+
+    // Determine which reserve is USDC
+    const isToken0USDC = token0.toLowerCase() === CONFIG.ADDRESSES.USDC.toLowerCase();
+    const usdcReserve = isToken0USDC ? reserve0 : reserve1;
+    const bflReserve = isToken0USDC ? reserve1 : reserve0;
+
+    // Price = USDC / BFL (with decimal adjustment)
+    const price = Number(usdcReserve) / Number(bflReserve);
+
+    // Store globally
+    window.currentPrice = price;
+
+    return price;
+  } catch (error) {
+    console.error('Error fetching price:', error);
+    return null;
+  }
+}
+
+/* ============================================
+   MONAD DEX - MAIN INITIALIZATION
+   ============================================ */
+
+// Initialize the DEX
+document.addEventListener("DOMContentLoaded", async () => {
+  try {
+    log("🚀 Monad DEX initializing...", "info");
+    
+    // Show mobile notice if on mobile without wallet
+    if (isMobile() && !window.ethereum) {
+      const notice = document.getElementById("mobileNotice");
+      if (notice) {
+        notice.style.display = "block";
+        
+        // Setup "Open in MetaMask" button
+        const openBtn = document.getElementById("openInMetaMask");
+        if (openBtn) {
+          openBtn.onclick = () => {
+            const dappUrl = window.location.href.replace(/\/$/, '');
+            const metamaskAppDeepLink = `https://metamask.app.link/dapp/${dappUrl.replace(/^https?:\/\//, '')}`;
+            window.location.href = metamaskAppDeepLink;
+          };
+        }
+      }
+    } else if (window.ethereum) {
+      // Hide notice if wallet is available
+      const notice = document.getElementById("mobileNotice");
+      if (notice) notice.style.display = "none";
+    }
+    
+    // Initialize RPC provider with retries
+    try {
+      await initReadProvider();
+    } catch (err) {
+      log("⚠️ RPC connection failed - using limited mode", "warn");
+    }
+    
+    // Wait for Chart.js to be loaded before initializing
+    if (typeof Chart !== 'undefined') {
+      initChart();
+      log("✅ Chart initialized", "info");
+    } else {
+      log("⚠️ Chart.js not loaded", "warn");
+    }
+    
+    // Try to load pair data (but don't fail if it errors)
+    try {
+      await loadPairReserves();
+    } catch (err) {
+      log("⚠️ Could not load pair reserves - " + err.message, "warn");
+    }
+    
+    // Setup event listeners
+    setupEventListeners();
+    log("✅ Event listeners registered", "info");
+    
+    // Auto-connect wallet if previously connected
+    await autoConnectWallet();
+    
+    // Start periodic updates (with error handling)
+    startPeriodicUpdates();
+    log("✅ Periodic updates started", "info");
+    
+    log("✅ Monad DEX ready!", "info");
+  } catch (err) {
+    log("❌ Initialization error: " + getErrorMessage(err), "error");
+    console.error("Initialization failed:", err);
+  }
+});
+// Setup all event listeners
+function setupEventListeners() {
+  // Token selection
+  const fromToken = document.getElementById("fromToken");
+  const toToken = document.getElementById("toToken");
+
+  if (fromToken && toToken) {
+    fromToken.addEventListener("change", () => {
+      updateTokenLogos();
+      updateOutputEstimate();
+      if (isWalletConnected()) loadBalances();
+    });
+
+    toToken.addEventListener("change", () => {
+      updateTokenLogos();
+      updateOutputEstimate();
+      if (isWalletConnected()) loadBalances();
+    });
+  }
+
+  // Swap amount input
+  const fromAmount = document.getElementById("fromAmount");
+  if (fromAmount) {
+    fromAmount.addEventListener("input", debouncedUpdateOutput);
+  }
+
+  // Swap button
+  const swapBtn = document.getElementById("swapBtn");
+  if (swapBtn) {
+    swapBtn.addEventListener("click", handleSwap);
+  }
+
+  // Connect wallet button
+  const connectBtn = document.getElementById("connectWallet");
+  if (connectBtn) {
+    connectBtn.addEventListener("click", async () => {
+      if (userAddress) {
+        await disconnectWallet();
+      } else {
+        await connectWallet();
+      }
+    });
+  }
+
+  // Approve button
+  const approveBtn = $("approveBtn");
+  if (approveBtn) approveBtn.addEventListener("click", handleApprove);
+
+  // Swap flip button
+  const swapFlip = $("swapFlip");
+  if (swapFlip) {
+    swapFlip.addEventListener("click", handleSwapFlip);
+  }
+
+  // Timeframe buttons
+  document.querySelectorAll(".timeframe-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const tf = e.target.getAttribute("data-timeframe");
+      if (tf) changeTimeframe(tf);
+    });
+  });
+
+  // Pair buttons
+  document.querySelectorAll(".pair-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const pair = e.target.getAttribute("data-pair");
+      if (pair) {
+        const [from, to] = pair.split("-");
+        if (fromToken) fromToken.value = from;
+        if (toToken) toToken.value = to;
+        updateTokenLogos();
+        updateOutputEstimate();
+      }
+    });
+  });
+
+  // Slippage input
+  const slippageTolerance = $("slippageTolerance");
+  const slippageDisplay = $("slippageDisplay");
+  if (slippageTolerance) {
+    slippageTolerance.addEventListener("input", () => {
+      if (slippageDisplay) slippageDisplay.textContent = slippageTolerance.value + "%";
+    });
+  }
+
+  // Refresh buttons
+  const refreshBalances = $("refreshBalances");
+  if (refreshBalances) refreshBalances.addEventListener("click", refreshAll);
+
+  const refreshPortfolio = $("refreshPortfolio");
+  if (refreshPortfolio) refreshPortfolio.addEventListener("click", loadBalances);
+
+  const refreshReserves = $("refreshReserves");
+  if (refreshReserves) refreshReserves.addEventListener("click", loadPairReserves);
+
+  // Update logos initially
+  updateTokenLogos();
+}
+
+// Start periodic updates with error handling
+function startPeriodicUpdates() {
+  // Update pair reserves every 15 seconds
+  setInterval(async () => {
+    if (!readProvider) return;
+    try {
+      await loadPairReserves();
+    } catch (err) {
+      // Silently fail - don't spam console
+    }
+  }, 15000);
+
+  // Update gas price every 10 seconds
+  setInterval(async () => {
+    if (!readProvider) return;
+    try {
+      await updateGasPrice();
+    } catch (err) {
+      // Silently fail
+    }
+  }, 10000);
+
+  // Update chain stats every 30 seconds
+  setInterval(async () => {
+    if (!readProvider) return;
+    try {
+      await updateChainStats();
+    } catch (err) {
+      // Silently fail
+    }
+  }, 30000);
+}
+
+// Update gas price
+async function updateGasPrice() {
+  if (!window.readProvider) return;
+
+  try {
+    const feeData = await window.readProvider.getFeeData();
+    const gasPrice = ethers.formatUnits(feeData.gasPrice || 0n, "gwei");
+
+    const gasPriceEl = document.getElementById("gasPrice");
+    if (gasPriceEl) {
+      gasPriceEl.textContent = parseFloat(gasPrice).toFixed(2) + " gwei";
+    }
+  } catch (err) {
+    console.error("Gas price update error:", err);
+  }
+}
+
+// Update chain stats
+async function updateChainStats() {
+  if (!window.readProvider) return;
+
+  try {
+    const blockNumber = await window.readProvider.getBlockNumber();
+    const blockNumberEl = document.getElementById("currentBlock");
+    if (blockNumberEl) {
+      blockNumberEl.textContent = blockNumber.toLocaleString();
+    }
+  } catch (err) {
+    console.error("Chain stats update error:", err);
+  }
+}
+
+console.info("✅ Main module loaded");
+
+})();
+</script>
 </html>
