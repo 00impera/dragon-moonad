@@ -2100,6 +2100,7 @@ label {
               <option value="USDCB">USDCB</option>
               <option value="MDX">MDX</option>
               <option value="GOLD">GOLD</option>
+              <option value="EUROGOLD">EUROGOLD</option>
               <option value="DRAGON">DRAGON</option>
               </select>
               <div style="margin-left: auto;" class="small">Balance: <span id="fromBalance">-</span></div>
@@ -2125,6 +2126,7 @@ label {
              <option value="USDCB">USDCB</option>
              <option value="MDX">MDX</option>
              <option value="GOLD">GOLD</option>
+             <option value="EUROGOLD">EUROGOLD</option>
              <option value="DRAGON">DRAGON</option>
              </select>
              
@@ -2241,6 +2243,9 @@ label {
          <div style="margin-top: 6px;" class="small">
         USDCB: <span id="balanceUSDCB" class="stat">-</span>
         </div> 
+         <div style="margin-top: 6px;" class="small">
+         EUROGOLD: <span id="balanceEUROGOLD" class="stat">-</span>
+          </div>
            
           <button id="refreshPortfolio" class="btn btn-ghost" style="margin-top: 12px; width: 100%;">
             Refresh Balances
@@ -2286,6 +2291,11 @@ label {
         </button>
         <button class="btn btn-ghost pair-btn" data-pair="USDCB-USDC" style="width: 100%;">
          USDCB / USDC
+        <button class="btn btn-ghost pair-btn" data-pair="USDC-EUROGOLD" style="width: 100%;">
+         USDC / EUROGOLD
+        </button>
+        <button class="btn btn-ghost pair-btn" data-pair="BFL-EUROGOLD" style="width: 100%;">
+         BFL / EUROGOLD
         </button>
         </div>
 
@@ -2432,6 +2442,9 @@ function formatAmount(amount, decimals) {
   if (addr === ADDRESSES.USDC.toLowerCase()) {
     return "https://files.catbox.moe/ujzf30.gif";
   } 
+  if (addr === ADDRESSES.EUROGOLD.toLowerCase()) {
+    return "https://files.catbox.moe/lrgkws.jpeg";
+  }
   if (addr === ADDRESSES.USDCB.toLowerCase()) {
     return "https://files.catbox.moe/89qw9n.png";
   }
@@ -2523,17 +2536,20 @@ const ADDRESSES = {
   MDX: "0x66238b63532509a9c9c2440de341fd2335794a07",
   GOLD: "0x3E459BeA2A3Efab22Ce12358E672dD31A9594D34",
   DRAGON: "0x1b685B0c771b877d1a4e8F02365a4A809E962c81",
+  EUROGOLD: "0x66e27Fcf309e40FCB44b815EEBb852beC0795884",
   PAIR_USDC_BFL: "0x57489a99059a41464fe9322864e3b241d96c5d62",
   ROUTER: "0x7139332aa7C461bfC6463586D0fbf5A7cdEf5324",
   BADGE_NFT_USDCB: "0x968e03563bF2fFB549fD5BE999aED59b1B2c88f3"
 };
+
 const TOKENS_MAP = {
   "USDC": ADDRESSES.USDC,
   "BFL": ADDRESSES.BFL, 
   "USDCB": ADDRESSES.USDCB,
   "MDX": ADDRESSES.MDX,
   "GOLD": ADDRESSES.GOLD,
-  "DRAGON": ADDRESSES.DRAGON
+  "DRAGON": ADDRESSES.DRAGON,
+  "EUROGOLD": ADDRESSES.EUROGOLD
 };
 
 CONFIG.TOKENS = TOKENS_MAP;
@@ -2787,22 +2803,24 @@ async function loadBalances() {
     const goldContract = new ethers.Contract(ADDRESSES.GOLD, ABIS.ERC20, provider);
     const dragonContract = new ethers.Contract(ADDRESSES.DRAGON, ABIS.ERC20, provider);
     const usdcbContract = new ethers.Contract(ADDRESSES.USDCB, ABIS.ERC20, provider);
+    const eurogoldContract = new ethers.Contract(ADDRESSES.EUROGOLD, ABIS.ERC20, provider);
      
-    const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal] = await Promise.all([
-      usdcContract.balanceOf(userAddress),
-      bflContract.balanceOf(userAddress),
-      mdxContract.balanceOf(userAddress),
-      goldContract.balanceOf(userAddress),
-      dragonContract.balanceOf(userAddress),
-      usdcbContract.balanceOf(userAddress)
-    ]);
-
+const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal, eurogoldBal] = await Promise.all([
+  usdcContract.balanceOf(userAddress),
+  bflContract.balanceOf(userAddress),
+  mdxContract.balanceOf(userAddress),
+  goldContract.balanceOf(userAddress),
+  dragonContract.balanceOf(userAddress),
+  usdcbContract.balanceOf(userAddress),
+  eurogoldContract.balanceOf(userAddress)
+]);
     const usdcFormatted = formatAmount(usdcBal, 6);
     const bflFormatted = formatAmount(bflBal, 18);
     const mdxFormatted = formatAmount(mdxBal, 18);
     const goldFormatted = formatAmount(goldBal, 18);
     const dragonFormatted = formatAmount(dragonBal, 18);
     const usdcbFormatted = formatAmount(usdcbBal, 18);
+    const eurogoldFormatted = formatAmount(eurogoldBal, 18);
     // Update all balance displays
     const els = {
       balanceUSDC: usdcFormatted,
@@ -2811,6 +2829,7 @@ async function loadBalances() {
       balanceMDX: mdxFormatted,
       balanceGOLD: goldFormatted,
       balanceDRAGON: dragonFormatted,
+      balanceEUROGOLD: eurogoldFormatted,
       fromBalance: usdcFormatted,
       toBalance: bflFormatted,
       portfolioValue: `$${formatNumber(usdcFormatted)}`
@@ -3464,7 +3483,8 @@ function displaySwapPath(fromToken, toToken, path) {
     else if (addr === ADDRESSES.MDX.toLowerCase()) symbol = "MDX";
     else if (addr === ADDRESSES.GOLD.toLowerCase()) symbol = "GOLD";
     else if (addr === ADDRESSES.DRAGON.toLowerCase()) symbol = "DRAGON";
-    
+    else if (addr === ADDRESSES.USDCB.toLowerCase()) symbol = "USDCB";
+    else if (addr === ADDRESSES.EUROGOLD.toLowerCase()) symbol = "EUROGOLD";
     tokenSymbols.push(symbol);
   }
   
