@@ -2097,6 +2097,7 @@ label {
               <select id="toToken">
               <option value="BFL">BFL</option>
               <option value="USDC">USDC</option>
+              <option value="USDCB">USDCB</option>
               <option value="MDX">MDX</option>
               <option value="GOLD">GOLD</option>
               <option value="DRAGON">DRAGON</option>
@@ -2121,6 +2122,7 @@ label {
              <select id="fromToken">
              <option value="USDC">USDC</option>
              <option value="BFL">BFL</option>
+             <option value="USDCB">USDCB</option>
              <option value="MDX">MDX</option>
              <option value="GOLD">GOLD</option>
              <option value="DRAGON">DRAGON</option>
@@ -2236,7 +2238,10 @@ label {
         <div style="margin-top: 6px;" class="small">
         DRAGON: <span id="balanceDRAGON" class="stat">-</span>
          </div>
-
+         <div style="margin-top: 6px;" class="small">
+        USDCB: <span id="balanceUSDCB" class="stat">-</span>
+        </div> 
+           
           <button id="refreshPortfolio" class="btn btn-ghost" style="margin-top: 12px; width: 100%;">
             Refresh Balances
           </button>
@@ -2262,21 +2267,27 @@ label {
 
          <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
          <button class="btn btn-ghost pair-btn" data-pair="USDC-BFL" style="width: 100%;">
-           USDC / BFL
-          </button>
-          <button class="btn btn-ghost pair-btn" data-pair="BFL-USDC" style="width: 100%;">
-           BFL / USDC
-          <button>
-          <button class="btn btn-ghost pair-btn" data-pair="USDC-MDX" style="width: 100%;">
-           USDC / MDX
-          </button>
-          <button class="btn btn-ghost pair-btn" data-pair="USDC-GOLD" style="width: 100%;">
-           USDC / GOLD
-          </button>
-          <button class="btn btn-ghost pair-btn" data-pair="USDC-DRAGON" style="width: 100%;">
-           USDC / DRAGON
-          </button>
-          </div>
+          USDC / BFL
+        </button>
+        <button class="btn btn-ghost pair-btn" data-pair="BFL-USDC" style="width: 100%;">
+         BFL / USDC
+         </button> <!-- ← FIXED: was <button>, now </button> -->
+         <button class="btn btn-ghost pair-btn" data-pair="USDC-MDX" style="width: 100%;">
+         USDC / MDX
+        </button>
+        <button class="btn btn-ghost pair-btn" data-pair="USDC-GOLD" style="width: 100%;">
+         USDC / GOLD
+        </button>
+        <button class="btn btn-ghost pair-btn" data-pair="USDC-DRAGON" style="width: 100%;">
+         USDC / DRAGON
+        </button>
+        <button class="btn btn-ghost pair-btn" data-pair="USDC-USDCB" style="width: 100%;">
+         USDC / USDCB
+        </button>
+        <button class="btn btn-ghost pair-btn" data-pair="USDCB-USDC" style="width: 100%;">
+         USDCB / USDC
+        </button>
+        </div>
 
         <!-- CHAIN ACTIVITY CARD -->
         <div class="card chrome-rim" style="margin-bottom: 12px;">
@@ -2420,6 +2431,9 @@ function formatAmount(amount, decimals) {
   const addr = address.toLowerCase();
   if (addr === ADDRESSES.USDC.toLowerCase()) {
     return "https://files.catbox.moe/ujzf30.gif";
+  } 
+  if (addr === ADDRESSES.USDCB.toLowerCase()) {
+    return "https://files.catbox.moe/89qw9n.png";
   }
   if (addr === ADDRESSES.BFL.toLowerCase()) {
     return "https://files.catbox.moe/lk7mrk.png";
@@ -2505,16 +2519,18 @@ const CONFIG = {
 const ADDRESSES = {
   USDC: "0x754704bc059f8c67012fed69bc8a327a5aafb603",
   BFL: "0x7d7e0112d2763c98238af7cebeae33d53f3f76dd",
+  USDCB: "0xf5667ab887B32f263E45294435571a0b274113a8",
   MDX: "0x66238b63532509a9c9c2440de341fd2335794a07",
   GOLD: "0x3E459BeA2A3Efab22Ce12358E672dD31A9594D34",
   DRAGON: "0x1b685B0c771b877d1a4e8F02365a4A809E962c81",
   PAIR_USDC_BFL: "0x57489a99059a41464fe9322864e3b241d96c5d62",
-  ROUTER: "0x7139332aa7C461bfC6463586D0fbf5A7cdEf5324"  
+  ROUTER: "0x7139332aa7C461bfC6463586D0fbf5A7cdEf5324",
+  BADGE_NFT_USDCB: "0x968e03563bF2fFB549fD5BE999aED59b1B2c88f3"
 };
-
 const TOKENS_MAP = {
   "USDC": ADDRESSES.USDC,
-  "BFL": ADDRESSES.BFL,
+  "BFL": ADDRESSES.BFL, 
+  "USDCB": ADDRESSES.USDCB,
   "MDX": ADDRESSES.MDX,
   "GOLD": ADDRESSES.GOLD,
   "DRAGON": ADDRESSES.DRAGON
@@ -2770,13 +2786,15 @@ async function loadBalances() {
     const mdxContract = new ethers.Contract(ADDRESSES.MDX, ABIS.ERC20, provider);
     const goldContract = new ethers.Contract(ADDRESSES.GOLD, ABIS.ERC20, provider);
     const dragonContract = new ethers.Contract(ADDRESSES.DRAGON, ABIS.ERC20, provider);
-
-    const [usdcBal, bflBal, mdxBal, goldBal, dragonBal] = await Promise.all([
+    const usdcbContract = new ethers.Contract(ADDRESSES.USDCB, ABIS.ERC20, provider);
+     
+    const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal] = await Promise.all([
       usdcContract.balanceOf(userAddress),
       bflContract.balanceOf(userAddress),
       mdxContract.balanceOf(userAddress),
       goldContract.balanceOf(userAddress),
-      dragonContract.balanceOf(userAddress)
+      dragonContract.balanceOf(userAddress),
+      usdcbContract.balanceOf(userAddress)
     ]);
 
     const usdcFormatted = formatAmount(usdcBal, 6);
@@ -2784,10 +2802,11 @@ async function loadBalances() {
     const mdxFormatted = formatAmount(mdxBal, 18);
     const goldFormatted = formatAmount(goldBal, 18);
     const dragonFormatted = formatAmount(dragonBal, 18);
-
+    const usdcbFormatted = formatAmount(usdcbBal, 18);
     // Update all balance displays
     const els = {
       balanceUSDC: usdcFormatted,
+      balanceUSDCB: usdcbFormatted,
       balanceBFL: bflFormatted,
       balanceMDX: mdxFormatted,
       balanceGOLD: goldFormatted,
