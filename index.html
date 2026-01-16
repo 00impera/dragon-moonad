@@ -3,6 +3,10 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- ADD THESE: -->
+  <meta name="description" content="Monad DEX - Decentralized Exchange for USDC, BFL, and other tokens" />
+  <meta name="theme-color" content="#0A0E14" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💎</text></svg>" />
   <title>Monad DEX — Modern UI</title>
   <style>
 /* ============================================
@@ -2036,10 +2040,10 @@ label {
           </button>
         </div>
 
-        <!-- RPC display -->
-        <div class="small" style="margin-left: 8px; min-width: 180px; text-align: right;">
-          RPC: <span id="rpcUrl">hidden</span>
-        </div>
+       <!-- RPC status indicator -->
+<div class="small" style="margin-left: 8px; min-width: 120px; text-align: right;">
+  Status: <span id="rpcStatus" class="neon-pulse">●</span>
+</div>
 
       </div>
     </header>
@@ -2088,24 +2092,24 @@ label {
             <div class="small">Slippage: <span id="slippageDisplay">0.5%</span></div>
           </div>
 
-          <!-- From token -->
-          <div style="margin-top: 12px;">
-            <label class="small">From</label>
-            <div class="token-input">
-              <img id="fromLogo" class="token-logo" src="https://files.catbox.moe/ujzf30.gif" alt="USDC logo" />
-              <input id="fromAmount" type="number" placeholder="0.0" step="any" />
-              <select id="toToken">
-              <option value="BFL">BFL</option>
-              <option value="USDC">USDC</option>
-              <option value="USDCB">USDCB</option>
-              <option value="MDX">MDX</option>
-              <option value="GOLD">GOLD</option>
-              <option value="EUROGOLD">EUROGOLD</option>
-              <option value="DRAGON">DRAGON</option>
-              </select>
-              <div style="margin-left: auto;" class="small">Balance: <span id="fromBalance">-</span></div>
-            </div>
-          </div>
+         <!-- From token -->
+<div style="margin-top: 12px;">
+  <label class="small">From</label>
+  <div class="token-input">
+    <img id="fromLogo" class="token-logo" src="https://files.catbox.moe/ujzf30.gif" alt="USDC logo" />
+    <input id="fromAmount" type="number" placeholder="0.0" step="any" />
+    <select id="fromToken">
+      <option value="USDC" selected>USDC</option>
+      <option value="BFL">BFL</option>
+      <option value="USDCB">USDCB</option>
+      <option value="MDX">MDX</option>
+      <option value="GOLD">GOLD</option>
+      <option value="EUROGOLD">EUROGOLD</option>
+      <option value="DRAGON">DRAGON</option>
+    </select>
+    <div style="margin-left: auto;" class="small">Balance: <span id="fromBalance">-</span></div>
+  </div>
+</div>
 
           <!-- Swap direction button -->
           <div style="text-align: center; margin: 12px 0;">
@@ -2270,35 +2274,41 @@ label {
             <div class="small">Quick select</div>
           </div>
 
-         <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
-         <button class="btn btn-ghost pair-btn" data-pair="USDC-BFL" style="width: 100%;">
-          USDC / BFL
-        </button>
-        <button class="btn btn-ghost pair-btn" data-pair="BFL-USDC" style="width: 100%;">
-         BFL / USDC
-         </button> <!-- ← FIXED: was <button>, now </button> -->
-         <button class="btn btn-ghost pair-btn" data-pair="USDC-MDX" style="width: 100%;">
-         USDC / MDX
-        </button>
-        <button class="btn btn-ghost pair-btn" data-pair="USDC-GOLD" style="width: 100%;">
-         USDC / GOLD
-        </button>
-        <button class="btn btn-ghost pair-btn" data-pair="USDC-DRAGON" style="width: 100%;">
-         USDC / DRAGON
-        </button>
-        <button class="btn btn-ghost pair-btn" data-pair="USDC-USDCB" style="width: 100%;">
-         USDC / USDCB
-        </button>
-        <button class="btn btn-ghost pair-btn" data-pair="USDCB-USDC" style="width: 100%;">
-         USDCB / USDC
-        <button class="btn btn-ghost pair-btn" data-pair="USDC-EUROGOLD" style="width: 100%;">
-         USDC / EUROGOLD
-        </button>
-        <button class="btn btn-ghost pair-btn" data-pair="BFL-EUROGOLD" style="width: 100%;">
-         BFL / EUROGOLD
-        </button>
-        </div>
-
+       <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+  <button class="btn btn-ghost pair-btn" data-pair="USDC-BFL" style="width: 100%;">
+    USDC / BFL
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="BFL-USDC" style="width: 100%;">
+    BFL / USDC
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="USDC-MDX" style="width: 100%;">
+    USDC / MDX
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="USDC-GOLD" style="width: 100%;">
+    USDC / GOLD
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="USDC-DRAGON" style="width: 100%;">
+    USDC / DRAGON
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="USDC-USDCB" style="width: 100%;">
+    USDC / USDCB
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="USDCB-USDC" style="width: 100%;">
+    USDCB / USDC
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="USDC-EUROGOLD" style="width: 100%;">
+    USDC / EUROGOLD
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="BFL-EUROGOLD" style="width: 100%;">
+    BFL / EUROGOLD
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="GOLD-EUROGOLD" style="width: 100%;">
+    GOLD / EUROGOLD
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="DRAGON-GOLD" style="width: 100%;">
+    DRAGON / GOLD
+  </button>
+</div>
         <!-- CHAIN ACTIVITY CARD -->
         <div class="card chrome-rim" style="margin-bottom: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -2337,14 +2347,18 @@ label {
             reserve1: <span id="reserve1Amount" class="stat">-</span>
           </div>
 
-          <button id="refreshReserves" class="btn btn-ghost" style="margin-top: 12px; width: 100%;">
+         <button id="refreshReserves" class="btn btn-ghost" style="margin-top: 12px; width: 100%;">
             Refresh Reserves
           </button>
         </div>
-        
-  <!-- Load ethers.js first -->
-<script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
 
+      </aside>
+    </main>
+
+  </div>
+
+  <!-- Load ethers.js first -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6/dist/ethers.umd.min.js"></script>
 <!-- Single main script tag -->
 <script>
 (function() {
@@ -3178,7 +3192,7 @@ async function updateOutputEstimate() {
   }
 }
 // Debounced version for input events
-const debouncedUpdateOutput = debounce(updateOutputEstimate, 300);
+const debouncedUpdateOutput = debounce(updateOutputEstimate, 500);
 
 /* ==================
    TOKEN APPROVAL
