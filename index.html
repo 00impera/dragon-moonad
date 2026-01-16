@@ -2098,15 +2098,16 @@ label {
   <div class="token-input">
     <img id="fromLogo" class="token-logo" src="https://files.catbox.moe/ujzf30.gif" alt="USDC logo" />
     <input id="fromAmount" type="number" placeholder="0.0" step="any" />
-    <select id="fromToken">
-      <option value="USDC" selected>USDC</option>
-      <option value="BFL">BFL</option>
-      <option value="USDCB">USDCB</option>
-      <option value="MDX">MDX</option>
-      <option value="GOLD">GOLD</option>
-      <option value="EUROGOLD">EUROGOLD</option>
-      <option value="DRAGON">DRAGON</option>
-    </select>
+   <select id="fromToken">
+  <option value="USDC" selected>USDC</option>
+  <option value="BFL">BFL</option>
+  <option value="USDCB">USDCB</option>
+  <option value="MDX">MDX</option>
+  <option value="GOLD">GOLD</option>
+  <option value="EUROGOLD">EUROGOLD</option>
+  <option value="DRAGON">DRAGON</option>
+  <option value="SWAPLESS">SWAPLESS</option>
+</select>
     <div style="margin-left: auto;" class="small">Balance: <span id="fromBalance">-</span></div>
   </div>
 </div>
@@ -2124,15 +2125,16 @@ label {
             <div class="token-input">
               <img id="toLogo" class="token-logo" src="https://files.catbox.moe/lk7mrk.png" alt="BFL logo" />
               <input id="toAmount" type="text" placeholder="0.0" readonly />
-             <select id="fromToken">
-             <option value="USDC">USDC</option>
-             <option value="BFL">BFL</option>
-             <option value="USDCB">USDCB</option>
-             <option value="MDX">MDX</option>
-             <option value="GOLD">GOLD</option>
-             <option value="EUROGOLD">EUROGOLD</option>
-             <option value="DRAGON">DRAGON</option>
-             </select>
+            <select id="toToken">
+            <option value="BFL" selected>BFL</option>
+            <option value="USDC">USDC</option>
+            <option value="USDCB">USDCB</option>
+            <option value="MDX">MDX</option>
+            <option value="GOLD">GOLD</option>
+            <option value="EUROGOLD">EUROGOLD</option>
+            <option value="DRAGON">DRAGON</option>
+            <option value="SWAPLESS">SWAPLESS</option>
+            </select>
              
               <div style="margin-left: auto;" class="small">Balance: <span id="toBalance">-</span></div>
             </div>
@@ -2226,30 +2228,33 @@ label {
             <div class="small">Net P/L</div>
           </div>
 
-           <div style="margin-top: 12px;" class="small">
-            Total value: <span id="portfolioValue" class="stat">-</span>
-           </div>
+          <div style="margin-top: 12px;" class="small">
+          Total value: <span id="portfolioValue" class="stat">-</span>
+         </div>
          <div style="margin-top: 8px;" class="small">
-         USDC: <span id="balanceUSDC" class="stat">-</span>
-       </div>
-        <div style="margin-top: 6px;" class="small">
-        BFL: <span id="balanceBFL" class="stat">-</span>
-       </div>
-       <div style="margin-top: 6px;" class="small">
-        MDX: <span id="balanceMDX" class="stat">-</span>
-       </div>
-      <div style="margin-top: 6px;" class="small">
-       GOLD: <span id="balanceGOLD" class="stat">-</span>
-       </div>
-        <div style="margin-top: 6px;" class="small">
-        DRAGON: <span id="balanceDRAGON" class="stat">-</span>
+           USDC: <span id="balanceUSDC" class="stat">-</span>
          </div>
          <div style="margin-top: 6px;" class="small">
-        USDCB: <span id="balanceUSDCB" class="stat">-</span>
-        </div> 
+           BFL: <span id="balanceBFL" class="stat">-</span>
+         </div>
          <div style="margin-top: 6px;" class="small">
-         EUROGOLD: <span id="balanceEUROGOLD" class="stat">-</span>
-          </div>
+           MDX: <span id="balanceMDX" class="stat">-</span>
+         </div>
+         <div style="margin-top: 6px;" class="small">
+           GOLD: <span id="balanceGOLD" class="stat">-</span>
+         </div>
+         <div style="margin-top: 6px;" class="small">
+           DRAGON: <span id="balanceDRAGON" class="stat">-</span>
+         </div>
+         <div style="margin-top: 6px;" class="small">
+           USDCB: <span id="balanceUSDCB" class="stat">-</span>
+         </div> 
+         <div style="margin-top: 6px;" class="small">
+           EUROGOLD: <span id="balanceEUROGOLD" class="stat">-</span>
+         </div>
+         <div style="margin-top: 6px;" class="small">
+           SWAPLESS: <span id="balanceSWAPLESS" class="stat">-</span>
+         </div>
            
           <button id="refreshPortfolio" class="btn btn-ghost" style="margin-top: 12px; width: 100%;">
             Refresh Balances
@@ -2274,7 +2279,7 @@ label {
             <div class="small">Quick select</div>
           </div>
 
-       <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
+ <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px;">
   <button class="btn btn-ghost pair-btn" data-pair="USDC-BFL" style="width: 100%;">
     USDC / BFL
   </button>
@@ -2307,6 +2312,15 @@ label {
   </button>
   <button class="btn btn-ghost pair-btn" data-pair="DRAGON-GOLD" style="width: 100%;">
     DRAGON / GOLD
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="USDC-SWAPLESS" style="width: 100%;">
+    USDC / SWAPLESS
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="SWAPLESS-USDC" style="width: 100%;">
+    SWAPLESS / USDC
+  </button>
+  <button class="btn btn-ghost pair-btn" data-pair="BFL-SWAPLESS" style="width: 100%;">
+    BFL / SWAPLESS
   </button>
 </div>
         <!-- CHAIN ACTIVITY CARD -->
@@ -2474,6 +2488,9 @@ function formatAmount(amount, decimals) {
   if (addr === ADDRESSES.DRAGON.toLowerCase()) {
     return "https://files.catbox.moe/bb1fsy.png";
   }
+  if (addr === ADDRESSES.SWAPLESS.toLowerCase()) {
+    return "https://files.catbox.moe/52ogvm.png";
+  }
   return "https://files.catbox.moe/ujzf30.gif";
 }
 
@@ -2551,6 +2568,7 @@ const ADDRESSES = {
   GOLD: "0x3E459BeA2A3Efab22Ce12358E672dD31A9594D34",
   DRAGON: "0x1b685B0c771b877d1a4e8F02365a4A809E962c81",
   EUROGOLD: "0x66e27Fcf309e40FCB44b815EEBb852beC0795884",
+  SWAPLESS: "0x19631f80cD04d1Ea516560627B368e6d86A60057",
   PAIR_USDC_BFL: "0x57489a99059a41464fe9322864e3b241d96c5d62",
   ROUTER: "0x7139332aa7C461bfC6463586D0fbf5A7cdEf5324",
   BADGE_NFT_USDCB: "0x968e03563bF2fFB549fD5BE999aED59b1B2c88f3"
@@ -2563,9 +2581,9 @@ const TOKENS_MAP = {
   "MDX": ADDRESSES.MDX,
   "GOLD": ADDRESSES.GOLD,
   "DRAGON": ADDRESSES.DRAGON,
-  "EUROGOLD": ADDRESSES.EUROGOLD
+  "EUROGOLD": ADDRESSES.EUROGOLD,
+  "SWAPLESS": ADDRESSES.SWAPLESS
 };
-
 CONFIG.TOKENS = TOKENS_MAP;
 
 // Alias for backward compatibility
@@ -2818,16 +2836,19 @@ async function loadBalances() {
     const dragonContract = new ethers.Contract(ADDRESSES.DRAGON, ABIS.ERC20, provider);
     const usdcbContract = new ethers.Contract(ADDRESSES.USDCB, ABIS.ERC20, provider);
     const eurogoldContract = new ethers.Contract(ADDRESSES.EUROGOLD, ABIS.ERC20, provider);
+    const swaplessContract = new ethers.Contract(ADDRESSES.SWAPLESS, ABIS.ERC20, provider);
      
-const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal, eurogoldBal] = await Promise.all([
-  usdcContract.balanceOf(userAddress),
-  bflContract.balanceOf(userAddress),
-  mdxContract.balanceOf(userAddress),
-  goldContract.balanceOf(userAddress),
-  dragonContract.balanceOf(userAddress),
-  usdcbContract.balanceOf(userAddress),
-  eurogoldContract.balanceOf(userAddress)
-]);
+    const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal, eurogoldBal, swaplessBal] = await Promise.all([
+      usdcContract.balanceOf(userAddress),
+      bflContract.balanceOf(userAddress),
+      mdxContract.balanceOf(userAddress),
+      goldContract.balanceOf(userAddress),
+      dragonContract.balanceOf(userAddress),
+      usdcbContract.balanceOf(userAddress),
+      eurogoldContract.balanceOf(userAddress),
+      swaplessContract.balanceOf(userAddress)
+    ]);
+
     const usdcFormatted = formatAmount(usdcBal, 6);
     const bflFormatted = formatAmount(bflBal, 18);
     const mdxFormatted = formatAmount(mdxBal, 18);
@@ -2835,6 +2856,8 @@ const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal, eurogoldBal] = awa
     const dragonFormatted = formatAmount(dragonBal, 18);
     const usdcbFormatted = formatAmount(usdcbBal, 18);
     const eurogoldFormatted = formatAmount(eurogoldBal, 18);
+    const swaplessFormatted = formatAmount(swaplessBal, 18);
+
     // Update all balance displays
     const els = {
       balanceUSDC: usdcFormatted,
@@ -2844,6 +2867,7 @@ const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal, eurogoldBal] = awa
       balanceGOLD: goldFormatted,
       balanceDRAGON: dragonFormatted,
       balanceEUROGOLD: eurogoldFormatted,
+      balanceSWAPLESS: swaplessFormatted,
       fromBalance: usdcFormatted,
       toBalance: bflFormatted,
       portfolioValue: `$${formatNumber(usdcFormatted)}`
@@ -2859,7 +2883,6 @@ const [usdcBal, bflBal, mdxBal, goldBal, dragonBal, usdcbBal, eurogoldBal] = awa
     log("Balance error: " + getErrorMessage(err), "error");
   }
 }
-
 // Update token logos
 function updateTokenLogos() {
   const fromToken = document.getElementById("fromToken")?.value;
@@ -3498,7 +3521,8 @@ function displaySwapPath(fromToken, toToken, path) {
     else if (addr === ADDRESSES.GOLD.toLowerCase()) symbol = "GOLD";
     else if (addr === ADDRESSES.DRAGON.toLowerCase()) symbol = "DRAGON";
     else if (addr === ADDRESSES.USDCB.toLowerCase()) symbol = "USDCB";
-    else if (addr === ADDRESSES.EUROGOLD.toLowerCase()) symbol = "EUROGOLD";
+    else if (addr === ADDRESSES.EUROGOLD.toLowerCase()) symbol = "EUROGOLD"; 
+    else if (addr === ADDRESSES.SWAPLESS.toLowerCase()) symbol = "SWAPLESS";
     tokenSymbols.push(symbol);
   }
   
