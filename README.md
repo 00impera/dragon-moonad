@@ -44,7 +44,7 @@ Now with a live dashboard, wallet connect, staking, rewards, and real-time stats
 - **LP Mining Contract:**  
   `0x28840f3e117345A5FBF08b7F67503D2F47B28023`  
   Verified: ✅ Sourcify Match ID 520027
-
+https://euro-voucher-nft.gitbook.io/euro-voucher-nft-docs/
 ---
 
 ## 🎯 Features
