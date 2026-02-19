@@ -143,8 +143,9 @@
     const MONAD_CHAIN_ID = "0x8F";
     const MONAD_CHAIN_ID_DECIMAL = 143;
     const MONAD_RPC = "https://rpc.monad.xyz";
-    
-  const CONTRACT_ABI = [
+    const VAULT_ADDRESS = "0xE00454506f50ac31A0b87324513e28f77Db2a8F9";
+    const SWAP_ROUTER_ADDRESS = "0x334cf8898EecCC0B98420E6910A3ae83A00b32e0";
+    const CONTRACT_ABI = [
       {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
       {"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721IncorrectOwner","type":"error"},
       {"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721InsufficientApproval","type":"error"},
@@ -364,7 +365,13 @@
           value: web3.utils.toWei(selectedVoucher.price, 'ether')
         });
 
-        showStatus(`✅ Success! NFT Voucher sent to your wallet. Transaction Hash: ${tx.transactionHash.slice(0, 10)}...`);
+        const tokenId = tx.events.VoucherPurchased.returnValues.tokenId;
+        showStatus(`✅ Voucher #${tokenId} minted! Sending token reward...`);
+
+        const vaultABI = [{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"address","name":"recipient","type":"address"}],"name":"sendReward","outputs":[],"stateMutability":"nonpayable","type":"function"}];
+        const vault = new web3.eth.Contract(vaultABI, VAULT_ADDRESS);
+        const rewardTx = await vault.methods.sendReward(tokenId, userAddress).send({ from: userAddress });
+        showStatus(`🎁 Reward sent! Voucher #${tokenId} minted + random token delivered! TX: ${rewardTx.transactionHash.slice(0,10)}...`);
         
         voucherBtns.forEach(b => b.classList.remove('selected'));
         selectedVoucher = null;
