@@ -33,29 +33,29 @@
 </head>
 <body class="bg-black text-blue-400 min-h-screen p-6">
   <div class="max-w-4xl mx-auto">
-    <!-- Wallet Connection -->
-    <div id="walletSection" class="bg-black border-2 border-blue-500 rounded-2xl p-6 mb-6 neon-glow">
-      <h2 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-        </svg>
-        [CONNECT_WALLET]
-      </h2>
-      <p class="text-blue-300/80 mb-4 text-sm">» Connect MetaMask to Monad Mainnet</p>
-      <button id="connectBtn" class="w-full bg-blue-500 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 neon-glow hover:neon-glow-strong">
-        CONNECT TO MONAD
-      </button>
-      <div id="connectedWallet" class="hidden bg-blue-950/50 border-2 border-blue-400 rounded-xl p-4 mt-4 neon-glow flex flex-col items-start">
-        <p class="text-blue-400 flex items-center gap-2 text-sm">
-          <span class="pulse">✓</span>
-          [CONNECTED] <span id="walletAddress"></span>
-        </p>
-        <p class="text-blue-300/60 text-xs mt-2">Chain ID: <span id="chainId"></span></p>
-        <button id="disconnectBtn" class="mt-4 bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded-xl transition-all neon-glow-strong">
-          Disconnect
-        </button>
-      </div>
-    </div>
+  <!-- Wallet Connection -->
+<div id="walletSection" class="bg-black border-2 border-blue-500 rounded-2xl p-6 mb-6 neon-glow">
+  <h2 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+    </svg>
+    [CONNECT_WALLET]
+  </h2>
+  <p class="text-blue-300/80 mb-4 text-sm">» Connect MetaMask to Monad Mainnet</p>
+  <button id="connectBtn" class="w-full bg-blue-500 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 neon-glow hover:neon-glow-strong">
+    CONNECT TO MONAD
+  </button>
+  <div id="connectedWallet" style="display:none;" class="bg-blue-950/50 border-2 border-blue-400 rounded-xl p-4 mt-4 neon-glow">
+    <p class="text-blue-400 flex items-center gap-2 text-sm">
+      <span class="pulse">✓</span>
+      [CONNECTED] <span id="walletAddress"></span>
+    </p>
+    <p class="text-blue-300/60 text-xs mt-2">Chain ID: <span id="chainId"></span></p>
+    <button id="disconnectBtn" class="mt-4 bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded-xl transition-all neon-glow-strong">
+      Disconnect
+    </button>
+  </div>
+</div>
     <!-- Voucher Selection -->
     <div class="bg-black border-2 border-blue-500 rounded-2xl p-6 mb-6 neon-glow">
       <h2 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2">
@@ -223,100 +223,95 @@
     const voucherResult = document.getElementById('voucherResult');
 
     // --- WALLET CONNECTION ---
-    connectBtn.addEventListener('click', async () => {
-      if (typeof window.ethereum === 'undefined') {
-        showStatus('⚠️ Please install <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">MetaMask</a> to connect.');
-        return;
-      }
-
+connectBtn.addEventListener('click', async () => {
+  if (typeof window.ethereum === 'undefined') {
+    showStatus('⚠️ Please install <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">MetaMask</a> to connect.');
+    return;
+  }
+  try {
+    showStatus('🔄 Connecting to MetaMask...');
+    const accounts = await window.ethereum.request({ 
+      method: 'eth_requestAccounts' 
+    });
+    
+    userAddress = accounts[0];
+    web3 = new Web3(window.ethereum);
+    const chainId = await web3.eth.getChainId();
+    
+    if (Number(chainId) !== MONAD_CHAIN_ID_DECIMAL) {
+      showStatus('⚠️ Please switch to Monad network...');
       try {
-        showStatus('🔄 Connecting to MetaMask...');
-
-        const accounts = await window.ethereum.request({ 
-          method: 'eth_requestAccounts' 
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: MONAD_CHAIN_ID }],
         });
-        
-        userAddress = accounts[0];
-        web3 = new Web3(window.ethereum);
-        const chainId = await web3.eth.getChainId();
-        
-        if (Number(chainId) !== MONAD_CHAIN_ID_DECIMAL) {
-          showStatus('⚠️ Please switch to Monad network...');
+      } catch (switchError) {
+        if (switchError.code === 4902) {
           try {
             await window.ethereum.request({
-              method: 'wallet_switchEthereumChain',
-              params: [{ chainId: MONAD_CHAIN_ID }],
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: MONAD_CHAIN_ID,
+                chainName: 'Monad Mainnet',
+                nativeCurrency: {
+                  name: 'MON',
+                  symbol: 'MON',
+                  decimals: 18
+                },
+                rpcUrls: [MONAD_RPC],
+                blockExplorerUrls: ['https://explorer.monad.xyz']
+              }]
             });
-          } catch (switchError) {
-            if (switchError.code === 4902) {
-              try {
-                await window.ethereum.request({
-                  method: 'wallet_addEthereumChain',
-                  params: [{
-                    chainId: MONAD_CHAIN_ID,
-                    chainName: 'Monad Mainnet',
-                    nativeCurrency: {
-                      name: 'MON',
-                      symbol: 'MON',
-                      decimals: 18
-                    },
-                    rpcUrls: [MONAD_RPC],
-                    blockExplorerUrls: ['https://explorer.monad.xyz']
-                  }]
-                });
-              } catch (addError) {
-                showStatus('❌ Failed to add Monad network');
-                return;
-              }
-            } else {
-              showStatus('❌ Failed to switch network');
-              return;
-            }
+          } catch (addError) {
+            showStatus('❌ Failed to add Monad network');
+            return;
           }
+        } else {
+          showStatus('❌ Failed to switch network');
+          return;
         }
+      }
+    }
 
-        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+    contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+    walletAddressSpan.textContent = userAddress.slice(0, 8) + '...' + userAddress.slice(-6);
+    chainIdSpan.textContent = MONAD_CHAIN_ID_DECIMAL;
+    connectBtn.style.display = 'none';         // ← FIXED
+    connectedWallet.style.display = 'block';   // ← FIXED
+    statusMessage.classList.add('hidden');
+    updatePurchaseButton();
 
+    window.ethereum.on('accountsChanged', (accounts) => {
+      if (accounts.length === 0) {
+        disconnectWallet();
+      } else {
+        userAddress = accounts[0];
         walletAddressSpan.textContent = userAddress.slice(0, 8) + '...' + userAddress.slice(-6);
-        chainIdSpan.textContent = MONAD_CHAIN_ID_DECIMAL;
-        connectBtn.classList.add('hidden');
-        connectedWallet.classList.remove('hidden');
-        statusMessage.classList.add('hidden');
-        updatePurchaseButton();
-
-        window.ethereum.on('accountsChanged', (accounts) => {
-          if (accounts.length === 0) {
-            disconnectWallet();
-          } else {
-            userAddress = accounts[0];
-            walletAddressSpan.textContent = userAddress.slice(0, 8) + '...' + userAddress.slice(-6);
-          }
-        });
-
-        window.ethereum.on('chainChanged', () => {
-          location.reload();
-        });
-
-      } catch (error) {
-        showStatus('❌ Failed to connect: ' + (error.message || 'Unknown error'));
-        console.error('Connection error:', error);
       }
     });
 
-    // --- DISCONNECT WALLET ---
-    function disconnectWallet() {
-      userAddress = null;
-      web3 = null;
-      contract = null;
-      connectBtn.classList.remove('hidden');
-      connectedWallet.classList.add('hidden');
-      voucherBtns.forEach(b => b.classList.remove('selected'));
-      selectedVoucher = null;
-      updatePurchaseButton();
-      showStatus('Wallet disconnected.');
-    }
-    disconnectBtn.addEventListener('click', disconnectWallet);
+    window.ethereum.on('chainChanged', () => {
+      location.reload();
+    });
 
+  } catch (error) {
+    showStatus('❌ Failed to connect: ' + (error.message || 'Unknown error'));
+    console.error('Connection error:', error);
+  }
+});
+
+function disconnectWallet() {
+  userAddress = null;
+  web3 = null;
+  contract = null;
+  connectBtn.style.display = 'block';
+  connectedWallet.style.display = 'none';
+  voucherBtns.forEach(b => b.classList.remove('selected'));
+  selectedVoucher = null;
+  updatePurchaseButton();
+  showStatus('Wallet disconnected.');
+}
+disconnectBtn.addEventListener('click', disconnectWallet);
     // --- VOUCHER SELECTION ---
     voucherBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -346,47 +341,51 @@
     }
 
     // --- PURCHASE HANDLER ---
-    purchaseBtn.addEventListener('click', async () => {
-      if (!selectedVoucher || !userAddress) return;
+   purchaseBtn.addEventListener('click', async () => {
+  if (!selectedVoucher || !userAddress) return;
 
-      showStatus('🔄 Preparing transaction...');
+  showStatus('🔄 Preparing transaction...');
 
-      try {
-        const now = new Date();
-        const voucherId = `VOC-${now.getTime()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+  try {
+    const now = new Date();
+    const voucherId = `VOC-${now.getTime()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-        showStatus(`💳 Confirm transaction in MetaMask...`);
+    showStatus(`💳 Confirm transaction in MetaMask...`);
 
-        const tx = await contract.methods.purchaseVoucher(
-          selectedVoucher.value,
-          voucherId
-        ).send({
-          from: userAddress,
-          value: web3.utils.toWei(selectedVoucher.price, 'ether')
-        });
-
-        const tokenId = tx.events.VoucherPurchased.returnValues.tokenId;
-        showStatus(`✅ Voucher #${tokenId} minted! Sending token reward...`);
-
-        const vaultABI = [{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"address","name":"recipient","type":"address"}],"name":"sendReward","outputs":[],"stateMutability":"nonpayable","type":"function"}];
-        const vault = new web3.eth.Contract(vaultABI, VAULT_ADDRESS);
-        const rewardTx = await vault.methods.sendReward(tokenId, userAddress).send({ from: userAddress });
-        showStatus(`🎁 Reward sent! Voucher #${tokenId} minted + random token delivered! TX: ${rewardTx.transactionHash.slice(0,10)}...`);
-        
-        voucherBtns.forEach(b => b.classList.remove('selected'));
-        selectedVoucher = null;
-        updatePurchaseButton();
-
-      } catch (error) {
-        if (error.code === 4001) {
-          showStatus('❌ Transaction rejected by user');
-        } else {
-          showStatus('❌ Transaction failed: ' + (error.message || 'Unknown error'));
-        }
-        console.error('Transaction error:', error);
-      }
+    const tx = await contract.methods.purchaseVoucher(
+      selectedVoucher.value,
+      voucherId
+    ).send({
+      from: userAddress,
+      value: web3.utils.toWei(selectedVoucher.price, 'ether')
     });
 
+    // Safely extract tokenId
+    let tokenId = null;
+    if (tx.events && tx.events.VoucherPurchased) {
+      tokenId = tx.events.VoucherPurchased.returnValues.tokenId;
+    } else {
+      // Fallback: parse logs manually
+      tokenId = tx.logs?.[0]?.topics?.[1] 
+        ? parseInt(tx.logs[0].topics[1], 16) 
+        : '?';
+    }
+
+    showStatus(`✅ Voucher #${tokenId} minted successfully! TX: ${tx.transactionHash.slice(0,10)}...`);
+
+    voucherBtns.forEach(b => b.classList.remove('selected'));
+    selectedVoucher = null;
+    updatePurchaseButton();
+
+  } catch (error) {
+    if (error.code === 4001) {
+      showStatus('❌ Transaction rejected by user');
+    } else {
+      showStatus('❌ Transaction failed: ' + (error.message || 'Unknown error'));
+    }
+    console.error('Transaction error:', error);
+  }
+});
     // --- READ VOUCHER LOGIC ---
     readVoucherBtn.addEventListener('click', async () => {
       const tokenId = readTokenId.value;
