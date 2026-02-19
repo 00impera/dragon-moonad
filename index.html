@@ -29,10 +29,19 @@
     }
     .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+    /* RED NEON */
     .red-neon-text {
       color: #ff0000;
       text-shadow: 0 0 8px #ff0000, 0 0 20px #ff0000, 0 0 40px #cc0000;
     }
+
+    /* GREEN NEON */
+    .green-neon-text {
+      color: #00ff00;
+      text-shadow: 0 0 8px #00ff00, 0 0 20px #00ff00, 0 0 40px #00cc00;
+    }
+
     .coin-logo {
       width: 56px;
       height: 56px;
@@ -56,13 +65,13 @@
       <img src="https://scarlet-central-krill-672.mypinata.cloud/ipfs/bafybeiaho7h7ysvoxmoqvi7rveh2rcls6rh4weagezoi6umctfpgrgkvp4" alt="Logo" class="h-28 object-contain" style="filter: drop-shadow(0 0 20px rgba(59,130,246,0.8));">
     </div>
 
-    <!-- Wallet Connection -->
-    <div id="walletSection" class="bg-black border-2 border-blue-500 rounded-2xl p-6 mb-6 neon-glow">
-      <h2 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Wallet Connection — GREEN NEON -->
+    <div id="walletSection" class="bg-black border-2 rounded-2xl p-6 mb-6" style="border-color: #00ff00; box-shadow: 0 0 20px rgba(0,255,0,0.3);">
+      <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <svg class="w-6 h-6" fill="none" stroke="#00ff00" viewBox="0 0 24 24" style="filter: drop-shadow(0 0 5px #00ff00);">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
         </svg>
-        [CONNECT_WALLET]
+        <span class="green-neon-text">💳 [CONNECT_WALLET]</span>
       </h2>
       <p class="text-blue-300/80 mb-4 text-sm">» Connect MetaMask to Monad Mainnet</p>
       <button id="connectBtn" class="w-full bg-blue-500 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 neon-glow hover:neon-glow-strong">
@@ -145,23 +154,25 @@
       <p class="text-blue-400" id="statusText"></p>
     </div>
 
-    <!-- Read Voucher Section -->
-    <div class="bg-black border-2 border-blue-500 rounded-2xl p-6 mb-6 neon-glow">
-      <h2 class="text-xl font-bold text-blue-400 mb-4 flex items-center gap-2">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- TOKEN GIFT ID — RED NEON -->
+    <div class="bg-black border-2 rounded-2xl p-6 mb-6" style="border-color: #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.35);">
+      <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
+        <svg class="w-6 h-6" fill="none" stroke="#ff0000" viewBox="0 0 24 24" style="filter: drop-shadow(0 0 5px #ff0000);">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z" />
         </svg>
-        [READ VOUCHER BY TOKEN ID]
+        <span class="red-neon-text">🎁 TOKEN GIFT ID</span>
       </h2>
       <div class="flex gap-2 mb-4">
         <input type="number" id="readTokenId" placeholder="Enter tokenId"
-          class="w-32 px-4 py-2 bg-black border-2 border-blue-500/50 rounded-lg text-blue-400 placeholder-blue-600 focus:outline-none focus:border-blue-400"/>
+          class="w-32 px-4 py-2 bg-black rounded-lg text-red-400 placeholder-red-900 focus:outline-none"
+          style="border: 2px solid rgba(255,0,0,0.5); focus-border-color: #ff0000;"/>
         <button id="readVoucherBtn"
-          class="bg-blue-500 hover:bg-blue-400 text-black font-bold py-2 px-4 rounded-xl transition-all neon-glow hover:neon-glow-strong">
-          Read Voucher
+          class="text-white font-bold py-2 px-4 rounded-xl transition-all"
+          style="background: linear-gradient(135deg, #cc0000, #ff0000); box-shadow: 0 0 15px rgba(255,0,0,0.5);">
+          Read Gift
         </button>
       </div>
-      <div id="voucherResult" class="text-blue-300 text-sm"></div>
+      <div id="voucherResult" class="text-red-300 text-sm"></div>
     </div>
 
     <!-- Coin Logos Footer -->
@@ -243,18 +254,18 @@
 
     let web3, contract, userAddress = null, selectedVoucher = null;
 
-    const connectBtn = document.getElementById('connectBtn');
+    const connectBtn      = document.getElementById('connectBtn');
     const connectedWallet = document.getElementById('connectedWallet');
-    const disconnectBtn = document.getElementById('disconnectBtn');
+    const disconnectBtn   = document.getElementById('disconnectBtn');
     const walletAddressSpan = document.getElementById('walletAddress');
-    const chainIdSpan = document.getElementById('chainId');
-    const voucherBtns = document.querySelectorAll('.voucher-btn');
-    const purchaseBtn = document.getElementById('purchaseBtn');
-    const statusMessage = document.getElementById('statusMessage');
-    const statusText = document.getElementById('statusText');
-    const readTokenId = document.getElementById('readTokenId');
-    const readVoucherBtn = document.getElementById('readVoucherBtn');
-    const voucherResult = document.getElementById('voucherResult');
+    const chainIdSpan     = document.getElementById('chainId');
+    const voucherBtns     = document.querySelectorAll('.voucher-btn');
+    const purchaseBtn     = document.getElementById('purchaseBtn');
+    const statusMessage   = document.getElementById('statusMessage');
+    const statusText      = document.getElementById('statusText');
+    const readTokenId     = document.getElementById('readTokenId');
+    const readVoucherBtn  = document.getElementById('readVoucherBtn');
+    const voucherResult   = document.getElementById('voucherResult');
 
     connectBtn.addEventListener('click', async () => {
       if (typeof window.ethereum === 'undefined') {
