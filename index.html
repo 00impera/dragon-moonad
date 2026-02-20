@@ -48,6 +48,27 @@
       }
     })
   </script>
+  <script>
+    // Enable WalletConnect button once AppKit is ready
+    function enableWCWhenReady() {
+      if (window.appKit) {
+        const btn = document.getElementById('walletConnectBtn');
+        if (btn) {
+          btn.disabled = false;
+          btn.style.opacity = '1';
+          btn.style.cursor = 'pointer';
+          btn.style.color = '#34d399';
+          btn.style.background = 'rgba(0,180,120,0.15)';
+          btn.style.borderColor = 'rgba(0,180,120,0.5)';
+          btn.innerHTML = '📱 WalletConnect — Mobile & 300+ Wallets';
+        }
+      } else {
+        setTimeout(enableWCWhenReady, 150);
+      }
+    }
+    // Start polling after DOM is ready
+    document.addEventListener('DOMContentLoaded', enableWCWhenReady);
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
     body { font-family: 'JetBrains Mono', monospace; background: radial-gradient(circle at center, rgba(0, 180, 255, 0.6), rgba(0, 0, 40, 1) 70%, #000 100%); }
@@ -137,12 +158,12 @@
           onmouseout="this.style.borderColor='rgba(59,130,246,0.5)'; this.style.boxShadow='none'">
           🔗 Other Wallet
         </button>
-        <button onclick="connectWalletConnect()"
+        <button id="walletConnectBtn" onclick="connectWalletConnect()" disabled
           class="col-span-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all"
-          style="background: rgba(0,180,120,0.15); border: 2px solid rgba(0,180,120,0.5); color: #34d399;"
-          onmouseover="this.style.borderColor='#34d399'; this.style.boxShadow='0 0 15px rgba(0,180,120,0.4)'"
+          style="background: rgba(0,180,120,0.08); border: 2px solid rgba(0,180,120,0.3); color: rgba(52,211,153,0.4); cursor:not-allowed; opacity:0.6;"
+          onmouseover="if(!this.disabled){this.style.borderColor='#34d399'; this.style.boxShadow='0 0 15px rgba(0,180,120,0.4)'}"
           onmouseout="this.style.borderColor='rgba(0,180,120,0.5)'; this.style.boxShadow='none'">
-          📱 WalletConnect — Mobile & 300+ Wallets
+          ⏳ WalletConnect loading...
         </button>
       </div>
 
@@ -293,67 +314,45 @@
     const voucherResult   = document.getElementById('voucherResult');
 
     async function connectWallet(type) {
-      // Detect provider based on wallet type
       let provider = null;
 
+      // Detect correct provider
       if (type === 'metamask') {
-        // MetaMask specific
-        if (window.ethereum?.isMetaMask) {
-          provider = window.ethereum;
-        } else if (window.ethereum?.providers) {
-          provider = window.ethereum.providers.find(p => p.isMetaMask);
-        }
-        if (!provider) {
-          showStatus('⚠️ MetaMask not found. <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">Install here</a>');
-          return;
-        }
+        if (window.ethereum?.isMetaMask) provider = window.ethereum;
+        else if (window.ethereum?.providers) provider = window.ethereum.providers.find(p => p.isMetaMask);
+        if (!provider) { showStatus('⚠️ MetaMask not found. <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">Install here</a>'); return; }
       } else if (type === 'rabby') {
-        // Rabby wallet
-        if (window.ethereum?.isRabby) {
-          provider = window.ethereum;
-        } else if (window.ethereum?.providers) {
-          provider = window.ethereum.providers.find(p => p.isRabby);
-        }
-        if (!provider && window.ethereum) provider = window.ethereum; // fallback
-        if (!provider) {
-          showStatus('⚠️ Rabby not found. <a href="https://rabby.io" target="_blank" class="underline text-blue-300">Install here</a>');
-          return;
-        }
+        if (window.ethereum?.isRabby) provider = window.ethereum;
+        else if (window.ethereum?.providers) provider = window.ethereum.providers.find(p => p.isRabby);
+        if (!provider) provider = window.ethereum;
+        if (!provider) { showStatus('⚠️ Rabby not found. <a href="https://rabby.io" target="_blank" class="underline text-blue-300">Install here</a>'); return; }
       } else if (type === 'coinbase') {
-        // Coinbase Wallet
-        if (window.coinbaseWalletExtension) {
-          provider = window.coinbaseWalletExtension;
-        } else if (window.ethereum?.isCoinbaseWallet) {
-          provider = window.ethereum;
-        } else if (window.ethereum?.providers) {
-          provider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
-        }
-        if (!provider) {
-          showStatus('⚠️ Coinbase Wallet not found. <a href="https://www.coinbase.com/wallet/downloads" target="_blank" class="underline text-blue-300">Install here</a>');
-          return;
-        }
+        if (window.coinbaseWalletExtension) provider = window.coinbaseWalletExtension;
+        else if (window.ethereum?.isCoinbaseWallet) provider = window.ethereum;
+        else if (window.ethereum?.providers) provider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
+        if (!provider) { showStatus('⚠️ Coinbase Wallet not found. <a href="https://www.coinbase.com/wallet/downloads" target="_blank" class="underline text-blue-300">Install here</a>'); return; }
       } else {
-        // Any/Other — use whatever is injected
         provider = window.ethereum;
-        if (!provider) {
-          showStatus('⚠️ No wallet found. Please install MetaMask, Rabby, or another EVM wallet.');
-          return;
-        }
+        if (!provider) { showStatus('⚠️ No wallet found. Please install MetaMask or another EVM wallet.'); return; }
       }
 
       try {
         showStatus('🔄 Connecting wallet...');
         const accounts = await provider.request({ method: 'eth_requestAccounts' });
+        if (!accounts || accounts.length === 0) { showStatus('❌ No accounts found'); return; }
         userAddress = accounts[0];
-        web3 = new Web3(provider);
 
-        const chainId = await web3.eth.getChainId();
-        if (Number(chainId) !== MONAD_CHAIN_ID_DECIMAL) {
+        // Switch to Monad network FIRST before creating web3
+        const chainIdHex = await provider.request({ method: 'eth_chainId' });
+        if (parseInt(chainIdHex, 16) !== MONAD_CHAIN_ID_DECIMAL) {
           showStatus('⚠️ Switching to Monad network...');
           try {
             await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: MONAD_CHAIN_ID }] });
+            // Wait a moment for chain switch to complete
+            await new Promise(r => setTimeout(r, 500));
           } catch (switchError) {
-            if (switchError.code === 4902) {
+            if (switchError.code === 4902 || switchError.code === -32603) {
+              // Chain not found — add it
               try {
                 await provider.request({ method: 'wallet_addEthereumChain', params: [{
                   chainId: MONAD_CHAIN_ID,
@@ -362,16 +361,36 @@
                   rpcUrls: [MONAD_RPC],
                   blockExplorerUrls: ['https://explorer.monad.xyz']
                 }]});
-              } catch (addError) { showStatus('❌ Failed to add Monad network'); return; }
-            } else { showStatus('❌ Failed to switch network'); return; }
+                await new Promise(r => setTimeout(r, 500));
+              } catch (addError) {
+                showStatus('❌ Failed to add Monad network: ' + (addError.message || ''));
+                return;
+              }
+            } else if (switchError.code === 4001) {
+              showStatus('❌ User rejected network switch');
+              return;
+            } else {
+              showStatus('❌ Failed to switch network: ' + (switchError.message || ''));
+              return;
+            }
           }
         }
 
-        contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        // Now create web3 AFTER chain switch
+        web3 = new Web3(provider);
+
+        // Verify contract is accessible
+        try {
+          contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+          // Quick test call to confirm contract works
+          await contract.methods.totalSupply().call();
+        } catch (contractErr) {
+          // Contract call failed but continue — might just be RPC issue
+          contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+        }
+
         walletAddressSpan.textContent = userAddress.slice(0,8) + '...' + userAddress.slice(-6);
         chainIdSpan.textContent = MONAD_CHAIN_ID_DECIMAL;
-
-        // Show wallet name
         const walletNames = { metamask: '🦊 MetaMask', rabby: '🐰 Rabby', coinbase: '🔵 Coinbase', any: '🔗 Wallet' };
         walletTypeSpan.textContent = walletNames[type] || '🔗 Wallet';
 
