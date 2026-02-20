@@ -6,6 +6,48 @@
   <title>Euro Voucher System - Monad Blockchain</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/web3@1.10.4/dist/web3.min.js"></script>
+  <script type="module">
+    import { createAppKit } from 'https://esm.sh/@reown/appkit@1.7.7'
+    import { EthersAdapter } from 'https://esm.sh/@reown/appkit-adapter-ethers@1.7.7'
+
+    const monad = {
+      id: 143,
+      name: 'Monad Mainnet',
+      network: 'monad',
+      nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 },
+      rpcUrls: { default: { http: ['https://rpc.monad.xyz'] } },
+      blockExplorers: { default: { name: 'Explorer', url: 'https://explorer.monad.xyz' } }
+    }
+
+    const projectId = '83764e5a442fd38d9827e3302a37517a'
+    const ethersAdapter = new EthersAdapter()
+
+    window.appKit = createAppKit({
+      adapters: [ethersAdapter],
+      projectId,
+      networks: [monad],
+      defaultNetwork: monad,
+      metadata: {
+        name: 'Euro Voucher System',
+        description: 'NFT Euro Vouchers on Monad Blockchain',
+        url: 'https://00impera.github.io/NFT-Euro-Voucher-System-CRIPTO/',
+        icons: ['https://scarlet-central-krill-672.mypinata.cloud/ipfs/bafybeiaho7h7ysvoxmoqvi7rveh2rcls6rh4weagezoi6umctfpgrgkvp4']
+      },
+      features: { analytics: true, email: false, socials: false }
+    })
+
+    // Listen for wallet connection from AppKit
+    window.appKit.subscribeAccount((account) => {
+      if (account.isConnected && account.address) {
+        window.wcAddress = account.address
+        window.wcProvider = window.appKit.getWalletProvider()
+        if (window.onWalletConnect) window.onWalletConnect(account.address)
+      } else {
+        window.wcAddress = null
+        if (window.onWalletDisconnect) window.onWalletDisconnect()
+      }
+    })
+  </script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
     body { font-family: 'JetBrains Mono', monospace; background: radial-gradient(circle at center, rgba(0, 180, 255, 0.6), rgba(0, 0, 40, 1) 70%, #000 100%); }
@@ -63,17 +105,54 @@
         </svg>
         <span class="green-neon-text">💳 [CONNECT_WALLET]</span>
       </h2>
-      <p class="text-blue-300/80 mb-4 text-sm">» Connect MetaMask to Monad Mainnet</p>
-      <button id="connectBtn" class="w-full bg-blue-500 hover:bg-blue-400 text-black font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 neon-glow hover:neon-glow-strong">
-        CONNECT TO MONAD
-      </button>
-      <div id="connectedWallet" style="display:none;" class="bg-blue-950/50 border-2 border-blue-400 rounded-xl p-4 mt-4 neon-glow">
+      <p class="text-blue-300/80 mb-4 text-sm">» Choose your wallet to connect to Monad Mainnet</p>
+
+      <!-- Wallet buttons grid -->
+      <div id="walletButtons" class="grid grid-cols-2 gap-3 mb-3">
+        <button onclick="connectWallet('metamask')"
+          class="flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all"
+          style="background: rgba(255,140,0,0.15); border: 2px solid rgba(255,140,0,0.5); color: #FF8C00;"
+          onmouseover="this.style.borderColor='#FF8C00'; this.style.boxShadow='0 0 15px rgba(255,140,0,0.4)'"
+          onmouseout="this.style.borderColor='rgba(255,140,0,0.5)'; this.style.boxShadow='none'">
+          🦊 MetaMask
+        </button>
+        <button onclick="connectWallet('rabby')"
+          class="flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all"
+          style="background: rgba(128,90,213,0.15); border: 2px solid rgba(128,90,213,0.5); color: #805AD5;"
+          onmouseover="this.style.borderColor='#805AD5'; this.style.boxShadow='0 0 15px rgba(128,90,213,0.4)'"
+          onmouseout="this.style.borderColor='rgba(128,90,213,0.5)'; this.style.boxShadow='none'">
+          🐰 Rabby
+        </button>
+        <button onclick="connectWallet('coinbase')"
+          class="flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all"
+          style="background: rgba(0,82,255,0.15); border: 2px solid rgba(0,82,255,0.5); color: #0052FF;"
+          onmouseover="this.style.borderColor='#0052FF'; this.style.boxShadow='0 0 15px rgba(0,82,255,0.4)'"
+          onmouseout="this.style.borderColor='rgba(0,82,255,0.5)'; this.style.boxShadow='none'">
+          🔵 Coinbase
+        </button>
+        <button onclick="connectWallet('any')"
+          class="flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all"
+          style="background: rgba(59,130,246,0.15); border: 2px solid rgba(59,130,246,0.5); color: #60a5fa;"
+          onmouseover="this.style.borderColor='#60a5fa'; this.style.boxShadow='0 0 15px rgba(59,130,246,0.4)'"
+          onmouseout="this.style.borderColor='rgba(59,130,246,0.5)'; this.style.boxShadow='none'">
+          🔗 Other Wallet
+        </button>
+        <button onclick="connectWalletConnect()"
+          class="col-span-2 flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-bold text-sm transition-all"
+          style="background: rgba(0,180,120,0.15); border: 2px solid rgba(0,180,120,0.5); color: #34d399;"
+          onmouseover="this.style.borderColor='#34d399'; this.style.boxShadow='0 0 15px rgba(0,180,120,0.4)'"
+          onmouseout="this.style.borderColor='rgba(0,180,120,0.5)'; this.style.boxShadow='none'">
+          📱 WalletConnect — Mobile & 300+ Wallets
+        </button>
+      </div>
+
+      <div id="connectedWallet" style="display:none;" class="bg-blue-950/50 border-2 border-blue-400 rounded-xl p-4 mt-2 neon-glow">
         <p class="text-blue-400 flex items-center gap-2 text-sm">
           <span class="pulse">✓</span>
           [CONNECTED] <span id="walletAddress"></span>
         </p>
-        <p class="text-blue-300/60 text-xs mt-2">Chain ID: <span id="chainId"></span></p>
-        <button id="disconnectBtn" class="mt-4 bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded-xl transition-all neon-glow-strong">Disconnect</button>
+        <p class="text-blue-300/60 text-xs mt-1">Chain ID: <span id="chainId"></span> &nbsp;|&nbsp; Wallet: <span id="walletType"></span></p>
+        <button id="disconnectBtn" class="mt-3 bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded-xl transition-all neon-glow-strong text-sm">Disconnect</button>
       </div>
     </div>
 
@@ -200,57 +279,167 @@
     const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721IncorrectOwner","type":"error"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721InsufficientApproval","type":"error"},{"inputs":[{"internalType":"address","name":"approver","type":"address"}],"name":"ERC721InvalidApprover","type":"error"},{"inputs":[{"internalType":"address","name":"operator","type":"address"}],"name":"ERC721InvalidOperator","type":"error"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721InvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"receiver","type":"address"}],"name":"ERC721InvalidReceiver","type":"error"},{"inputs":[{"internalType":"address","name":"sender","type":"address"}],"name":"ERC721InvalidSender","type":"error"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721NonexistentToken","type":"error"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},{"inputs":[{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"length","type":"uint256"}],"name":"StringsInsufficientHexLength","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"oldPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"PriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"pricePaid","type":"uint256"},{"indexed":false,"internalType":"string","name":"voucherId","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"redeemer","type":"address"},{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherRedeemed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherTransferred","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getContractBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"}],"name":"getPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getQRCodeData","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getVoucher","outputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"pricePaidMON","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"},{"internalType":"uint256","name":"purchaseTimestamp","type":"uint256"},{"internalType":"bool","name":"redeemed","type":"bool"},{"internalType":"string","name":"voucherId","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"}],"name":"getVoucherStats","outputs":[{"internalType":"uint256","name":"totalMinted","type":"uint256"},{"internalType":"uint256","name":"currentPrice","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"getVouchersByOwner","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"isVoucherValid","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"string","name":"voucherId","type":"string"}],"name":"purchaseVoucher","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"redeemVoucher","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalVouchersByValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"updatePrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"","type":"string"}],"name":"voucherIdExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"voucherPrices","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vouchers","outputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"pricePaidMON","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"},{"internalType":"uint256","name":"purchaseTimestamp","type":"uint256"},{"internalType":"bool","name":"redeemed","type":"bool"},{"internalType":"string","name":"voucherId","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTo","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
     let web3, contract, userAddress = null, selectedVoucher = null;
-    const connectBtn = document.getElementById('connectBtn');
     const connectedWallet = document.getElementById('connectedWallet');
-    const disconnectBtn = document.getElementById('disconnectBtn');
+    const walletButtons   = document.getElementById('walletButtons');
     const walletAddressSpan = document.getElementById('walletAddress');
-    const chainIdSpan = document.getElementById('chainId');
-    const voucherBtns = document.querySelectorAll('.voucher-btn');
-    const purchaseBtn = document.getElementById('purchaseBtn');
-    const statusMessage = document.getElementById('statusMessage');
-    const statusText = document.getElementById('statusText');
-    const readTokenId = document.getElementById('readTokenId');
-    const readVoucherBtn = document.getElementById('readVoucherBtn');
-    const voucherResult = document.getElementById('voucherResult');
+    const chainIdSpan     = document.getElementById('chainId');
+    const walletTypeSpan  = document.getElementById('walletType');
+    const voucherBtns     = document.querySelectorAll('.voucher-btn');
+    const purchaseBtn     = document.getElementById('purchaseBtn');
+    const statusMessage   = document.getElementById('statusMessage');
+    const statusText      = document.getElementById('statusText');
+    const readTokenId     = document.getElementById('readTokenId');
+    const readVoucherBtn  = document.getElementById('readVoucherBtn');
+    const voucherResult   = document.getElementById('voucherResult');
 
-    connectBtn.addEventListener('click', async () => {
-      if (typeof window.ethereum === 'undefined') { showStatus('⚠️ Please install <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">MetaMask</a> to connect.'); return; }
+    async function connectWallet(type) {
+      // Detect provider based on wallet type
+      let provider = null;
+
+      if (type === 'metamask') {
+        // MetaMask specific
+        if (window.ethereum?.isMetaMask) {
+          provider = window.ethereum;
+        } else if (window.ethereum?.providers) {
+          provider = window.ethereum.providers.find(p => p.isMetaMask);
+        }
+        if (!provider) {
+          showStatus('⚠️ MetaMask not found. <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">Install here</a>');
+          return;
+        }
+      } else if (type === 'rabby') {
+        // Rabby wallet
+        if (window.ethereum?.isRabby) {
+          provider = window.ethereum;
+        } else if (window.ethereum?.providers) {
+          provider = window.ethereum.providers.find(p => p.isRabby);
+        }
+        if (!provider && window.ethereum) provider = window.ethereum; // fallback
+        if (!provider) {
+          showStatus('⚠️ Rabby not found. <a href="https://rabby.io" target="_blank" class="underline text-blue-300">Install here</a>');
+          return;
+        }
+      } else if (type === 'coinbase') {
+        // Coinbase Wallet
+        if (window.coinbaseWalletExtension) {
+          provider = window.coinbaseWalletExtension;
+        } else if (window.ethereum?.isCoinbaseWallet) {
+          provider = window.ethereum;
+        } else if (window.ethereum?.providers) {
+          provider = window.ethereum.providers.find(p => p.isCoinbaseWallet);
+        }
+        if (!provider) {
+          showStatus('⚠️ Coinbase Wallet not found. <a href="https://www.coinbase.com/wallet/downloads" target="_blank" class="underline text-blue-300">Install here</a>');
+          return;
+        }
+      } else {
+        // Any/Other — use whatever is injected
+        provider = window.ethereum;
+        if (!provider) {
+          showStatus('⚠️ No wallet found. Please install MetaMask, Rabby, or another EVM wallet.');
+          return;
+        }
+      }
+
       try {
-        showStatus('🔄 Connecting to MetaMask...');
-        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        showStatus('🔄 Connecting wallet...');
+        const accounts = await provider.request({ method: 'eth_requestAccounts' });
         userAddress = accounts[0];
-        web3 = new Web3(window.ethereum);
+        web3 = new Web3(provider);
+
         const chainId = await web3.eth.getChainId();
         if (Number(chainId) !== MONAD_CHAIN_ID_DECIMAL) {
-          showStatus('⚠️ Please switch to Monad network...');
+          showStatus('⚠️ Switching to Monad network...');
           try {
-            await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: MONAD_CHAIN_ID }] });
+            await provider.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: MONAD_CHAIN_ID }] });
           } catch (switchError) {
             if (switchError.code === 4902) {
-              try { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: MONAD_CHAIN_ID, chainName: 'Monad Mainnet', nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 }, rpcUrls: [MONAD_RPC], blockExplorerUrls: ['https://explorer.monad.xyz'] }] }); }
-              catch (addError) { showStatus('❌ Failed to add Monad network'); return; }
+              try {
+                await provider.request({ method: 'wallet_addEthereumChain', params: [{
+                  chainId: MONAD_CHAIN_ID,
+                  chainName: 'Monad Mainnet',
+                  nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 },
+                  rpcUrls: [MONAD_RPC],
+                  blockExplorerUrls: ['https://explorer.monad.xyz']
+                }]});
+              } catch (addError) { showStatus('❌ Failed to add Monad network'); return; }
             } else { showStatus('❌ Failed to switch network'); return; }
           }
         }
+
         contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-        walletAddressSpan.textContent = userAddress.slice(0, 8) + '...' + userAddress.slice(-6);
+        walletAddressSpan.textContent = userAddress.slice(0,8) + '...' + userAddress.slice(-6);
         chainIdSpan.textContent = MONAD_CHAIN_ID_DECIMAL;
-        connectBtn.style.display = 'none';
+
+        // Show wallet name
+        const walletNames = { metamask: '🦊 MetaMask', rabby: '🐰 Rabby', coinbase: '🔵 Coinbase', any: '🔗 Wallet' };
+        walletTypeSpan.textContent = walletNames[type] || '🔗 Wallet';
+
+        walletButtons.style.display = 'none';
         connectedWallet.style.display = 'block';
         statusMessage.classList.add('hidden');
         updatePurchaseButton();
-        window.ethereum.on('accountsChanged', (accounts) => { if (accounts.length === 0) { disconnectWallet(); } else { userAddress = accounts[0]; walletAddressSpan.textContent = userAddress.slice(0, 8) + '...' + userAddress.slice(-6); } });
-        window.ethereum.on('chainChanged', () => { location.reload(); });
-      } catch (error) { showStatus('❌ Failed to connect: ' + (error.message || 'Unknown error')); }
-    });
+
+        provider.on('accountsChanged', (accs) => {
+          if (accs.length === 0) disconnectWallet();
+          else { userAddress = accs[0]; walletAddressSpan.textContent = userAddress.slice(0,8)+'...'+userAddress.slice(-6); }
+        });
+        provider.on('chainChanged', () => location.reload());
+
+      } catch (error) {
+        if (error.code === 4001) showStatus('❌ Connection rejected by user');
+        else showStatus('❌ Failed to connect: ' + (error.message || 'Unknown error'));
+      }
+    }
 
     function disconnectWallet() {
       userAddress = null; web3 = null; contract = null;
-      connectBtn.style.display = 'block'; connectedWallet.style.display = 'none';
+      walletButtons.style.display = 'grid';
+      connectedWallet.style.display = 'none';
       voucherBtns.forEach(b => b.classList.remove('selected'));
-      selectedVoucher = null; updatePurchaseButton(); showStatus('Wallet disconnected.');
+      selectedVoucher = null;
+      updatePurchaseButton();
+      showStatus('Wallet disconnected.');
     }
-    disconnectBtn.addEventListener('click', disconnectWallet);
+    document.getElementById('disconnectBtn').addEventListener('click', disconnectWallet);
+
+    // WalletConnect via AppKit
+    async function connectWalletConnect() {
+      if (!window.appKit) {
+        showStatus('⚠️ WalletConnect loading... please wait and try again.');
+        return;
+      }
+      try {
+        showStatus('🔄 Opening WalletConnect...');
+        await window.appKit.open()
+
+        // Set up callback for when user connects
+        window.onWalletConnect = async (address) => {
+          userAddress = address
+          const wcProv = window.appKit.getWalletProvider()
+          if (wcProv) {
+            web3 = new Web3(wcProv)
+          } else {
+            web3 = new Web3(new Web3.providers.HttpProvider(MONAD_RPC))
+          }
+          contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS)
+          walletAddressSpan.textContent = address.slice(0,8) + '...' + address.slice(-6)
+          chainIdSpan.textContent = MONAD_CHAIN_ID_DECIMAL
+          document.getElementById('walletType').textContent = '📱 WalletConnect'
+          walletButtons.style.display = 'none'
+          connectedWallet.style.display = 'block'
+          statusMessage.classList.add('hidden')
+          updatePurchaseButton()
+        }
+
+        window.onWalletDisconnect = () => {
+          disconnectWallet()
+        }
+
+      } catch (error) {
+        showStatus('❌ WalletConnect error: ' + (error.message || 'Unknown'))
+      }
+    }
 
     voucherBtns.forEach(btn => {
       btn.addEventListener('click', () => {
