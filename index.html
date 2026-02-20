@@ -29,32 +29,22 @@
     }
     .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-    /* RED NEON */
-    .red-neon-text {
-      color: #ff0000;
-      text-shadow: 0 0 8px #ff0000, 0 0 20px #ff0000, 0 0 40px #cc0000;
-    }
-
-    /* GREEN NEON */
-    .green-neon-text {
-      color: #00ff00;
-      text-shadow: 0 0 8px #00ff00, 0 0 20px #00ff00, 0 0 40px #00cc00;
-    }
-
+    .red-neon-text { color: #ff0000; text-shadow: 0 0 8px #ff0000, 0 0 20px #ff0000, 0 0 40px #cc0000; }
+    .green-neon-text { color: #00ff00; text-shadow: 0 0 8px #00ff00, 0 0 20px #00ff00, 0 0 40px #00cc00; }
+    .yellow-neon-text { color: #FFD700; text-shadow: 0 0 8px #FFD700, 0 0 20px #FFD700, 0 0 40px #FFA500; }
     .coin-logo {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid rgba(59, 130, 246, 0.5);
-      transition: all 0.3s ease;
+      width: 56px; height: 56px; border-radius: 50%; object-fit: cover;
+      border: 2px solid rgba(59, 130, 246, 0.5); transition: all 0.3s ease;
     }
-    .coin-logo:hover {
-      border-color: #60a5fa;
-      box-shadow: 0 0 14px rgba(59,130,246,0.9);
-      transform: scale(1.15);
+    .coin-logo:hover { border-color: #60a5fa; box-shadow: 0 0 14px rgba(59,130,246,0.9); transform: scale(1.15); }
+    .swap-tab-btn {
+      background: transparent; border: 2px solid rgba(255,215,0,0.3);
+      color: rgba(255,215,0,0.6); padding: 8px 20px; border-radius: 10px;
+      cursor: pointer; font-family: 'JetBrains Mono', monospace;
+      font-weight: bold; font-size: 14px; transition: all 0.3s;
     }
+    .swap-tab-btn.active { background: rgba(255,215,0,0.15); border-color: #FFD700; color: #FFD700; box-shadow: 0 0 15px rgba(255,215,0,0.5); }
+    .swap-tab-btn:hover { border-color: #FFD700; color: #FFD700; }
   </style>
 </head>
 <body class="bg-black text-blue-400 min-h-screen p-6">
@@ -65,7 +55,7 @@
       <img src="https://scarlet-central-krill-672.mypinata.cloud/ipfs/bafybeiaho7h7ysvoxmoqvi7rveh2rcls6rh4weagezoi6umctfpgrgkvp4" alt="Logo" class="h-28 object-contain" style="filter: drop-shadow(0 0 20px rgba(59,130,246,0.8));">
     </div>
 
-    <!-- Wallet Connection — GREEN NEON -->
+    <!-- Wallet Connection -->
     <div id="walletSection" class="bg-black border-2 rounded-2xl p-6 mb-6" style="border-color: #00ff00; box-shadow: 0 0 20px rgba(0,255,0,0.3);">
       <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
         <svg class="w-6 h-6" fill="none" stroke="#00ff00" viewBox="0 0 24 24" style="filter: drop-shadow(0 0 5px #00ff00);">
@@ -83,9 +73,7 @@
           [CONNECTED] <span id="walletAddress"></span>
         </p>
         <p class="text-blue-300/60 text-xs mt-2">Chain ID: <span id="chainId"></span></p>
-        <button id="disconnectBtn" class="mt-4 bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded-xl transition-all neon-glow-strong">
-          Disconnect
-        </button>
+        <button id="disconnectBtn" class="mt-4 bg-red-500 hover:bg-red-400 text-white font-bold py-2 px-4 rounded-xl transition-all neon-glow-strong">Disconnect</button>
       </div>
     </div>
 
@@ -100,45 +88,27 @@
       <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <button class="voucher-btn p-6 rounded-xl relative overflow-hidden" data-value="5" data-price="100">
           <img src="https://files.catbox.moe/mszp1d.jpeg" alt="5 Euro" class="absolute inset-0 w-full h-full object-cover opacity-20">
-          <div class="relative z-10">
-            <div class="text-3xl font-bold text-blue-400 mb-2">5€</div>
-            <div class="text-sm text-blue-300">100 MON</div>
-          </div>
+          <div class="relative z-10"><div class="text-3xl font-bold text-blue-400 mb-2">5€</div><div class="text-sm text-blue-300">100 MON</div></div>
         </button>
         <button class="voucher-btn p-6 rounded-xl relative overflow-hidden" data-value="10" data-price="200">
           <img src="https://files.catbox.moe/otcljk.jpeg" alt="10 Euro" class="absolute inset-0 w-full h-full object-cover opacity-20">
-          <div class="relative z-10">
-            <div class="text-3xl font-bold text-blue-400 mb-2">10€</div>
-            <div class="text-sm text-blue-300">200 MON</div>
-          </div>
+          <div class="relative z-10"><div class="text-3xl font-bold text-blue-400 mb-2">10€</div><div class="text-sm text-blue-300">200 MON</div></div>
         </button>
         <button class="voucher-btn p-6 rounded-xl relative overflow-hidden" data-value="20" data-price="300">
           <img src="https://files.catbox.moe/c11h9p.jpeg" alt="20 Euro" class="absolute inset-0 w-full h-full object-cover opacity-20">
-          <div class="relative z-10">
-            <div class="text-3xl font-bold text-blue-400 mb-2">20€</div>
-            <div class="text-sm text-blue-300">300 MON</div>
-          </div>
+          <div class="relative z-10"><div class="text-3xl font-bold text-blue-400 mb-2">20€</div><div class="text-sm text-blue-300">300 MON</div></div>
         </button>
         <button class="voucher-btn p-6 rounded-xl relative overflow-hidden" data-value="50" data-price="500">
           <img src="https://files.catbox.moe/4jezdg.jpeg" alt="50 Euro" class="absolute inset-0 w-full h-full object-cover opacity-20">
-          <div class="relative z-10">
-            <div class="text-3xl font-bold text-blue-400 mb-2">50€</div>
-            <div class="text-sm text-blue-300">500 MON</div>
-          </div>
+          <div class="relative z-10"><div class="text-3xl font-bold text-blue-400 mb-2">50€</div><div class="text-sm text-blue-300">500 MON</div></div>
         </button>
         <button class="voucher-btn p-6 rounded-xl relative overflow-hidden" data-value="100" data-price="1000">
           <img src="https://files.catbox.moe/qlf6vq.jpeg" alt="100 Euro" class="absolute inset-0 w-full h-full object-cover opacity-20">
-          <div class="relative z-10">
-            <div class="text-3xl font-bold text-blue-400 mb-2">100€</div>
-            <div class="text-sm text-blue-300">1,000 MON</div>
-          </div>
+          <div class="relative z-10"><div class="text-3xl font-bold text-blue-400 mb-2">100€</div><div class="text-sm text-blue-300">1,000 MON</div></div>
         </button>
         <button class="voucher-btn p-6 rounded-xl relative overflow-hidden" data-value="500" data-price="5000">
           <img src="https://files.catbox.moe/ir84ab.jpeg" alt="500 Euro" class="absolute inset-0 w-full h-full object-cover opacity-20">
-          <div class="relative z-10">
-            <div class="text-3xl font-bold text-blue-400 mb-2">500€</div>
-            <div class="text-sm text-blue-300">5,000 MON</div>
-          </div>
+          <div class="relative z-10"><div class="text-3xl font-bold text-blue-400 mb-2">500€</div><div class="text-sm text-blue-300">5,000 MON</div></div>
         </button>
       </div>
     </div>
@@ -154,7 +124,7 @@
       <p class="text-blue-400" id="statusText"></p>
     </div>
 
-    <!-- TOKEN GIFT ID — RED NEON -->
+    <!-- TOKEN GIFT ID -->
     <div class="bg-black border-2 rounded-2xl p-6 mb-6" style="border-color: #ff0000; box-shadow: 0 0 20px rgba(255,0,0,0.35);">
       <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
         <svg class="w-6 h-6" fill="none" stroke="#ff0000" viewBox="0 0 24 24" style="filter: drop-shadow(0 0 5px #ff0000);">
@@ -165,14 +135,38 @@
       <div class="flex gap-2 mb-4">
         <input type="number" id="readTokenId" placeholder="Enter tokenId"
           class="w-32 px-4 py-2 bg-black rounded-lg text-red-400 placeholder-red-900 focus:outline-none"
-          style="border: 2px solid rgba(255,0,0,0.5); focus-border-color: #ff0000;"/>
-        <button id="readVoucherBtn"
-          class="text-white font-bold py-2 px-4 rounded-xl transition-all"
+          style="border: 2px solid rgba(255,0,0,0.5);"/>
+        <button id="readVoucherBtn" class="text-white font-bold py-2 px-4 rounded-xl transition-all"
           style="background: linear-gradient(135deg, #cc0000, #ff0000); box-shadow: 0 0 15px rgba(255,0,0,0.5);">
           Read Gift
         </button>
       </div>
       <div id="voucherResult" class="text-red-300 text-sm"></div>
+    </div>
+
+    <!-- SWAP TOKENS SECTION — compact -->
+    <div class="bg-black border-2 rounded-2xl px-4 py-3 mb-6" style="border-color: #FFD700; box-shadow: 0 0 12px rgba(255,215,0,0.25);">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="yellow-neon-text text-sm font-bold">🔄 SWAP TOKENS</span>
+        <span class="text-yellow-300/40 text-xs">» via OpenOcean</span>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <a href="https://app.openocean.finance/CLASSIC#/MONAD" target="_blank"
+          class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all"
+          style="background: rgba(147,51,234,0.2); border: 1px solid rgba(147,51,234,0.5); color: #c084fc; text-decoration: none;"
+          onmouseover="this.style.borderColor='#a855f7'; this.style.boxShadow='0 0 12px rgba(147,51,234,0.5)'"
+          onmouseout="this.style.borderColor='rgba(147,51,234,0.5)'; this.style.boxShadow='none'">
+          🟣 MONAD SWAP ↗
+        </a>
+        <a href="https://app.openocean.finance/CROSS#/MONAD" target="_blank"
+          class="flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-bold transition-all"
+          style="background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.4); color: #FFD700; text-decoration: none;"
+          onmouseover="this.style.borderColor='#FFD700'; this.style.boxShadow='0 0 12px rgba(255,215,0,0.4)'"
+          onmouseout="this.style.borderColor='rgba(255,215,0,0.4)'; this.style.boxShadow='none'">
+          🌉 CROSS-CHAIN BRIDGE ↗
+        </a>
+        <span class="text-yellow-300/40 text-xs self-center">35+ chains • 1000+ tokens</span>
+      </div>
     </div>
 
     <!-- Coin Logos Footer -->
@@ -191,87 +185,36 @@
   </div>
 
   <script>
+    function showSwap(type, btn) {
+      document.getElementById('swap-monad').style.display = type === 'monad' ? 'block' : 'none';
+      document.getElementById('swap-cross').style.display = type === 'cross' ? 'block' : 'none';
+      document.querySelectorAll('.swap-tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+
     const CONTRACT_ADDRESS = "0xa4d064E4ac881234961C076d314Abf9ac8d4E4BB";
     const MONAD_CHAIN_ID = "0x8F";
     const MONAD_CHAIN_ID_DECIMAL = 143;
     const MONAD_RPC = "https://rpc.monad.xyz";
     const VAULT_ADDRESS = "0xE00454506f50ac31A0b87324513e28f77Db2a8F9";
-    const CONTRACT_ABI = [
-      {"inputs":[],"stateMutability":"nonpayable","type":"constructor"},
-      {"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721IncorrectOwner","type":"error"},
-      {"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721InsufficientApproval","type":"error"},
-      {"inputs":[{"internalType":"address","name":"approver","type":"address"}],"name":"ERC721InvalidApprover","type":"error"},
-      {"inputs":[{"internalType":"address","name":"operator","type":"address"}],"name":"ERC721InvalidOperator","type":"error"},
-      {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721InvalidOwner","type":"error"},
-      {"inputs":[{"internalType":"address","name":"receiver","type":"address"}],"name":"ERC721InvalidReceiver","type":"error"},
-      {"inputs":[{"internalType":"address","name":"sender","type":"address"}],"name":"ERC721InvalidSender","type":"error"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721NonexistentToken","type":"error"},
-      {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},
-      {"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},
-      {"inputs":[{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"length","type":"uint256"}],"name":"StringsInsufficientHexLength","type":"error"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"oldPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"PriceUpdated","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"pricePaid","type":"uint256"},{"indexed":false,"internalType":"string","name":"voucherId","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherPurchased","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"redeemer","type":"address"},{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherRedeemed","type":"event"},
-      {"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherTransferred","type":"event"},
-      {"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"getContractBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"}],"name":"getPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getQRCodeData","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getVoucher","outputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"pricePaidMON","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"},{"internalType":"uint256","name":"purchaseTimestamp","type":"uint256"},{"internalType":"bool","name":"redeemed","type":"bool"},{"internalType":"string","name":"voucherId","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"}],"name":"getVoucherStats","outputs":[{"internalType":"uint256","name":"totalMinted","type":"uint256"},{"internalType":"uint256","name":"currentPrice","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"getVouchersByOwner","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"isVoucherValid","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"string","name":"voucherId","type":"string"}],"name":"purchaseVoucher","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"redeemVoucher","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalVouchersByValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"updatePrice","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"string","name":"","type":"string"}],"name":"voucherIdExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"voucherPrices","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
-      {"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vouchers","outputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"pricePaidMON","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"},{"internalType":"uint256","name":"purchaseTimestamp","type":"uint256"},{"internalType":"bool","name":"redeemed","type":"bool"},{"internalType":"string","name":"voucherId","type":"string"}],"stateMutability":"view","type":"function"},
-      {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
-      {"inputs":[{"internalType":"address payable","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTo","outputs":[],"stateMutability":"nonpayable","type":"function"}
-    ];
+    const CONTRACT_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"inputs":[{"internalType":"address","name":"sender","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721IncorrectOwner","type":"error"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721InsufficientApproval","type":"error"},{"inputs":[{"internalType":"address","name":"approver","type":"address"}],"name":"ERC721InvalidApprover","type":"error"},{"inputs":[{"internalType":"address","name":"operator","type":"address"}],"name":"ERC721InvalidOperator","type":"error"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"ERC721InvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"receiver","type":"address"}],"name":"ERC721InvalidReceiver","type":"error"},{"inputs":[{"internalType":"address","name":"sender","type":"address"}],"name":"ERC721InvalidSender","type":"error"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ERC721NonexistentToken","type":"error"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"OwnableInvalidOwner","type":"error"},{"inputs":[{"internalType":"address","name":"account","type":"address"}],"name":"OwnableUnauthorizedAccount","type":"error"},{"inputs":[{"internalType":"uint256","name":"value","type":"uint256"},{"internalType":"uint256","name":"length","type":"uint256"}],"name":"StringsInsufficientHexLength","type":"error"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"approved","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Approval","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":true,"internalType":"address","name":"operator","type":"address"},{"indexed":false,"internalType":"bool","name":"approved","type":"bool"}],"name":"ApprovalForAll","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"previousOwner","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"oldPrice","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"PriceUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"buyer","type":"address"},{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"pricePaid","type":"uint256"},{"indexed":false,"internalType":"string","name":"voucherId","type":"string"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherPurchased","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"redeemer","type":"address"},{"indexed":false,"internalType":"uint256","name":"euroValue","type":"uint256"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherRedeemed","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"uint256","name":"tokenId","type":"uint256"},{"indexed":true,"internalType":"address","name":"from","type":"address"},{"indexed":true,"internalType":"address","name":"to","type":"address"},{"indexed":false,"internalType":"uint256","name":"timestamp","type":"uint256"}],"name":"VoucherTransferred","type":"event"},{"inputs":[{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"approve","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"balanceOf","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getApproved","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"getContractBalance","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"}],"name":"getPrice","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getQRCodeData","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"getVoucher","outputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"pricePaidMON","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"},{"internalType":"uint256","name":"purchaseTimestamp","type":"uint256"},{"internalType":"bool","name":"redeemed","type":"bool"},{"internalType":"string","name":"voucherId","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"}],"name":"getVoucherStats","outputs":[{"internalType":"uint256","name":"totalMinted","type":"uint256"},{"internalType":"uint256","name":"currentPrice","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"}],"name":"getVouchersByOwner","outputs":[{"internalType":"uint256[]","name":"","type":"uint256[]"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"owner","type":"address"},{"internalType":"address","name":"operator","type":"address"}],"name":"isApprovedForAll","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"isVoucherValid","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"name","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"ownerOf","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"string","name":"voucherId","type":"string"}],"name":"purchaseVoucher","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"redeemVoucher","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"renounceOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"bytes","name":"data","type":"bytes"}],"name":"safeTransferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"operator","type":"address"},{"internalType":"bool","name":"approved","type":"bool"}],"name":"setApprovalForAll","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"bytes4","name":"interfaceId","type":"bytes4"}],"name":"supportsInterface","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"symbol","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalSupply","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"totalVouchersByValue","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"from","type":"address"},{"internalType":"address","name":"to","type":"address"},{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"transferFrom","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"newPrice","type":"uint256"}],"name":"updatePrice","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"string","name":"","type":"string"}],"name":"voucherIdExists","outputs":[{"internalType":"bool","name":"","type":"bool"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"voucherPrices","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"","type":"uint256"}],"name":"vouchers","outputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"},{"internalType":"uint256","name":"euroValue","type":"uint256"},{"internalType":"uint256","name":"pricePaidMON","type":"uint256"},{"internalType":"address","name":"buyer","type":"address"},{"internalType":"uint256","name":"purchaseTimestamp","type":"uint256"},{"internalType":"bool","name":"redeemed","type":"bool"},{"internalType":"string","name":"voucherId","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address payable","name":"to","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"withdrawTo","outputs":[],"stateMutability":"nonpayable","type":"function"}];
 
     let web3, contract, userAddress = null, selectedVoucher = null;
-
-    const connectBtn      = document.getElementById('connectBtn');
+    const connectBtn = document.getElementById('connectBtn');
     const connectedWallet = document.getElementById('connectedWallet');
-    const disconnectBtn   = document.getElementById('disconnectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
     const walletAddressSpan = document.getElementById('walletAddress');
-    const chainIdSpan     = document.getElementById('chainId');
-    const voucherBtns     = document.querySelectorAll('.voucher-btn');
-    const purchaseBtn     = document.getElementById('purchaseBtn');
-    const statusMessage   = document.getElementById('statusMessage');
-    const statusText      = document.getElementById('statusText');
-    const readTokenId     = document.getElementById('readTokenId');
-    const readVoucherBtn  = document.getElementById('readVoucherBtn');
-    const voucherResult   = document.getElementById('voucherResult');
+    const chainIdSpan = document.getElementById('chainId');
+    const voucherBtns = document.querySelectorAll('.voucher-btn');
+    const purchaseBtn = document.getElementById('purchaseBtn');
+    const statusMessage = document.getElementById('statusMessage');
+    const statusText = document.getElementById('statusText');
+    const readTokenId = document.getElementById('readTokenId');
+    const readVoucherBtn = document.getElementById('readVoucherBtn');
+    const voucherResult = document.getElementById('voucherResult');
 
     connectBtn.addEventListener('click', async () => {
-      if (typeof window.ethereum === 'undefined') {
-        showStatus('⚠️ Please install <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">MetaMask</a> to connect.');
-        return;
-      }
+      if (typeof window.ethereum === 'undefined') { showStatus('⚠️ Please install <a href="https://metamask.io/download.html" target="_blank" class="underline text-blue-300">MetaMask</a> to connect.'); return; }
       try {
         showStatus('🔄 Connecting to MetaMask...');
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -284,9 +227,8 @@
             await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: MONAD_CHAIN_ID }] });
           } catch (switchError) {
             if (switchError.code === 4902) {
-              try {
-                await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: MONAD_CHAIN_ID, chainName: 'Monad Mainnet', nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 }, rpcUrls: [MONAD_RPC], blockExplorerUrls: ['https://explorer.monad.xyz'] }] });
-              } catch (addError) { showStatus('❌ Failed to add Monad network'); return; }
+              try { await window.ethereum.request({ method: 'wallet_addEthereumChain', params: [{ chainId: MONAD_CHAIN_ID, chainName: 'Monad Mainnet', nativeCurrency: { name: 'MON', symbol: 'MON', decimals: 18 }, rpcUrls: [MONAD_RPC], blockExplorerUrls: ['https://explorer.monad.xyz'] }] }); }
+              catch (addError) { showStatus('❌ Failed to add Monad network'); return; }
             } else { showStatus('❌ Failed to switch network'); return; }
           }
         }
@@ -297,24 +239,16 @@
         connectedWallet.style.display = 'block';
         statusMessage.classList.add('hidden');
         updatePurchaseButton();
-        window.ethereum.on('accountsChanged', (accounts) => {
-          if (accounts.length === 0) { disconnectWallet(); }
-          else { userAddress = accounts[0]; walletAddressSpan.textContent = userAddress.slice(0, 8) + '...' + userAddress.slice(-6); }
-        });
+        window.ethereum.on('accountsChanged', (accounts) => { if (accounts.length === 0) { disconnectWallet(); } else { userAddress = accounts[0]; walletAddressSpan.textContent = userAddress.slice(0, 8) + '...' + userAddress.slice(-6); } });
         window.ethereum.on('chainChanged', () => { location.reload(); });
-      } catch (error) {
-        showStatus('❌ Failed to connect: ' + (error.message || 'Unknown error'));
-      }
+      } catch (error) { showStatus('❌ Failed to connect: ' + (error.message || 'Unknown error')); }
     });
 
     function disconnectWallet() {
       userAddress = null; web3 = null; contract = null;
-      connectBtn.style.display = 'block';
-      connectedWallet.style.display = 'none';
+      connectBtn.style.display = 'block'; connectedWallet.style.display = 'none';
       voucherBtns.forEach(b => b.classList.remove('selected'));
-      selectedVoucher = null;
-      updatePurchaseButton();
-      showStatus('Wallet disconnected.');
+      selectedVoucher = null; updatePurchaseButton(); showStatus('Wallet disconnected.');
     }
     disconnectBtn.addEventListener('click', disconnectWallet);
 
@@ -329,13 +263,8 @@
     });
 
     function updatePurchaseButton() {
-      if (selectedVoucher && userAddress) {
-        purchaseBtn.disabled = false;
-        purchaseBtn.textContent = `BUY ${selectedVoucher.value}€ FOR ${selectedVoucher.price} MON`;
-      } else {
-        purchaseBtn.disabled = true;
-        purchaseBtn.textContent = 'SELECT VOUCHER';
-      }
+      if (selectedVoucher && userAddress) { purchaseBtn.disabled = false; purchaseBtn.textContent = `BUY ${selectedVoucher.value}€ FOR ${selectedVoucher.price} MON`; }
+      else { purchaseBtn.disabled = true; purchaseBtn.textContent = 'SELECT VOUCHER'; }
     }
 
     purchaseBtn.addEventListener('click', async () => {
@@ -344,20 +273,12 @@
       try {
         const voucherId = `VOC-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
         showStatus('💳 Confirm transaction in MetaMask...');
-        const tx = await contract.methods.purchaseVoucher(selectedVoucher.value, voucherId).send({
-          from: userAddress,
-          value: web3.utils.toWei(selectedVoucher.price, 'ether')
-        });
+        const tx = await contract.methods.purchaseVoucher(selectedVoucher.value, voucherId).send({ from: userAddress, value: web3.utils.toWei(selectedVoucher.price, 'ether') });
         let tokenId = null;
-        if (tx.events && tx.events.VoucherPurchased) {
-          tokenId = tx.events.VoucherPurchased.returnValues.tokenId;
-        } else {
-          tokenId = tx.logs?.[0]?.topics?.[1] ? parseInt(tx.logs[0].topics[1], 16) : '?';
-        }
+        if (tx.events && tx.events.VoucherPurchased) { tokenId = tx.events.VoucherPurchased.returnValues.tokenId; }
+        else { tokenId = tx.logs?.[0]?.topics?.[1] ? parseInt(tx.logs[0].topics[1], 16) : '?'; }
         showStatus(`✅ Voucher #${tokenId} minted successfully! TX: ${tx.transactionHash.slice(0,10)}...`);
-        voucherBtns.forEach(b => b.classList.remove('selected'));
-        selectedVoucher = null;
-        updatePurchaseButton();
+        voucherBtns.forEach(b => b.classList.remove('selected')); selectedVoucher = null; updatePurchaseButton();
       } catch (error) {
         if (error.code === 4001) { showStatus('❌ Transaction rejected by user'); }
         else { showStatus('❌ Transaction failed: ' + (error.message || 'Unknown error')); }
@@ -365,31 +286,17 @@
     });
 
     readVoucherBtn.addEventListener('click', async () => {
-      const tokenId = readTokenId.value;
-      voucherResult.textContent = '';
+      const tokenId = readTokenId.value; voucherResult.textContent = '';
       if (!tokenId || isNaN(tokenId)) { voucherResult.textContent = 'Please enter a valid tokenId.'; return; }
       if (!contract) { voucherResult.textContent = 'Please connect wallet first.'; return; }
       try {
         voucherResult.textContent = 'Loading...';
         const result = await contract.methods.getVoucher(tokenId).call();
-        voucherResult.innerHTML = `
-          <div class="space-y-1">
-            <div><b>Euro Value:</b> ${result[0]}€</div>
-            <div><b>Price Paid (MON):</b> ${web3.utils.fromWei(result[1], 'ether')} MON</div>
-            <div><b>Buyer:</b> ${result[2]}</div>
-            <div><b>Purchase Time:</b> ${new Date(Number(result[3]) * 1000).toLocaleString()}</div>
-            <div><b>Redeemed:</b> ${result[4] ? 'Yes ✓' : 'No ✗'}</div>
-            <div><b>Voucher ID:</b> ${result[5]}</div>
-          </div>`;
-      } catch (err) {
-        voucherResult.textContent = 'Error: ' + (err.message || 'Token may not exist');
-      }
+        voucherResult.innerHTML = `<div class="space-y-1"><div><b>Euro Value:</b> ${result[0]}€</div><div><b>Price Paid (MON):</b> ${web3.utils.fromWei(result[1], 'ether')} MON</div><div><b>Buyer:</b> ${result[2]}</div><div><b>Purchase Time:</b> ${new Date(Number(result[3]) * 1000).toLocaleString()}</div><div><b>Redeemed:</b> ${result[4] ? 'Yes ✓' : 'No ✗'}</div><div><b>Voucher ID:</b> ${result[5]}</div></div>`;
+      } catch (err) { voucherResult.textContent = 'Error: ' + (err.message || 'Token may not exist'); }
     });
 
-    function showStatus(message) {
-      statusText.innerHTML = message;
-      statusMessage.classList.remove('hidden');
-    }
+    function showStatus(message) { statusText.innerHTML = message; statusMessage.classList.remove('hidden'); }
   </script>
 </body>
 </html>
