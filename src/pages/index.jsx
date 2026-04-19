@@ -14,6 +14,7 @@ import {
   prepareContractCall,
   toWei,
 } from "thirdweb";
+import { createWallet, walletConnect } from "thirdweb/wallets";
 
 // ── CONFIG ──────────────────────────────────────────────────────
 const CLIENT_ID     = "821819db832d1a313ae3b1a62fbeafb7";
@@ -30,8 +31,16 @@ const MONAD_MAINNET = defineChain({
   blockExplorers: [{ name: "Monadscan", url: "https://monadscan.com" }],
 });
 
-// ── same pattern as GoldToken: simple client, no custom wallets array ──
 const client = createThirdwebClient({ clientId: CLIENT_ID });
+
+// Explicit wallet list — shows a proper picker modal instead of jumping straight to MetaMask QR
+const WALLETS = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  walletConnect(),
+  createWallet("io.rabby"),
+  createWallet("com.trustwallet.app"),
+];
 
 const ERC20_ABI = [
   { inputs: [{ name: "account", type: "address" }], name: "balanceOf",   outputs: [{ name: "", type: "uint256" }], stateMutability: "view",        type: "function" },
@@ -496,10 +505,11 @@ function DragonApp() {
               <span className="fire-dot" />
               Monad · 143
             </div>
-            {/* ── Same ConnectButton pattern as GoldToken ── */}
             <ConnectButton
               client={client}
               chain={MONAD_MAINNET}
+              wallets={WALLETS}
+              showAllWallets={false}
               theme="dark"
               btnTitle="🔥 Connect"
             />
@@ -569,10 +579,12 @@ function DragonApp() {
                 <div className="connect-prompt">
                   <div className="connect-icon">🐉</div>
                   <div className="connect-msg">Connect your wallet to view your {sym} balance and send tokens on Monad.</div>
-                  {/* ── Same ConnectButton pattern as GoldToken ── */}
+                  {/* ── Explicit wallets list = proper picker modal ── */}
                   <ConnectButton
                     client={client}
                     chain={MONAD_MAINNET}
+                    wallets={WALLETS}
+                    showAllWallets={false}
                     theme="dark"
                     btnTitle="🔥 Connect Wallet"
                   />
@@ -623,7 +635,7 @@ function DragonApp() {
                 <div className="connect-prompt">
                   <div className="connect-icon">🔥</div>
                   <div className="connect-msg">Connect your wallet to swap any token for {sym} via NEAR Intents.</div>
-                  <ConnectButton client={client} chain={MONAD_MAINNET} theme="dark" btnTitle="🔥 Connect Wallet" />
+                  <ConnectButton client={client} chain={MONAD_MAINNET} wallets={WALLETS} showAllWallets={false} theme="dark" btnTitle="🔥 Connect Wallet" />
                 </div>
               ) : (
                 <>
