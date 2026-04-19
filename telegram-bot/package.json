@@ -1,20 +1,20 @@
 {
-  "name": "gold-token",
+  "name": "dragon-monad-bot",
   "version": "1.0.0",
-  "private": true,
-  "type": "module",
+  "description": "Dragon Monad Telegram Bot",
+  "main": "bot.js",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "start": "node bot.js",
+    "dev": "nodemon bot.js"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "thirdweb": "^5.92.0"
+    "node-telegram-bot-api": "^0.66.0",
+    "ethers": "^6.13.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
-    "vite": "^5.4.2"
+    "nodemon": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
