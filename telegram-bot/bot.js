@@ -1,8 +1,9 @@
 const TelegramBot = require("node-telegram-bot-api");
 const { ethers } = require("ethers");
+const http = require("http");
 
 // ── CONFIG ──────────────────────────────────────────────────────
-const BOT_TOKEN     = process.env.BOT_TOKEN || "YOUR_BOT_TOKEN_HERE";
+const BOT_TOKEN     = process.env.BOT_TOKEN     || "YOUR_BOT_TOKEN_HERE";
 const TOKEN_ADDRESS = "0x1b685B0c771b877d1a4e8F02365a4A809E962c81";
 const LP_MINING     = "0x28840f3e117345A5FBF08b7F67503D2F47B28023";
 const MONAD_RPC     = "https://rpc.monad.xyz";
@@ -10,7 +11,11 @@ const DAPP_URL      = "https://1bd70abb.dragon-moonad.pages.dev";
 const EXPLORER      = "https://monadscan.com";
 const VISION        = "https://monadvision.com";
 const COIN_LOGO     = "https://files.catbox.moe/byzt1g.png";
-const NEAR_JWT      = process.env.NEAR_JWT || "YOUR_NEAR_JWT_HERE";
+const NEAR_JWT      = process.env.NEAR_JWT      || "YOUR_NEAR_JWT_HERE";
+
+// Trade & Buy URLs — update these to your actual DEX/dApp buy page
+const BUY_URL       = `${DAPP_URL}/#buy`;
+const TRADE_URL     = `${DAPP_URL}/#swap`;
 
 const ERC20_ABI = [
   "function balanceOf(address) view returns (uint256)",
@@ -20,15 +25,20 @@ const ERC20_ABI = [
   "function decimals() view returns (uint8)",
 ];
 
+// ── KEEP-ALIVE HTTP SERVER (required for Render Web Service) ──────
+http.createServer((req, res) => res.end("OK")).listen(process.env.PORT || 3000);
+
 // ── INIT ─────────────────────────────────────────────────────────
 const bot      = new TelegramBot(BOT_TOKEN, { polling: true });
 const provider = new ethers.JsonRpcProvider(MONAD_RPC);
 const contract = new ethers.Contract(TOKEN_ADDRESS, ERC20_ABI, provider);
 
-// Price alert subscriptions: { chatId: { address, threshold, above } }
-const priceAlerts = new Map();
-// Wallet watchers: { chatId: address }
+// Price alert subscriptions
+const priceAlerts    = new Map();
+// Wallet watchers
 const walletWatchers = new Map();
+// Previous balances for change detection
+const watchedBalances = new Map();
 
 // ── UTILS ─────────────────────────────────────────────────────────
 function fmt(val, decimals = 18) {
@@ -96,58 +106,74 @@ const mainMenu = {
   reply_markup: {
     inline_keyboard: [
       [
-        { text: "💰 Balance",     callback_data: "balance"  },
-        { text: "📊 Token Info",  callback_data: "info"     },
+        { text: "🟢 Buy DRAGON",    url: BUY_URL              },
+        { text: "🔄 Trade",          url: TRADE_URL            },
       ],
       [
-        { text: "🔥 Swap",        callback_data: "swap"     },
-        { text: "⛏️ Mining",      callback_data: "mining"   },
+        { text: "💰 Balance",        callback_data: "balance"  },
+        { text: "📊 Token Info",     callback_data: "info"     },
       ],
       [
-        { text: "🔔 Price Alert", callback_data: "alert"    },
-        { text: "👁️ Watch Wallet",callback_data: "watch"    },
+        { text: "🔥 Swap",           callback_data: "swap"     },
+        { text: "⛏️ Mining",         callback_data: "mining"   },
       ],
       [
-        { text: "🌐 Open dApp",   url: DAPP_URL             },
-        { text: "📈 MonadVision", url: `${VISION}/token/${TOKEN_ADDRESS}` },
+        { text: "🔔 Price Alert",    callback_data: "alert"    },
+        { text: "👁️ Watch Wallet",   callback_data: "watch"    },
       ],
       [
-        { text: "🔍 Explorer",    url: `${EXPLORER}/token/${TOKEN_ADDRESS}` },
+        { text: "🌐 Open dApp",      url: DAPP_URL             },
+        { text: "📈 MonadVision",    url: `${VISION}/token/${TOKEN_ADDRESS}` },
+      ],
+      [
+        { text: "🔍 Explorer",       url: `${EXPLORER}/token/${TOKEN_ADDRESS}` },
       ],
     ],
   },
 };
 
 // ── USER SESSION STATE ────────────────────────────────────────────
-const sessions = new Map(); // chatId -> { step, data }
+const sessions = new Map();
 
-function setSession(chatId, step, data = {}) {
-  sessions.set(chatId, { step, data });
-}
-function getSession(chatId) {
-  return sessions.get(chatId) || { step: null, data: {} };
-}
-function clearSession(chatId) {
-  sessions.delete(chatId);
-}
+function setSession(chatId, step, data = {}) { sessions.set(chatId, { step, data }); }
+function getSession(chatId) { return sessions.get(chatId) || { step: null, data: {} }; }
+function clearSession(chatId) { sessions.delete(chatId); }
 
-// ── WELCOME ───────────────────────────────────────────────────────
+// ── WELCOME BANNER ────────────────────────────────────────────────
 async function sendWelcome(chatId) {
-  const text = `🐉 *DRAGON MONAD BOT*
+  const text =
+`🐉 *DRAGON MONAD* — Official Bot
 
-Welcome to the official Dragon Monad Token bot\\!
+🔥 *The Dragon has awakened on Monad Mainnet\\!*
 
-*Contract:* \`${TOKEN_ADDRESS}\`
-*Network:* Monad Mainnet \\(Chain 143\\)
-*Standard:* ERC\\-20
+💎 *Contract:*
+\`${TOKEN_ADDRESS}\`
 
-Choose an option below:`;
+🌐 *Network:* Monad Mainnet · Chain 143
+📐 *Standard:* ERC\\-20
 
-  await bot.sendPhoto(chatId, COIN_LOGO, {
-    caption: text,
-    parse_mode: "MarkdownV2",
-    ...mainMenu,
-  });
+━━━━━━━━━━━━━━━━━━━━
+🟢 *How to Buy DRAGON:*
+1️⃣ Add Monad Mainnet to your wallet
+2️⃣ Get MON for gas fees
+3️⃣ Tap *Buy DRAGON* below & swap\\!
+━━━━━━━━━━━━━━━━━━━━
+
+Choose an action below 👇`;
+
+  try {
+    await bot.sendPhoto(chatId, COIN_LOGO, {
+      caption: text,
+      parse_mode: "MarkdownV2",
+      ...mainMenu,
+    });
+  } catch {
+    // Fallback if photo fails (e.g. logo URL broken)
+    await bot.sendMessage(chatId, text, {
+      parse_mode: "MarkdownV2",
+      ...mainMenu,
+    });
+  }
 }
 
 // ── /start ────────────────────────────────────────────────────────
@@ -159,17 +185,36 @@ bot.onText(/\/start/, async (msg) => {
 // ── /menu ─────────────────────────────────────────────────────────
 bot.onText(/\/menu/, async (msg) => {
   clearSession(msg.chat.id);
-  await bot.sendMessage(msg.chat.id, "🐉 *Dragon Monad Menu*", {
+  await bot.sendMessage(msg.chat.id, "🐉 *Dragon Monad — Main Menu*", {
     parse_mode: "Markdown",
     ...mainMenu,
   });
+});
+
+// ── /buy ─────────────────────────────────────────────────────────
+bot.onText(/\/buy/, async (msg) => {
+  bot.sendMessage(msg.chat.id,
+    `🟢 *Buy DRAGON*\n\nGet DRAGON tokens on Monad Mainnet\\!\n\n[👉 Open Buy Page](${BUY_URL})`,
+    { parse_mode: "MarkdownV2", disable_web_page_preview: false }
+  );
+});
+
+// ── /trade ────────────────────────────────────────────────────────
+bot.onText(/\/trade/, async (msg) => {
+  bot.sendMessage(msg.chat.id,
+    `🔄 *Trade DRAGON*\n\nSwap tokens on the Dragon Monad dApp\\!\n\n[👉 Open Trade Page](${TRADE_URL})`,
+    { parse_mode: "MarkdownV2", disable_web_page_preview: false }
+  );
 });
 
 // ── /balance <address> ────────────────────────────────────────────
 bot.onText(/\/balance (.+)/, async (msg, match) => {
   const addr = match[1].trim();
   if (!isAddress(addr)) {
-    return bot.sendMessage(msg.chat.id, "❌ Invalid address. Example:\n`/balance 0x1234...abcd`", { parse_mode: "Markdown" });
+    return bot.sendMessage(msg.chat.id,
+      "❌ Invalid address. Example:\n`/balance 0x1234...abcd`",
+      { parse_mode: "Markdown" }
+    );
   }
   await handleBalanceCheck(msg.chat.id, addr);
 });
@@ -213,34 +258,42 @@ bot.onText(/\/stopwatch/, async (msg) => {
   bot.sendMessage(msg.chat.id, "🛑 Wallet watch stopped.");
 });
 
+// ── /dapp ─────────────────────────────────────────────────────────
+bot.onText(/\/dapp/, async (msg) => {
+  bot.sendMessage(msg.chat.id,
+    `🌐 *Dragon Monad dApp*\n\n[Open dApp](${DAPP_URL})`,
+    { parse_mode: "Markdown" }
+  );
+});
+
 // ── /help ─────────────────────────────────────────────────────────
 bot.onText(/\/help/, async (msg) => {
   const text = `🐉 *Dragon Monad Bot — Commands*
 
-/start — Welcome screen
+/start — Welcome screen & banner
 /menu — Show main menu
+/buy — Buy DRAGON tokens
+/trade — Trade DRAGON on dApp
 /balance \`<address>\` — Check DRAGON balance
 /info — Token contract info
 /swap — Swap tokens via NEAR Intents
 /mining — LP Mining info
-/alert — Set price/supply alert
+/alert — Set supply alert
 /watch \`<address>\` — Watch a wallet (5min updates)
 /stopwatch — Stop wallet watching
 /dapp — Open the dApp
 /help — This help message
 
 *Quick links:*
+🟢 [Buy DRAGON](${BUY_URL})
+🔄 [Trade](${TRADE_URL})
 🌐 [dApp](${DAPP_URL})
 📈 [MonadVision](${VISION}/token/${TOKEN_ADDRESS})
 🔍 [Explorer](${EXPLORER}/token/${TOKEN_ADDRESS})`;
 
-  bot.sendMessage(msg.chat.id, text, { parse_mode: "Markdown", disable_web_page_preview: true });
-});
-
-// ── /dapp ─────────────────────────────────────────────────────────
-bot.onText(/\/dapp/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `🌐 *Dragon Monad dApp*\n\n[Open dApp](${DAPP_URL})`, {
+  bot.sendMessage(msg.chat.id, text, {
     parse_mode: "Markdown",
+    disable_web_page_preview: true,
   });
 });
 
@@ -266,7 +319,7 @@ bot.on("callback_query", async (query) => {
       reply_markup: { force_reply: true },
     });
   }
-  else if (data === "menu")   {
+  else if (data === "menu") {
     clearSession(chatId);
     bot.sendMessage(chatId, "🐉 *Main Menu*", { parse_mode: "Markdown", ...mainMenu });
   }
@@ -275,10 +328,10 @@ bot.on("callback_query", async (query) => {
     const session = getSession(chatId);
     setSession(chatId, "awaiting_swap_amount", { ...session.data, originAsset: assetId });
     const sym = assetId.split(":")[1]?.split(".")[0]?.toUpperCase() || "token";
-    bot.sendMessage(chatId, `💱 How much *${sym}* do you want to swap for DRAGON?\n\nEnter amount:`, {
-      parse_mode: "Markdown",
-      reply_markup: { force_reply: true },
-    });
+    bot.sendMessage(chatId,
+      `💱 How much *${sym}* do you want to swap for DRAGON?\n\nEnter amount:`,
+      { parse_mode: "Markdown", reply_markup: { force_reply: true } }
+    );
   }
 });
 
@@ -292,7 +345,10 @@ bot.on("message", async (msg) => {
   if (session.step === "awaiting_balance_address") {
     clearSession(chatId);
     if (!isAddress(text)) {
-      return bot.sendMessage(chatId, "❌ Invalid Ethereum address. Try again with `/balance 0x...`", { parse_mode: "Markdown" });
+      return bot.sendMessage(chatId,
+        "❌ Invalid Ethereum address. Try again with `/balance 0x...`",
+        { parse_mode: "Markdown" }
+      );
     }
     await handleBalanceCheck(chatId, text);
   }
@@ -321,10 +377,10 @@ bot.on("message", async (msg) => {
       return bot.sendMessage(chatId, "❌ Invalid amount. Enter a positive number:");
     }
     setSession(chatId, "awaiting_swap_recipient", { ...session.data, amount: text });
-    bot.sendMessage(chatId, "📬 Enter your *Monad wallet address* to receive DRAGON:", {
-      parse_mode: "Markdown",
-      reply_markup: { force_reply: true },
-    });
+    bot.sendMessage(chatId,
+      "📬 Enter your *Monad wallet address* to receive DRAGON:",
+      { parse_mode: "Markdown", reply_markup: { force_reply: true } }
+    );
   }
   else if (session.step === "awaiting_alert_threshold") {
     const val = parseFloat(text);
@@ -346,7 +402,8 @@ async function handleBalanceCheck(chatId, address) {
   try {
     const { balance, decimals } = await getBalance(address);
     const formatted = fmt(balance, decimals);
-    const text = `💰 *DRAGON Balance*
+    const text =
+`💰 *DRAGON Balance*
 
 *Address:* \`${shortAddr(address)}\`
 *Balance:* \`${formatted} DRAGON\`
@@ -359,10 +416,16 @@ async function handleBalanceCheck(chatId, address) {
       parse_mode: "Markdown",
       disable_web_page_preview: true,
       reply_markup: {
-        inline_keyboard: [[
-          { text: "🔄 Check Again", callback_data: "balance" },
-          { text: "🏠 Menu",        callback_data: "menu"    },
-        ]],
+        inline_keyboard: [
+          [
+            { text: "🟢 Buy DRAGON",  url: BUY_URL              },
+            { text: "🔄 Trade",        url: TRADE_URL            },
+          ],
+          [
+            { text: "🔄 Check Again", callback_data: "balance"  },
+            { text: "🏠 Menu",        callback_data: "menu"      },
+          ],
+        ],
       },
     });
   } catch (e) {
@@ -377,7 +440,8 @@ async function handleInfo(chatId) {
   const loading = await bot.sendMessage(chatId, "⏳ Fetching token info...");
   try {
     const { name, symbol, supply, decimals } = await getTokenInfo();
-    const text = `📊 *Token Information*
+    const text =
+`📊 *Token Information*
 
 *Name:* ${name}
 *Symbol:* ${symbol}
@@ -400,8 +464,12 @@ async function handleInfo(chatId) {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: "🔍 Explorer",    url: `${EXPLORER}/token/${TOKEN_ADDRESS}` },
-            { text: "📈 MonadVision", url: `${VISION}/token/${TOKEN_ADDRESS}`   },
+            { text: "🟢 Buy DRAGON",  url: BUY_URL                              },
+            { text: "🔄 Trade",        url: TRADE_URL                            },
+          ],
+          [
+            { text: "🔍 Explorer",    url: `${EXPLORER}/token/${TOKEN_ADDRESS}`  },
+            { text: "📈 MonadVision", url: `${VISION}/token/${TOKEN_ADDRESS}`    },
           ],
           [{ text: "🏠 Menu", callback_data: "menu" }],
         ],
@@ -425,12 +493,15 @@ async function startSwapFlow(chatId) {
     }]);
     buttons.push([{ text: "🏠 Menu", callback_data: "menu" }]);
 
-    await bot.editMessageText(`🔥 *Swap to DRAGON*\n\nPowered by *NEAR Intents*\nSelect the token you want to swap:`, {
-      chat_id: chatId,
-      message_id: loading.message_id,
-      parse_mode: "Markdown",
-      reply_markup: { inline_keyboard: buttons },
-    });
+    await bot.editMessageText(
+      `🔥 *Swap to DRAGON*\n\nPowered by *NEAR Intents*\nSelect the token you want to swap:`,
+      {
+        chat_id: chatId,
+        message_id: loading.message_id,
+        parse_mode: "Markdown",
+        reply_markup: { inline_keyboard: buttons },
+      }
+    );
   } catch (e) {
     bot.editMessageText("❌ Could not load tokens. Try again later.", {
       chat_id: chatId,
@@ -465,8 +536,11 @@ async function handleSwapQuote(chatId, { originAsset, amount, recipient }) {
       parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
-          [{ text: "🔄 New Swap", callback_data: "swap" }],
-          [{ text: "🏠 Menu",     callback_data: "menu" }],
+          [
+            { text: "🟢 Buy DRAGON", url: BUY_URL              },
+            { text: "🔄 New Swap",   callback_data: "swap"      },
+          ],
+          [{ text: "🏠 Menu",        callback_data: "menu"      }],
         ],
       },
     });
@@ -481,7 +555,8 @@ async function handleSwapQuote(chatId, { originAsset, amount, recipient }) {
 }
 
 async function handleMining(chatId) {
-  const text = `⛏️ *LP Mining*
+  const text =
+`⛏️ *LP Mining*
 
 Provide liquidity and earn DRAGON rewards\\!
 
@@ -498,13 +573,17 @@ Provide liquidity and earn DRAGON rewards\\!
     reply_markup: {
       inline_keyboard: [
         [
-          { text: "🔍 View Mining Contract", url: `${EXPLORER}/address/${LP_MINING}` },
+          { text: "🟢 Buy DRAGON",            url: BUY_URL                           },
+          { text: "🔄 Trade",                  url: TRADE_URL                         },
+        ],
+        [
+          { text: "🔍 View Mining Contract",  url: `${EXPLORER}/address/${LP_MINING}` },
         ],
         [
           { text: "📊 MonadVision Analytics", url: `${VISION}/token/${TOKEN_ADDRESS}` },
         ],
-        [{ text: "🌐 Open dApp", url: DAPP_URL }],
-        [{ text: "🏠 Menu", callback_data: "menu" }],
+        [{ text: "🌐 Open dApp",              url: DAPP_URL                           }],
+        [{ text: "🏠 Menu",                   callback_data: "menu"                   }],
       ],
     },
   });
@@ -514,21 +593,16 @@ async function startAlertFlow(chatId) {
   setSession(chatId, "awaiting_alert_threshold");
   bot.sendMessage(chatId,
     `🔔 *Set Supply Alert*\n\nEnter a total supply threshold.\nYou'll be notified when DRAGON total supply exceeds that number.\n\nExample: \`1000000\``,
-    {
-      parse_mode: "Markdown",
-      reply_markup: { force_reply: true },
-    }
+    { parse_mode: "Markdown", reply_markup: { force_reply: true } }
   );
 }
 
 // ── WALLET WATCHER (every 5 min) ──────────────────────────────────
-const watchedBalances = new Map();
-
 setInterval(async () => {
   for (const [chatId, address] of walletWatchers.entries()) {
     try {
       const { balance, decimals } = await getBalance(address);
-      const current = balance.toString();
+      const current  = balance.toString();
       const previous = watchedBalances.get(`${chatId}:${address}`);
 
       if (previous !== undefined && previous !== current) {
@@ -539,7 +613,15 @@ setInterval(async () => {
 
         bot.sendMessage(chatId,
           `👁️ *Wallet Update*\n\n\`${shortAddr(address)}\`\n\n*Previous:* ${oldFmt} DRAGON\n*Current:* ${newFmt} DRAGON\n*Change:* ${sign}${Math.abs(change).toFixed(4)} DRAGON`,
-          { parse_mode: "Markdown" }
+          {
+            parse_mode: "Markdown",
+            reply_markup: {
+              inline_keyboard: [[
+                { text: "🟢 Buy DRAGON", url: BUY_URL  },
+                { text: "🔄 Trade",       url: TRADE_URL },
+              ]],
+            },
+          }
         );
       }
       watchedBalances.set(`${chatId}:${address}`, current);
@@ -551,8 +633,8 @@ setInterval(async () => {
 setInterval(async () => {
   if (priceAlerts.size === 0) return;
   try {
-    const supply   = await contract.totalSupply();
-    const decimals = await contract.decimals();
+    const supply    = await contract.totalSupply();
+    const decimals  = await contract.decimals();
     const supplyNum = Number(ethers.formatUnits(supply, decimals));
 
     for (const [chatId, alert] of priceAlerts.entries()) {
@@ -560,7 +642,15 @@ setInterval(async () => {
         alert.triggered = true;
         bot.sendMessage(chatId,
           `🔔 *Supply Alert Triggered!*\n\nTotal supply has reached *${supplyNum.toLocaleString()}* DRAGON\n(Your threshold: ${alert.threshold.toLocaleString()})`,
-          { parse_mode: "Markdown" }
+          {
+            parse_mode: "Markdown",
+            reply_markup: {
+              inline_keyboard: [[
+                { text: "🟢 Buy DRAGON", url: BUY_URL  },
+                { text: "🔄 Trade",       url: TRADE_URL },
+              ]],
+            },
+          }
         );
       }
     }
