@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   ConnectButton,
   useActiveAccount,
   useReadContract,
   useSendTransaction,
+  useConnect,
   ThirdwebProvider,
   BuyWidget,
 } from "thirdweb/react";
@@ -14,6 +15,7 @@ import {
   prepareContractCall,
   toWei,
 } from "thirdweb";
+import { createWallet } from "thirdweb/wallets";
 
 // ── CONFIG ──────────────────────────────────────────────────────
 const CLIENT_ID     = "821819db832d1a313ae3b1a62fbeafb7";
@@ -31,6 +33,12 @@ const MONAD_MAINNET = defineChain({
 });
 
 const client = createThirdwebClient({ clientId: CLIENT_ID });
+
+const WALLETS = [
+  createWallet("io.metamask"),
+  createWallet("com.coinbase.wallet"),
+  createWallet("walletConnect"),
+];
 
 const ERC20_ABI = [
   { inputs: [{ name: "account", type: "address" }], name: "balanceOf",   outputs: [{ name: "", type: "uint256" }], stateMutability: "view", type: "function" },
@@ -125,6 +133,8 @@ function BuyWithCard({ account, sym }) {
 // ── MAIN APP ──────────────────────────────────────────────────────
 function DragonApp() {
   const account = useActiveAccount();
+  const { connect } = useConnect();
+
   const [tab,         setTab        ] = useState("wallet");
   const [transferTo,  setTransferTo ] = useState("");
   const [transferAmt, setTransferAmt] = useState("");
@@ -144,6 +154,14 @@ function DragonApp() {
   const { data: tokenSymbol } = useReadContract({ contract, method: "symbol",      params: [] });
   const { mutate: sendTx    } = useSendTransaction();
 
+  // ── AUTO-RECONNECT last wallet on page load ──────────────────
+  useEffect(() => {
+    if (!account) {
+      connect({ client, wallets: WALLETS }).catch(() => {});
+    }
+  }, []);
+
+  // ── Load NEAR swap tokens ────────────────────────────────────
   useEffect(() => {
     getNearIntentsTokens()
       .then(tokens => setSwapTokens(tokens.filter(t =>
@@ -216,16 +234,13 @@ function DragonApp() {
           position: relative; overflow-x: hidden;
         }
 
-        /* Scales texture overlay */
         .app::before {
           content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
-          background-image:
-            radial-gradient(ellipse 8px 6px at 50% 50%, rgba(139,0,0,0.08) 0%, transparent 70%);
+          background-image: radial-gradient(ellipse 8px 6px at 50% 50%, rgba(139,0,0,0.08) 0%, transparent 70%);
           background-size: 20px 16px;
           opacity: 0.6;
         }
 
-        /* Dragon particles */
         .dragon-particles { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
         .dp { position: absolute; bottom: -20px; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; animation: fireRise linear infinite; }
         .dp-large  { width: 6px;  height: 14px; background: radial-gradient(var(--fire), transparent); opacity: 0.7; }
@@ -239,7 +254,6 @@ function DragonApp() {
           100% { transform: translateY(-100vh) scaleX(0.5); opacity: 0; }
         }
 
-        /* ── HEADER ── */
         .header {
           position: relative; z-index: 10;
           display: flex; align-items: center; justify-content: space-between;
@@ -268,11 +282,8 @@ function DragonApp() {
         .fire-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--fire); box-shadow: 0 0 8px var(--fire); animation: flicker 1.5s infinite alternate; }
         @keyframes flicker { 0% { opacity: 1; box-shadow: 0 0 8px var(--fire); } 100% { opacity: 0.4; box-shadow: 0 0 2px var(--fire2); } }
 
-        /* ── HERO ── */
         .hero { position: relative; z-index: 5; text-align: center; padding: 56px 20px 32px; }
-        .hero-logo {
-          display: flex; justify-content: center; margin-bottom: 24px;
-        }
+        .hero-logo { display: flex; justify-content: center; margin-bottom: 24px; }
         .hero-logo img {
           width: 130px; height: 130px; border-radius: 50%;
           border: 3px solid var(--fire);
@@ -303,7 +314,6 @@ function DragonApp() {
           box-shadow: 0 0 10px rgba(255,69,0,0.5);
         }
 
-        /* ── STATS ── */
         .stats { position: relative; z-index: 5; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; padding: 0 40px 36px; }
         .stat-card {
           background: linear-gradient(135deg, rgba(45,21,21,0.9) 0%, rgba(13,6,8,0.95) 100%);
@@ -322,7 +332,6 @@ function DragonApp() {
           -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
 
-        /* ── TABS ── */
         .tabs { position: relative; z-index: 5; display: flex; justify-content: center; gap: 6px; padding: 0 20px 24px; flex-wrap: wrap; }
         .tab-btn {
           padding: 10px 28px; border-radius: 6px; border: 1px solid var(--border);
@@ -332,7 +341,6 @@ function DragonApp() {
         .tab-btn.active { background: rgba(255,69,0,0.12); color: var(--fire3); border-color: rgba(255,69,0,0.5); box-shadow: 0 0 16px rgba(255,69,0,0.2), inset 0 0 12px rgba(255,69,0,0.06); }
         .tab-btn:not(.active):hover { border-color: rgba(255,69,0,0.4); color: var(--text); background: rgba(255,69,0,0.05); }
 
-        /* ── PANEL ── */
         .panel { position: relative; z-index: 5; max-width: 560px; margin: 0 auto; padding: 0 20px 80px; }
         .card {
           background: linear-gradient(135deg, rgba(34,16,16,0.95) 0%, rgba(13,6,8,0.98) 100%);
@@ -432,7 +440,6 @@ function DragonApp() {
         .connect-icon { font-size: 52px; margin-bottom: 16px; }
         .connect-msg { color: var(--text-dim); font-size: 15px; margin-bottom: 24px; line-height: 1.8; }
 
-        /* ── SOCIAL LINKS ── */
         .social-links { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 28px; }
         .social-link {
           display: inline-flex; align-items: center; gap: 6px;
@@ -444,7 +451,6 @@ function DragonApp() {
         }
         .social-link:hover { background: rgba(255,69,0,0.14); border-color: rgba(255,69,0,0.5); color: var(--fire3); box-shadow: 0 0 12px rgba(255,69,0,0.2); }
 
-        /* ── FOOTER ── */
         .footer { position: relative; z-index: 5; text-align: center; padding: 28px 20px 20px; border-top: 1px solid var(--border); font-size: 9px; color: var(--text-faint); letter-spacing: 3px; font-family: 'Cinzel', serif; }
         .footer a { color: rgba(255,139,0,0.6); text-decoration: none; transition: color .2s; }
         .footer a:hover { color: var(--fire3); }
@@ -473,7 +479,13 @@ function DragonApp() {
               <span className="fire-dot" />
               Monad · 143
             </div>
-            <ConnectButton client={client} chain={MONAD_MAINNET} theme="dark" btnTitle="🔥 Connect" />
+            <ConnectButton
+              client={client}
+              chain={MONAD_MAINNET}
+              wallets={WALLETS}
+              theme="dark"
+              btnTitle="🔥 Connect"
+            />
           </div>
         </header>
 
@@ -486,7 +498,6 @@ function DragonApp() {
           <div className="hero-sub">🐉 Dragon of the Monad Chain · Fire &amp; Wealth</div>
           <div className="hero-divider" />
 
-          {/* Social Links */}
           <div className="social-links">
             <a className="social-link" href="https://x.com/bnbgold277983" target="_blank" rel="noopener noreferrer">𝕏 Twitter</a>
             <a className="social-link" href="https://t.me/gemsrock_bot"   target="_blank" rel="noopener noreferrer">💬 Telegram</a>
@@ -534,7 +545,13 @@ function DragonApp() {
                 <div className="connect-prompt">
                   <div className="connect-icon">🐉</div>
                   <div className="connect-msg">Connect your wallet to view your {sym} balance and send tokens on Monad.</div>
-                  <ConnectButton client={client} chain={MONAD_MAINNET} theme="dark" btnTitle="🔥 Connect Wallet" />
+                  <ConnectButton
+                    client={client}
+                    chain={MONAD_MAINNET}
+                    wallets={WALLETS}
+                    theme="dark"
+                    btnTitle="🔥 Connect Wallet"
+                  />
                 </div>
               ) : (
                 <>
@@ -585,7 +602,7 @@ function DragonApp() {
                 <div className="connect-prompt">
                   <div className="connect-icon">🔥</div>
                   <div className="connect-msg">Connect your wallet to swap any token for {sym} via NEAR Intents.</div>
-                  <ConnectButton client={client} chain={MONAD_MAINNET} theme="dark" btnTitle="🔥 Connect Wallet" />
+                  <ConnectButton client={client} chain={MONAD_MAINNET} wallets={WALLETS} theme="dark" btnTitle="🔥 Connect Wallet" />
                 </div>
               ) : (
                 <>
