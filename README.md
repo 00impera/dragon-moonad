@@ -1,7 +1,8 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/00impera/dragon-moonad/b7e094df45b3a33ef5b310e925e1afd04ab8a5a6/3.png.png
-" alt="DRAGON MOONAD" width="160" />
+  <img src="https://raw.githubusercontent.com/00impera/dragon-moonad/b7e094df45b3a33ef5b310e925e1afd04ab8a5a6/3.png.png" 
+       alt="DRAGON MOONAD" width="160" />
 </p>
+
 
 <h1 align="center">🐉 DRAGON MOONAD</h1>
 <p align="center">
