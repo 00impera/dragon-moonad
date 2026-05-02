@@ -15,7 +15,7 @@ const TREASURY        = "0x592B35c8917eD36c39Ef73D0F5e92B0173560b2e"; // Treasur
 
 // ── URLS ─────────────────────────────────────────────────────────
 const MONAD_RPC  = "https://rpc.monad.xyz";
-const DAPP_URL   = "https://f6e69562.dragon-moonad.pages.dev";       // ← UPDATED
+const DAPP_URL   = "https://dragon-moonad.pages.dev";       // ← UPDATED
 const EXPLORER   = "https://monadscan.com";
 const VISION     = "https://monadvision.com";
 const BUY_URL    = `${DAPP_URL}/#buy`;
