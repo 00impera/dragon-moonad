@@ -15,15 +15,14 @@ const TREASURY        = "0x592B35c8917eD36c39Ef73D0F5e92B0173560b2e"; // Treasur
 
 // ── URLS ─────────────────────────────────────────────────────────
 const MONAD_RPC  = "https://rpc.monad.xyz";
-const DAPP_URL   = "https://dragon-moonad.pages.dev";       // ← UPDATED
+const DAPP_URL   = "https://dragon-moonad.pages.dev";
 const EXPLORER   = "https://monadscan.com";
 const VISION     = "https://monadvision.com";
 const BUY_URL    = `${DAPP_URL}/#buy`;
 const TRADE_URL  = `${DAPP_URL}/#swap`;
 const STAKE_URL  = `${DAPP_URL}/#stake`;
 
-// Logo — fixed raw GitHub URL (was 3.png.png, corrected to 3.png)
-const COIN_LOGO  = "https://raw.githubusercontent.com/00impera/dragon-moonad/b7e094df45b3a33ef5b310e925e1afd04ab8a5a6/3.png";
+const COIN_LOGO  = "https://raw.githubusercontent.com/00impera/dragon-moonad/b89deb47c0845339a40ca79b6c6286867ae07614/dragon_banner.gif";
 
 // ── ABIs ─────────────────────────────────────────────────────────
 const ERC20_ABI = [
@@ -61,9 +60,9 @@ const userLangs       = new Map();
 // ── i18n DICTIONARY ──────────────────────────────────────────────
 const I18N = {
   en: {
-    welcome_fire:      "🔥 *The Dragon has awakened on Monad Mainnet\\!*",
-    how_to_buy:        "🟢 *How to Buy DRAGON:*\n1️⃣ Add Monad Mainnet to your wallet\n2️⃣ Get MON for gas fees\n3️⃣ Tap *Buy DRAGON* below \\& swap\\!",
-    quick_start:       "🚀 *Quick Start Guide*\n\n1\\. Add Monad Mainnet to MetaMask or any EVM wallet\n2\\. Bridge or buy MON for gas fees\n3\\. Tap *Buy DRAGON* to get your tokens\n4\\. Stake MON to earn GOLD rewards\n5\\. Use /balance to check your holdings\n6\\. Use /watch to track any wallet\n\nType /help for all commands\\.",
+    welcome_fire:      "🔥 *The Dragon has awakened on Monad Mainnet!*",
+    how_to_buy:        "🟢 *How to Buy DRAGON:*\n1️⃣ Add Monad Mainnet to your wallet\n2️⃣ Get MON for gas fees\n3️⃣ Tap *Buy DRAGON* below & swap!",
+    quick_start:       "🚀 *Quick Start Guide*\n\n1. Add Monad Mainnet to MetaMask or any EVM wallet\n2. Bridge or buy MON for gas fees\n3. Tap *Buy DRAGON* to get your tokens\n4. Stake MON to earn GOLD rewards\n5. Use /balance to check your holdings\n6. Use /watch to track any wallet\n\nType /help for all commands.",
     choose_action:     "Choose an action below 👇",
     rpc_error:         "❌ RPC is slow or unavailable. Try again in a moment, or check MonadScan directly:",
     invalid_address:   "❌ Invalid address. Please provide a valid 0x... Ethereum address.",
@@ -73,12 +72,12 @@ const I18N = {
     fetching_tokens:   "⏳ Loading available tokens...",
     fetching_quote:    "⏳ Fetching best quote...",
     fetching_staking:  "⏳ Fetching staking info...",
-    referral_msg:      "🔗 *Your Referral Link:*\n`{link}`\n\nShare this link to invite friends and earn rewards\\!\n\n👥 *Your referrals so far:* {count}",
+    referral_msg:      "🔗 *Your Referral Link:*\n`{link}`\n\nShare this link to invite friends and earn rewards!\n\n👥 *Your referrals so far:* {count}",
   },
   es: {
-    welcome_fire:      "🔥 *¡El Dragón ha despertado en Monad Mainnet\\!*",
-    how_to_buy:        "🟢 *Cómo comprar DRAGON:*\n1️⃣ Añade Monad Mainnet a tu wallet\n2️⃣ Consigue MON para gas\n3️⃣ Pulsa *Comprar DRAGON* abajo \\& haz swap\\!",
-    quick_start:       "🚀 *Guía de Inicio Rápido*\n\n1\\. Añade Monad Mainnet a MetaMask\n2\\. Consigue MON para gas\n3\\. Toca *Comprar DRAGON* para obtener tus tokens\n4\\. Haz staking de MON para ganar GOLD\n5\\. Usa /balance para ver tu saldo\n6\\. Usa /watch para monitorear una wallet\n\nEscribe /help para todos los comandos\\.",
+    welcome_fire:      "🔥 *¡El Dragón ha despertado en Monad Mainnet!*",
+    how_to_buy:        "🟢 *Cómo comprar DRAGON:*\n1️⃣ Añade Monad Mainnet a tu wallet\n2️⃣ Consigue MON para gas\n3️⃣ Pulsa *Comprar DRAGON* abajo & haz swap!",
+    quick_start:       "🚀 *Guía de Inicio Rápido*\n\n1. Añade Monad Mainnet a MetaMask\n2. Consigue MON para gas\n3. Toca *Comprar DRAGON* para obtener tus tokens\n4. Haz staking de MON para ganar GOLD\n5. Usa /balance para ver tu saldo\n6. Usa /watch para monitorear una wallet\n\nEscribe /help para todos los comandos.",
     choose_action:     "Elige una acción 👇",
     rpc_error:         "❌ El RPC está lento. Inténtalo de nuevo o consulta MonadScan:",
     invalid_address:   "❌ Dirección inválida. Proporciona una dirección 0x... válida.",
@@ -88,12 +87,12 @@ const I18N = {
     fetching_tokens:   "⏳ Cargando tokens disponibles...",
     fetching_quote:    "⏳ Buscando la mejor cotización...",
     fetching_staking:  "⏳ Obteniendo info de staking...",
-    referral_msg:      "🔗 *Tu Enlace de Referido:*\n`{link}`\n\n¡Compártelo para invitar amigos y ganar recompensas\\!\n\n👥 *Tus referidos hasta ahora:* {count}",
+    referral_msg:      "🔗 *Tu Enlace de Referido:*\n`{link}`\n\n¡Compártelo para invitar amigos y ganar recompensas!\n\n👥 *Tus referidos hasta ahora:* {count}",
   },
   fr: {
-    welcome_fire:      "🔥 *Le Dragon s'est éveillé sur Monad Mainnet\\!*",
-    how_to_buy:        "🟢 *Comment acheter DRAGON:*\n1️⃣ Ajoutez Monad Mainnet à votre wallet\n2️⃣ Obtenez du MON pour le gas\n3️⃣ Appuyez sur *Acheter DRAGON* ci-dessous\\!",
-    quick_start:       "🚀 *Guide de Démarrage Rapide*\n\n1\\. Ajoutez Monad Mainnet à MetaMask\n2\\. Obtenez du MON pour le gas\n3\\. Appuyez sur *Acheter DRAGON* pour vos tokens\n4\\. Stakez du MON pour gagner des GOLD\n5\\. Utilisez /balance pour vérifier votre solde\n6\\. Utilisez /watch pour suivre un wallet\n\nTapez /help pour toutes les commandes\\.",
+    welcome_fire:      "🔥 *Le Dragon s'est éveillé sur Monad Mainnet!*",
+    how_to_buy:        "🟢 *Comment acheter DRAGON:*\n1️⃣ Ajoutez Monad Mainnet à votre wallet\n2️⃣ Obtenez du MON pour le gas\n3️⃣ Appuyez sur *Acheter DRAGON* ci-dessous!",
+    quick_start:       "🚀 *Guide de Démarrage Rapide*\n\n1. Ajoutez Monad Mainnet à MetaMask\n2. Obtenez du MON pour le gas\n3. Appuyez sur *Acheter DRAGON* pour vos tokens\n4. Stakez du MON pour gagner des GOLD\n5. Utilisez /balance pour vérifier votre solde\n6. Utilisez /watch pour suivre un wallet\n\nTapez /help pour toutes les commandes.",
     choose_action:     "Choisissez une action 👇",
     rpc_error:         "❌ Le RPC est lent. Réessayez ou consultez MonadScan directement:",
     invalid_address:   "❌ Adresse invalide. Fournissez une adresse 0x... valide.",
@@ -103,7 +102,7 @@ const I18N = {
     fetching_tokens:   "⏳ Chargement des tokens disponibles...",
     fetching_quote:    "⏳ Recherche du meilleur devis...",
     fetching_staking:  "⏳ Récupération des infos de staking...",
-    referral_msg:      "🔗 *Votre Lien de Parrainage:*\n`{link}`\n\nPartagez-le pour inviter des amis\\!\n\n👥 *Vos parrainages:* {count}",
+    referral_msg:      "🔗 *Votre Lien de Parrainage:*\n`{link}`\n\nPartagez-le pour inviter des amis!\n\n👥 *Vos parrainages:* {count}",
   },
 };
 
@@ -282,7 +281,7 @@ ${t(chatId, "welcome_fire")}
 \`${GOLD_ADDRESS}\`
 
 🌐 *Network:* Monad Mainnet · Chain 143
-📐 *Standard:* ERC\\-20
+📐 *Standard:* ERC-20
 
 ━━━━━━━━━━━━━━━━━━━━
 ${t(chatId, "how_to_buy")}
@@ -295,18 +294,18 @@ ${t(chatId, "choose_action")}`;
   try {
     await bot.sendPhoto(chatId, COIN_LOGO, {
       caption: text,
-      parse_mode: "MarkdownV2",
+      parse_mode: "Markdown",
       ...mainMenu,
     });
   } catch {
-    await bot.sendMessage(chatId, text, { parse_mode: "MarkdownV2", ...mainMenu });
+    await bot.sendMessage(chatId, text, { parse_mode: "Markdown", ...mainMenu });
   }
 }
 
 // ── QUICK START ONBOARDING ────────────────────────────────────────
 async function sendOnboarding(chatId) {
   await bot.sendMessage(chatId, t(chatId, "quick_start"), {
-    parse_mode: "MarkdownV2",
+    parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [
         [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }],
@@ -343,7 +342,7 @@ bot.onText(/\/referral/, async (msg) => {
   const refLink = `https://t.me/DragonMonadBot?start=ref_${msg.from.id}`;
   const count   = getReferralCount(msg.from.id);
   bot.sendMessage(chatId, t(chatId, "referral_msg", { link: refLink, count }), {
-    parse_mode: "MarkdownV2",
+    parse_mode: "Markdown",
     reply_markup: {
       inline_keyboard: [
         [{ text: "📤 Share Link", url: `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("Join Dragon Monad — the fire rises on Monad Mainnet! 🐉")}` }],
@@ -356,16 +355,16 @@ bot.onText(/\/referral/, async (msg) => {
 // ── /buy ─────────────────────────────────────────────────────────
 bot.onText(/\/buy/, (msg) => {
   bot.sendMessage(msg.chat.id,
-    `🟢 *Buy DRAGON*\n\nGet DRAGON tokens on Monad Mainnet\\!\n\n[👉 Open Buy Page](${BUY_URL})`,
-    { parse_mode: "MarkdownV2" }
+    `🟢 *Buy DRAGON*\n\nGet DRAGON tokens on Monad Mainnet!\n\n[👉 Open Buy Page](${BUY_URL})`,
+    { parse_mode: "Markdown" }
   );
 });
 
 // ── /trade ────────────────────────────────────────────────────────
 bot.onText(/\/trade/, (msg) => {
   bot.sendMessage(msg.chat.id,
-    `🔄 *Trade DRAGON*\n\nSwap tokens on the Dragon Monad dApp\\!\n\n[👉 Open Trade Page](${TRADE_URL})`,
-    { parse_mode: "MarkdownV2" }
+    `🔄 *Trade DRAGON*\n\nSwap tokens on the Dragon Monad dApp!\n\n[👉 Open Trade Page](${TRADE_URL})`,
+    { parse_mode: "Markdown" }
   );
 });
 
@@ -516,7 +515,7 @@ function sendHelpMessage(chatId) {
   });
 }
 
-// ── INLINE QUERY — share balance in any chat ───────────────────────
+// ── INLINE QUERY ──────────────────────────────────────────────────
 bot.on("inline_query", async (query) => {
   const addr = query.query.trim();
 
@@ -526,8 +525,8 @@ bot.on("inline_query", async (query) => {
       title: "🐉 Dragon Monad",
       description: "Type a 0x wallet address to look up DRAGON balance",
       input_message_content: {
-        message_text: `🐉 *Dragon Monad Bot*\n\nType a wallet address after @DragonMonadBot to look up DRAGON balances\\!\n\nExample: \`@DragonMonadBot 0x1234...abcd\``,
-        parse_mode: "MarkdownV2",
+        message_text: `🐉 *Dragon Monad Bot*\n\nType a wallet address after @DragonMonadBot to look up DRAGON balances!\n\nExample: \`@DragonMonadBot 0x1234...abcd\``,
+        parse_mode: "Markdown",
       },
     }], { cache_time: 0 });
   }
@@ -575,8 +574,8 @@ bot.on("inline_query", async (query) => {
       title: "❌ RPC Error",
       description: "Could not fetch balance. Try again.",
       input_message_content: {
-        message_text: `❌ Could not fetch balance for \`${shortAddr(addr)}\`\\. Try again or check [MonadScan](${EXPLORER}/address/${addr})`,
-        parse_mode: "MarkdownV2",
+        message_text: `❌ Could not fetch balance for \`${shortAddr(addr)}\`. Try again or check [MonadScan](${EXPLORER}/address/${addr})`,
+        parse_mode: "Markdown",
       },
     }], { cache_time: 0 });
   }
@@ -617,7 +616,7 @@ bot.on("callback_query", async (query) => {
     const refLink = `https://t.me/DragonMonadBot?start=ref_${query.from.id}`;
     const count   = getReferralCount(query.from.id);
     bot.sendMessage(chatId, t(chatId, "referral_msg", { link: refLink, count }), {
-      parse_mode: "MarkdownV2",
+      parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
           [{ text: "📤 Share Link", url: `https://t.me/share/url?url=${encodeURIComponent(refLink)}&text=${encodeURIComponent("Join Dragon Monad! 🐉🔥")}` }],
@@ -705,8 +704,8 @@ bot.on("message", async (msg) => {
     priceAlerts.set(chatId, { threshold: val, triggered: false });
     clearSession(chatId);
     bot.sendMessage(chatId,
-      `🔔 *Alert set\\!*\n\nYou'll be notified when total supply exceeds *${val.toLocaleString()}* DRAGON\\.`,
-      { parse_mode: "MarkdownV2", reply_markup: { inline_keyboard: [[{ text: "🏠 Menu", callback_data: "menu" }]] } }
+      `🔔 *Alert set!*\n\nYou'll be notified when total supply exceeds *${val.toLocaleString()}* DRAGON.`,
+      { parse_mode: "Markdown", reply_markup: { inline_keyboard: [[{ text: "🏠 Menu", callback_data: "menu" }]] } }
     );
   }
 });
@@ -765,7 +764,7 @@ async function handleGoldBalance(chatId, address) {
 *GOLD Balance:* \`${fmt(gBal, decimals)} GOLD\`
 *Unclaimed Rewards:* \`${fmt(pendingRaw, decimals)} GOLD\`
 
-GOLD is earned by staking MON at *1 GOLD per MON per day*\\. Claim from the Stake tab in the dApp\\.
+GOLD is earned by staking MON at *1 GOLD per MON per day*. Claim from the Stake tab in the dApp.
 
 [View GOLD on MonadVision](${VISION}/token/${GOLD_ADDRESS})`,
       {
@@ -806,9 +805,9 @@ async function handleGoldInfo(chatId) {
 
 ━━━━━━━━━━━━━━━━━━━━
 💡 *How to earn GOLD:*
-1\\. Stake MON in the Stake tab
-2\\. Earn 1 GOLD per MON per day
-3\\. Claim anytime — GOLD goes to your wallet
+1. Stake MON in the Stake tab
+2. Earn 1 GOLD per MON per day
+3. Claim anytime — GOLD goes to your wallet
 
 [View GOLD on MonadVision](${VISION}/token/${GOLD_ADDRESS})`,
       {
@@ -897,8 +896,8 @@ async function handleMyStake(chatId, address) {
 *Staked MON:* \`${fmt(staked, decimals)} MON\`
 *Pending GOLD:* \`${fmt(pendingGold, decimals)} GOLD\`${unstakeLine}
 
-💡 Claim your GOLD rewards from the Stake tab in the dApp\\. 
-Earning 1 GOLD per MON per day\\.`,
+💡 Claim your GOLD rewards from the Stake tab in the dApp.
+Earning 1 GOLD per MON per day.`,
       {
         chat_id: chatId, message_id: loading.message_id,
         parse_mode: "Markdown",
@@ -1060,9 +1059,9 @@ async function handleSwapQuote(chatId, { originAsset, amount, recipient }) {
     clearSession(chatId);
   } catch {
     bot.editMessageText(
-      "❌ Could not fetch quote\\. Try a different token or amount\\.",
+      "❌ Could not fetch quote. Try a different token or amount.",
       {
-        chat_id: chatId, message_id: loading.message_id, parse_mode: "MarkdownV2",
+        chat_id: chatId, message_id: loading.message_id, parse_mode: "Markdown",
         reply_markup: { inline_keyboard: [[{ text: "🔄 Try Again", callback_data: "swap" }, { text: "🏠 Menu", callback_data: "menu" }]] },
       }
     );
@@ -1074,7 +1073,7 @@ async function handleMining(chatId) {
   bot.sendMessage(chatId,
 `⛏️ *LP Mining*
 
-Provide liquidity and earn DRAGON rewards\\!
+Provide liquidity and earn DRAGON rewards!
 
 *Mining Contract:*
 \`${LP_MINING}\`
@@ -1084,9 +1083,9 @@ Provide liquidity and earn DRAGON rewards\\!
 
 *Network:* Monad Mainnet · Chain 143
 
-💡 Also try *Liquid Staking* — stake MON and earn 1 GOLD per MON per day\\.`,
+💡 Also try *Liquid Staking* — stake MON and earn 1 GOLD per MON per day.`,
     {
-      parse_mode: "MarkdownV2",
+      parse_mode: "Markdown",
       reply_markup: {
         inline_keyboard: [
           [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }],
@@ -1103,8 +1102,8 @@ Provide liquidity and earn DRAGON rewards\\!
 async function startAlertFlow(chatId) {
   setSession(chatId, "awaiting_alert_threshold");
   bot.sendMessage(chatId,
-    `🔔 *Set Supply Alert*\n\nEnter a total supply threshold\\.\nYou'll be notified when DRAGON total supply exceeds that number\\.\n\nExample: \`1000000\``,
-    { parse_mode: "MarkdownV2", reply_markup: { force_reply: true } }
+    `🔔 *Set Supply Alert*\n\nEnter a total supply threshold.\nYou'll be notified when DRAGON total supply exceeds that number.\n\nExample: \`1000000\``,
+    { parse_mode: "Markdown", reply_markup: { force_reply: true } }
   );
 }
 
@@ -1147,9 +1146,9 @@ setInterval(async () => {
       if (!alert.triggered && supplyNum >= alert.threshold) {
         alert.triggered = true;
         bot.sendMessage(chatId,
-          `🔔 *Supply Alert Triggered\\!*\n\nTotal supply has reached *${supplyNum.toLocaleString()}* DRAGON\n\\(Your threshold: ${alert.threshold.toLocaleString()}\\)`,
+          `🔔 *Supply Alert Triggered!*\n\nTotal supply has reached *${supplyNum.toLocaleString()}* DRAGON\n(Your threshold: ${alert.threshold.toLocaleString()})`,
           {
-            parse_mode: "MarkdownV2",
+            parse_mode: "Markdown",
             reply_markup: { inline_keyboard: [[{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }]] },
           }
         );
