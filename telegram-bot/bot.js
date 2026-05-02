@@ -4,17 +4,28 @@ const http = require("http");
 
 // ── CONFIG ──────────────────────────────────────────────────────
 const BOT_TOKEN     = process.env.BOT_TOKEN || "YOUR_BOT_TOKEN_HERE";
-const TOKEN_ADDRESS = "0x1b685B0c771b877d1a4e8F02365a4A809E962c81";
-const LP_MINING     = "0x28840f3e117345A5FBF08b7F67503D2F47B28023";
-const MONAD_RPC     = "https://rpc.monad.xyz";
-const DAPP_URL      = "https://1bd70abb.dragon-moonad.pages.dev";
-const EXPLORER      = "https://monadscan.com";
-const VISION        = "https://monadvision.com";
-const COIN_LOGO     = "https://files.catbox.moe/byzt1g.png";
-const NEAR_JWT      = process.env.NEAR_JWT || "YOUR_NEAR_JWT_HERE";
-const BUY_URL       = `${DAPP_URL}/#buy`;
-const TRADE_URL     = `${DAPP_URL}/#swap`;
+const NEAR_JWT      = process.env.NEAR_JWT  || "YOUR_NEAR_JWT_HERE";
 
+// ── CONTRACTS ───────────────────────────────────────────────────
+const TOKEN_ADDRESS   = "0x1b685B0c771b877d1a4e8F02365a4A809E962c81"; // DRAGON
+const GOLD_ADDRESS    = "0xb73bb15509504fB2Be64159ab0B0b38F26C6d795"; // GOLD
+const STAKING_ADDRESS = "0x095a69Fe5f0B01bb68f85F18C8b74c17D3F8971F"; // LiquidStaking
+const LP_MINING       = "0x28840f3e117345A5FBF08b7F67503D2F47B28023"; // LP Mining
+const TREASURY        = "0x592B35c8917eD36c39Ef73D0F5e92B0173560b2e"; // Treasury
+
+// ── URLS ─────────────────────────────────────────────────────────
+const MONAD_RPC  = "https://rpc.monad.xyz";
+const DAPP_URL   = "https://f6e69562.dragon-moonad.pages.dev";       // ← UPDATED
+const EXPLORER   = "https://monadscan.com";
+const VISION     = "https://monadvision.com";
+const BUY_URL    = `${DAPP_URL}/#buy`;
+const TRADE_URL  = `${DAPP_URL}/#swap`;
+const STAKE_URL  = `${DAPP_URL}/#stake`;
+
+// Logo — fixed raw GitHub URL (was 3.png.png, corrected to 3.png)
+const COIN_LOGO  = "https://raw.githubusercontent.com/00impera/dragon-moonad/b7e094df45b3a33ef5b310e925e1afd04ab8a5a6/3.png";
+
+// ── ABIs ─────────────────────────────────────────────────────────
 const ERC20_ABI = [
   "function balanceOf(address) view returns (uint256)",
   "function totalSupply() view returns (uint256)",
@@ -23,28 +34,36 @@ const ERC20_ABI = [
   "function decimals() view returns (uint8)",
 ];
 
+const STAKING_ABI = [
+  "function totalStaked() view returns (uint256)",
+  "function pendingRewards(address) view returns (uint256)",
+  "function stakeInfo(address) view returns (uint256 amount, uint256 stakedAt, uint256 pending, uint256 unstakeAmount, uint256 unstakeAt, bool canClaim)",
+];
+
 // ── KEEP-ALIVE HTTP SERVER ────────────────────────────────────────
 http.createServer((req, res) => res.end("OK")).listen(process.env.PORT || 3000);
 
 // ── INIT ─────────────────────────────────────────────────────────
-const bot      = new TelegramBot(BOT_TOKEN, { polling: true });
-const provider = new ethers.JsonRpcProvider(MONAD_RPC);
-const contract = new ethers.Contract(TOKEN_ADDRESS, ERC20_ABI, provider);
+const bot         = new TelegramBot(BOT_TOKEN, { polling: true });
+const provider    = new ethers.JsonRpcProvider(MONAD_RPC);
+const dragonC     = new ethers.Contract(TOKEN_ADDRESS,   ERC20_ABI,   provider);
+const goldC       = new ethers.Contract(GOLD_ADDRESS,    ERC20_ABI,   provider);
+const stakingC    = new ethers.Contract(STAKING_ADDRESS, STAKING_ABI, provider);
 
 // ── STATE MAPS ────────────────────────────────────────────────────
-const priceAlerts     = new Map(); // chatId -> { threshold, triggered }
-const walletWatchers  = new Map(); // chatId -> address
-const watchedBalances = new Map(); // `chatId:address` -> balance string
-const sessions        = new Map(); // chatId -> { step, data }
-const referrals       = new Map(); // referrerId -> Set of referred chatIds
-const userLangs       = new Map(); // chatId -> lang code
+const priceAlerts     = new Map();
+const walletWatchers  = new Map();
+const watchedBalances = new Map();
+const sessions        = new Map();
+const referrals       = new Map();
+const userLangs       = new Map();
 
 // ── i18n DICTIONARY ──────────────────────────────────────────────
 const I18N = {
   en: {
     welcome_fire:      "🔥 *The Dragon has awakened on Monad Mainnet\\!*",
     how_to_buy:        "🟢 *How to Buy DRAGON:*\n1️⃣ Add Monad Mainnet to your wallet\n2️⃣ Get MON for gas fees\n3️⃣ Tap *Buy DRAGON* below \\& swap\\!",
-    quick_start:       "🚀 *Quick Start Guide*\n\n1\\. Add Monad Mainnet to MetaMask or any EVM wallet\n2\\. Bridge or buy MON for gas fees\n3\\. Tap *Buy DRAGON* to get your tokens\n4\\. Use /balance to check your holdings\n5\\. Use /watch to track any wallet\n\nType /help for all commands\\.",
+    quick_start:       "🚀 *Quick Start Guide*\n\n1\\. Add Monad Mainnet to MetaMask or any EVM wallet\n2\\. Bridge or buy MON for gas fees\n3\\. Tap *Buy DRAGON* to get your tokens\n4\\. Stake MON to earn GOLD rewards\n5\\. Use /balance to check your holdings\n6\\. Use /watch to track any wallet\n\nType /help for all commands\\.",
     choose_action:     "Choose an action below 👇",
     rpc_error:         "❌ RPC is slow or unavailable. Try again in a moment, or check MonadScan directly:",
     invalid_address:   "❌ Invalid address. Please provide a valid 0x... Ethereum address.",
@@ -53,12 +72,13 @@ const I18N = {
     fetching_info:     "⏳ Fetching token info...",
     fetching_tokens:   "⏳ Loading available tokens...",
     fetching_quote:    "⏳ Fetching best quote...",
+    fetching_staking:  "⏳ Fetching staking info...",
     referral_msg:      "🔗 *Your Referral Link:*\n`{link}`\n\nShare this link to invite friends and earn rewards\\!\n\n👥 *Your referrals so far:* {count}",
   },
   es: {
     welcome_fire:      "🔥 *¡El Dragón ha despertado en Monad Mainnet\\!*",
     how_to_buy:        "🟢 *Cómo comprar DRAGON:*\n1️⃣ Añade Monad Mainnet a tu wallet\n2️⃣ Consigue MON para gas\n3️⃣ Pulsa *Comprar DRAGON* abajo \\& haz swap\\!",
-    quick_start:       "🚀 *Guía de Inicio Rápido*\n\n1\\. Añade Monad Mainnet a MetaMask\n2\\. Consigue MON para gas\n3\\. Toca *Comprar DRAGON* para obtener tus tokens\n4\\. Usa /balance para ver tu saldo\n5\\. Usa /watch para monitorear una wallet\n\nEscribe /help para todos los comandos\\.",
+    quick_start:       "🚀 *Guía de Inicio Rápido*\n\n1\\. Añade Monad Mainnet a MetaMask\n2\\. Consigue MON para gas\n3\\. Toca *Comprar DRAGON* para obtener tus tokens\n4\\. Haz staking de MON para ganar GOLD\n5\\. Usa /balance para ver tu saldo\n6\\. Usa /watch para monitorear una wallet\n\nEscribe /help para todos los comandos\\.",
     choose_action:     "Elige una acción 👇",
     rpc_error:         "❌ El RPC está lento. Inténtalo de nuevo o consulta MonadScan:",
     invalid_address:   "❌ Dirección inválida. Proporciona una dirección 0x... válida.",
@@ -67,12 +87,13 @@ const I18N = {
     fetching_info:     "⏳ Obteniendo info del token...",
     fetching_tokens:   "⏳ Cargando tokens disponibles...",
     fetching_quote:    "⏳ Buscando la mejor cotización...",
+    fetching_staking:  "⏳ Obteniendo info de staking...",
     referral_msg:      "🔗 *Tu Enlace de Referido:*\n`{link}`\n\n¡Compártelo para invitar amigos y ganar recompensas\\!\n\n👥 *Tus referidos hasta ahora:* {count}",
   },
   fr: {
     welcome_fire:      "🔥 *Le Dragon s'est éveillé sur Monad Mainnet\\!*",
     how_to_buy:        "🟢 *Comment acheter DRAGON:*\n1️⃣ Ajoutez Monad Mainnet à votre wallet\n2️⃣ Obtenez du MON pour le gas\n3️⃣ Appuyez sur *Acheter DRAGON* ci-dessous\\!",
-    quick_start:       "🚀 *Guide de Démarrage Rapide*\n\n1\\. Ajoutez Monad Mainnet à MetaMask\n2\\. Obtenez du MON pour le gas\n3\\. Appuyez sur *Acheter DRAGON* pour vos tokens\n4\\. Utilisez /balance pour vérifier votre solde\n5\\. Utilisez /watch pour suivre un wallet\n\nTapez /help pour toutes les commandes\\.",
+    quick_start:       "🚀 *Guide de Démarrage Rapide*\n\n1\\. Ajoutez Monad Mainnet à MetaMask\n2\\. Obtenez du MON pour le gas\n3\\. Appuyez sur *Acheter DRAGON* pour vos tokens\n4\\. Stakez du MON pour gagner des GOLD\n5\\. Utilisez /balance pour vérifier votre solde\n6\\. Utilisez /watch pour suivre un wallet\n\nTapez /help pour toutes les commandes\\.",
     choose_action:     "Choisissez une action 👇",
     rpc_error:         "❌ Le RPC est lent. Réessayez ou consultez MonadScan directement:",
     invalid_address:   "❌ Adresse invalide. Fournissez une adresse 0x... valide.",
@@ -81,14 +102,15 @@ const I18N = {
     fetching_info:     "⏳ Récupération des infos du token...",
     fetching_tokens:   "⏳ Chargement des tokens disponibles...",
     fetching_quote:    "⏳ Recherche du meilleur devis...",
+    fetching_staking:  "⏳ Récupération des infos de staking...",
     referral_msg:      "🔗 *Votre Lien de Parrainage:*\n`{link}`\n\nPartagez-le pour inviter des amis\\!\n\n👥 *Vos parrainages:* {count}",
   },
 };
 
 function t(chatId, key, vars) {
-  const lang   = userLangs.get(chatId) || "en";
-  const dict   = I18N[lang] || I18N.en;
-  let   str    = dict[key] || I18N.en[key] || key;
+  const lang = userLangs.get(chatId) || "en";
+  const dict = I18N[lang] || I18N.en;
+  let   str  = dict[key] || I18N.en[key] || key;
   if (vars) Object.keys(vars).forEach(k => { str = str.replace("{" + k + "}", vars[k]); });
   return str;
 }
@@ -115,19 +137,59 @@ function isAddress(str) {
   return /^0x[0-9a-fA-F]{40}$/.test(str);
 }
 
+function timeLeft(ts) {
+  const diff = Number(ts) - Math.floor(Date.now() / 1000);
+  if (diff <= 0) return "✅ Ready to claim";
+  const d = Math.floor(diff / 86400);
+  const h = Math.floor((diff % 86400) / 3600);
+  const m = Math.floor((diff % 3600) / 60);
+  return `⏳ ${d}d ${h}h ${m}m remaining`;
+}
+
 // ── API HELPERS ───────────────────────────────────────────────────
 async function getTokenInfo() {
   const [name, symbol, supply, decimals] = await Promise.all([
-    contract.name(), contract.symbol(), contract.totalSupply(), contract.decimals(),
+    dragonC.name(), dragonC.symbol(), dragonC.totalSupply(), dragonC.decimals(),
   ]);
   return { name, symbol, supply, decimals };
 }
 
 async function getBalance(address) {
   const [balance, decimals] = await Promise.all([
-    contract.balanceOf(address), contract.decimals(),
+    dragonC.balanceOf(address), dragonC.decimals(),
   ]);
   return { balance, decimals };
+}
+
+async function getGoldBalance(address) {
+  const [balance, decimals] = await Promise.all([
+    goldC.balanceOf(address), goldC.decimals(),
+  ]);
+  return { balance, decimals };
+}
+
+async function getStakingGlobal() {
+  const [totalStaked, decimals] = await Promise.all([
+    stakingC.totalStaked(), dragonC.decimals(),
+  ]);
+  return { totalStaked, decimals };
+}
+
+async function getStakingInfo(address) {
+  const [info, pending, decimals] = await Promise.all([
+    stakingC.stakeInfo(address),
+    stakingC.pendingRewards(address),
+    dragonC.decimals(),
+  ]);
+  return {
+    staked:       info[0],
+    stakedAt:     info[1],
+    unstakeAmt:   info[3],
+    unstakeAt:    info[4],
+    canClaim:     info[5],
+    pendingGold:  pending,
+    decimals,
+  };
 }
 
 async function getNearTokens() {
@@ -135,8 +197,8 @@ async function getNearTokens() {
     headers: { Authorization: "Bearer " + NEAR_JWT },
   });
   const data = await res.json();
-  return data.filter(t =>
-    ["eth","btc","sol","usdc","usdt","near"].some(s => t.symbol?.toLowerCase().includes(s))
+  return data.filter(tk =>
+    ["eth","btc","sol","usdc","usdt","near"].some(s => tk.symbol?.toLowerCase().includes(s))
   );
 }
 
@@ -159,28 +221,32 @@ const mainMenu = {
   reply_markup: {
     inline_keyboard: [
       [
-        { text: "🟢 Buy DRAGON",   url: BUY_URL   },
-        { text: "🔄 Trade",         url: TRADE_URL },
+        { text: "🟢 Buy DRAGON",    url: BUY_URL   },
+        { text: "🔄 Trade",          url: TRADE_URL },
       ],
       [
-        { text: "💰 Balance",       callback_data: "balance" },
-        { text: "📊 Token Info",    callback_data: "info"    },
+        { text: "🥩 Stake MON",      url: STAKE_URL },
+        { text: "🪙 GOLD Rewards",   callback_data: "gold_info" },
       ],
       [
-        { text: "🔥 Swap",          callback_data: "swap"    },
-        { text: "⛏️ Mining",        callback_data: "mining"  },
+        { text: "💰 My Balance",     callback_data: "balance"  },
+        { text: "📊 Token Info",     callback_data: "info"     },
       ],
       [
-        { text: "🔔 Price Alert",   callback_data: "alert"   },
-        { text: "👁️ Watch Wallet",  callback_data: "watch"   },
+        { text: "🔥 Swap",           callback_data: "swap"     },
+        { text: "⛏️ LP Mining",      callback_data: "mining"   },
       ],
       [
-        { text: "🔗 Referral",      callback_data: "referral"},
-        { text: "🌐 Open dApp",     url: DAPP_URL            },
+        { text: "🔔 Supply Alert",   callback_data: "alert"    },
+        { text: "👁️ Watch Wallet",   callback_data: "watch"    },
       ],
       [
-        { text: "📈 MonadVision",   url: `${VISION}/token/${TOKEN_ADDRESS}` },
-        { text: "🔍 Explorer",      url: `${EXPLORER}/token/${TOKEN_ADDRESS}` },
+        { text: "🔗 Referral",       callback_data: "referral" },
+        { text: "🌐 Open dApp",      url: DAPP_URL              },
+      ],
+      [
+        { text: "📈 MonadVision",    url: `${VISION}/token/${TOKEN_ADDRESS}` },
+        { text: "🔍 Explorer",       url: `${EXPLORER}/token/${TOKEN_ADDRESS}` },
       ],
     ],
   },
@@ -196,7 +262,6 @@ function getReferralCount(userId) {
   const set = referrals.get(String(userId));
   return set ? set.size : 0;
 }
-
 function recordReferral(referrerId, newUserId) {
   if (!referrerId || String(referrerId) === String(newUserId)) return;
   if (!referrals.has(String(referrerId))) referrals.set(String(referrerId), new Set());
@@ -210,8 +275,11 @@ async function sendWelcome(chatId, lang) {
 
 ${t(chatId, "welcome_fire")}
 
-💎 *Contract:*
+💎 *DRAGON Contract:*
 \`${TOKEN_ADDRESS}\`
+
+🪙 *GOLD Contract:*
+\`${GOLD_ADDRESS}\`
 
 🌐 *Network:* Monad Mainnet · Chain 143
 📐 *Standard:* ERC\\-20
@@ -219,6 +287,8 @@ ${t(chatId, "welcome_fire")}
 ━━━━━━━━━━━━━━━━━━━━
 ${t(chatId, "how_to_buy")}
 ━━━━━━━━━━━━━━━━━━━━
+
+🥩 *Stake MON → Earn 1 GOLD per MON per day*
 
 ${t(chatId, "choose_action")}`;
 
@@ -239,8 +309,8 @@ async function sendOnboarding(chatId) {
     parse_mode: "MarkdownV2",
     reply_markup: {
       inline_keyboard: [
-        [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🔗 My Referral", callback_data: "referral" }],
-        [{ text: "📖 All Commands", callback_data: "help_inline" }],
+        [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }],
+        [{ text: "🔗 My Referral", callback_data: "referral" }, { text: "📖 All Commands", callback_data: "help_inline" }],
       ],
     },
   });
@@ -248,16 +318,12 @@ async function sendOnboarding(chatId) {
 
 // ── /start ────────────────────────────────────────────────────────
 bot.onText(/\/start(?:\s+ref_(\d+))?/, async (msg, match) => {
-  const chatId    = msg.chat.id;
-  const lang      = detectLang(msg);
+  const chatId = msg.chat.id;
+  const lang   = detectLang(msg);
   userLangs.set(chatId, lang);
   clearSession(chatId);
-
-  // Record referral if started via ref link
   if (match && match[1]) recordReferral(match[1], chatId);
-
   await sendWelcome(chatId, lang);
-  // Send onboarding guide 1.5s after welcome so it feels natural
   setTimeout(() => sendOnboarding(chatId), 1500);
 });
 
@@ -272,7 +338,7 @@ bot.onText(/\/menu/, async (msg) => {
 
 // ── /referral ─────────────────────────────────────────────────────
 bot.onText(/\/referral/, async (msg) => {
-  const chatId = msg.chat.id;
+  const chatId  = msg.chat.id;
   userLangs.set(chatId, detectLang(msg));
   const refLink = `https://t.me/DragonMonadBot?start=ref_${msg.from.id}`;
   const count   = getReferralCount(msg.from.id);
@@ -288,7 +354,7 @@ bot.onText(/\/referral/, async (msg) => {
 });
 
 // ── /buy ─────────────────────────────────────────────────────────
-bot.onText(/\/buy/, async (msg) => {
+bot.onText(/\/buy/, (msg) => {
   bot.sendMessage(msg.chat.id,
     `🟢 *Buy DRAGON*\n\nGet DRAGON tokens on Monad Mainnet\\!\n\n[👉 Open Buy Page](${BUY_URL})`,
     { parse_mode: "MarkdownV2" }
@@ -296,11 +362,41 @@ bot.onText(/\/buy/, async (msg) => {
 });
 
 // ── /trade ────────────────────────────────────────────────────────
-bot.onText(/\/trade/, async (msg) => {
+bot.onText(/\/trade/, (msg) => {
   bot.sendMessage(msg.chat.id,
     `🔄 *Trade DRAGON*\n\nSwap tokens on the Dragon Monad dApp\\!\n\n[👉 Open Trade Page](${TRADE_URL})`,
     { parse_mode: "MarkdownV2" }
   );
+});
+
+// ── /stake ────────────────────────────────────────────────────────
+bot.onText(/\/stake/, async (msg) => {
+  userLangs.set(msg.chat.id, detectLang(msg));
+  await handleStakingGlobal(msg.chat.id);
+});
+
+// ── /mystake <address> ────────────────────────────────────────────
+bot.onText(/\/mystake (.+)/, async (msg, match) => {
+  userLangs.set(msg.chat.id, detectLang(msg));
+  const addr = match[1].trim();
+  if (!isAddress(addr)) {
+    return bot.sendMessage(msg.chat.id, t(msg.chat.id, "invalid_address"), {
+      reply_markup: { inline_keyboard: [[{ text: "🏠 Menu", callback_data: "menu" }]] },
+    });
+  }
+  await handleMyStake(msg.chat.id, addr);
+});
+
+// ── /gold <address> ───────────────────────────────────────────────
+bot.onText(/\/gold (.+)/, async (msg, match) => {
+  userLangs.set(msg.chat.id, detectLang(msg));
+  const addr = match[1].trim();
+  if (!isAddress(addr)) {
+    return bot.sendMessage(msg.chat.id, t(msg.chat.id, "invalid_address"), {
+      reply_markup: { inline_keyboard: [[{ text: "🏠 Menu", callback_data: "menu" }]] },
+    });
+  }
+  await handleGoldBalance(msg.chat.id, addr);
 });
 
 // ── /balance <address> ────────────────────────────────────────────
@@ -319,6 +415,12 @@ bot.onText(/\/balance (.+)/, async (msg, match) => {
 bot.onText(/\/info/, async (msg) => {
   userLangs.set(msg.chat.id, detectLang(msg));
   await handleInfo(msg.chat.id);
+});
+
+// ── /contracts ────────────────────────────────────────────────────
+bot.onText(/\/contracts/, async (msg) => {
+  userLangs.set(msg.chat.id, detectLang(msg));
+  await handleContracts(msg.chat.id);
 });
 
 // ── /swap ─────────────────────────────────────────────────────────
@@ -343,9 +445,7 @@ bot.onText(/\/alert/, async (msg) => {
 bot.onText(/\/watch (.+)/, async (msg, match) => {
   userLangs.set(msg.chat.id, detectLang(msg));
   const addr = match[1].trim();
-  if (!isAddress(addr)) {
-    return bot.sendMessage(msg.chat.id, t(msg.chat.id, "invalid_address"));
-  }
+  if (!isAddress(addr)) return bot.sendMessage(msg.chat.id, t(msg.chat.id, "invalid_address"));
   walletWatchers.set(msg.chat.id, addr.toLowerCase());
   bot.sendMessage(msg.chat.id,
     `👁️ *Watching wallet:*\n\`${addr}\`\n\nYou'll receive balance updates every 5 minutes.\nUse /stopwatch to stop.`,
@@ -354,18 +454,21 @@ bot.onText(/\/watch (.+)/, async (msg, match) => {
 });
 
 // ── /stopwatch ────────────────────────────────────────────────────
-bot.onText(/\/stopwatch/, async (msg) => {
+bot.onText(/\/stopwatch/, (msg) => {
   walletWatchers.delete(msg.chat.id);
   bot.sendMessage(msg.chat.id, "🛑 Wallet watch stopped.");
 });
 
 // ── /dapp ─────────────────────────────────────────────────────────
-bot.onText(/\/dapp/, async (msg) => {
-  bot.sendMessage(msg.chat.id, `🌐 *Dragon Monad dApp*\n\n[Open dApp](${DAPP_URL})`, { parse_mode: "Markdown" });
+bot.onText(/\/dapp/, (msg) => {
+  bot.sendMessage(msg.chat.id,
+    `🌐 *Dragon Monad dApp*\n\n[👉 Open dApp](${DAPP_URL})\n\n• Wallet · Stake · Swap · Airdrop · Info`,
+    { parse_mode: "Markdown" }
+  );
 });
 
 // ── /help ─────────────────────────────────────────────────────────
-bot.onText(/\/help/, async (msg) => {
+bot.onText(/\/help/, (msg) => {
   userLangs.set(msg.chat.id, detectLang(msg));
   sendHelpMessage(msg.chat.id);
 });
@@ -377,9 +480,13 @@ function sendHelpMessage(chatId) {
 /menu — Main menu
 /buy — Buy DRAGON tokens
 /trade — Trade on dApp
+/stake — Global staking stats
+/mystake \`<address>\` — Your staking position & GOLD rewards
+/gold \`<address>\` — Check GOLD token balance
 /referral — Get your referral link
 /balance \`<address>\` — Check DRAGON balance
 /info — Token contract info
+/contracts — All contract addresses
 /swap — Swap tokens via NEAR Intents
 /mining — LP Mining info
 /alert — Set supply alert
@@ -390,19 +497,19 @@ function sendHelpMessage(chatId) {
 
 *Quick links:*
 🟢 [Buy DRAGON](${BUY_URL})
+🥩 [Stake MON](${STAKE_URL})
 🔄 [Trade](${TRADE_URL})
 🌐 [dApp](${DAPP_URL})
 📈 [MonadVision](${VISION}/token/${TOKEN_ADDRESS})
-🔍 [Explorer](${EXPLORER}/token/${TOKEN_ADDRESS})
-
-💡 *Tip:* Use @DragonMonadBot in any chat to share token balances inline\\!`;
+🔍 [Explorer](${EXPLORER}/token/${TOKEN_ADDRESS})`;
 
   bot.sendMessage(chatId, text, {
     parse_mode: "Markdown",
     disable_web_page_preview: true,
     reply_markup: {
       inline_keyboard: [
-        [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🔗 My Referral", callback_data: "referral" }],
+        [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }],
+        [{ text: "🔗 My Referral", callback_data: "referral" }],
         [{ text: "🏠 Menu", callback_data: "menu" }],
       ],
     },
@@ -415,8 +522,7 @@ bot.on("inline_query", async (query) => {
 
   if (!addr) {
     return bot.answerInlineQuery(query.id, [{
-      type: "article",
-      id: "help",
+      type: "article", id: "help",
       title: "🐉 Dragon Monad",
       description: "Type a 0x wallet address to look up DRAGON balance",
       input_message_content: {
@@ -428,51 +534,48 @@ bot.on("inline_query", async (query) => {
 
   if (!isAddress(addr)) {
     return bot.answerInlineQuery(query.id, [{
-      type: "article",
-      id: "invalid",
+      type: "article", id: "invalid",
       title: "❌ Invalid address",
       description: "Please type a valid 0x... Ethereum address",
-      input_message_content: {
-        message_text: "❌ Invalid address. Provide a valid 0x... Ethereum address.",
-      },
+      input_message_content: { message_text: "❌ Invalid address. Provide a valid 0x... Ethereum address." },
     }], { cache_time: 0 });
   }
 
   try {
-    const { balance, decimals } = await getBalance(addr);
-    const formatted = fmt(balance, decimals);
-    bot.answerInlineQuery(query.id, [
-      {
-        type: "article",
-        id: "balance",
-        title: `💰 ${formatted} DRAGON`,
-        description: `Balance for ${shortAddr(addr)}`,
-        input_message_content: {
-          message_text:
+    const [
+      { balance: dBal, decimals },
+      { balance: gBal },
+    ] = await Promise.all([getBalance(addr), getGoldBalance(addr)]);
+
+    bot.answerInlineQuery(query.id, [{
+      type: "article", id: "balance",
+      title: `💰 ${fmt(dBal, decimals)} DRAGON`,
+      description: `GOLD: ${fmt(gBal, decimals)} | ${shortAddr(addr)}`,
+      input_message_content: {
+        message_text:
 `💰 *DRAGON Balance*
 
 *Address:* \`${addr}\`
-*Balance:* \`${formatted} DRAGON\`
+*DRAGON:* \`${fmt(dBal, decimals)} DRAGON\`
+*GOLD:* \`${fmt(gBal, decimals)} GOLD\`
 
-[View on Explorer](${EXPLORER}/address/${addr}) | [MonadVision](${VISION}/token/${TOKEN_ADDRESS})`,
-          parse_mode: "Markdown",
-        },
-        reply_markup: {
-          inline_keyboard: [[
-            { text: "🟢 Buy DRAGON", url: BUY_URL },
-            { text: "🔍 Explorer", url: `${EXPLORER}/address/${addr}` },
-          ]],
-        },
+[Explorer](${EXPLORER}/address/${addr}) | [MonadVision](${VISION}/token/${TOKEN_ADDRESS}) | [dApp](${DAPP_URL})`,
+        parse_mode: "Markdown",
       },
-    ], { cache_time: 30 });
+      reply_markup: {
+        inline_keyboard: [[
+          { text: "🟢 Buy DRAGON", url: BUY_URL },
+          { text: "🥩 Stake MON",  url: STAKE_URL },
+        ]],
+      },
+    }], { cache_time: 30 });
   } catch {
     bot.answerInlineQuery(query.id, [{
-      type: "article",
-      id: "error",
+      type: "article", id: "error",
       title: "❌ RPC Error",
       description: "Could not fetch balance. Try again.",
       input_message_content: {
-        message_text: `❌ Could not fetch balance for \`${shortAddr(addr)}\`\\. RPC may be slow — try again or check [MonadScan](${EXPLORER}/address/${addr})`,
+        message_text: `❌ Could not fetch balance for \`${shortAddr(addr)}\`\\. Try again or check [MonadScan](${EXPLORER}/address/${addr})`,
         parse_mode: "MarkdownV2",
       },
     }], { cache_time: 0 });
@@ -491,10 +594,25 @@ bot.on("callback_query", async (query) => {
       reply_markup: { force_reply: true },
     });
   }
-  else if (data === "info")     { await handleInfo(chatId); }
-  else if (data === "swap")     { await startSwapFlow(chatId); }
-  else if (data === "mining")   { await handleMining(chatId); }
-  else if (data === "alert")    { await startAlertFlow(chatId); }
+  else if (data === "info")       { await handleInfo(chatId); }
+  else if (data === "swap")       { await startSwapFlow(chatId); }
+  else if (data === "mining")     { await handleMining(chatId); }
+  else if (data === "alert")      { await startAlertFlow(chatId); }
+  else if (data === "gold_info")  { await handleGoldInfo(chatId); }
+  else if (data === "staking")    { await handleStakingGlobal(chatId); }
+  else if (data === "contracts")  { await handleContracts(chatId); }
+  else if (data === "mystake_prompt") {
+    setSession(chatId, "awaiting_mystake_address");
+    bot.sendMessage(chatId, "🥩 Enter your wallet address to view your staking position:", {
+      reply_markup: { force_reply: true },
+    });
+  }
+  else if (data === "gold_prompt") {
+    setSession(chatId, "awaiting_gold_address");
+    bot.sendMessage(chatId, "🪙 Enter wallet address to check GOLD balance:", {
+      reply_markup: { force_reply: true },
+    });
+  }
   else if (data === "referral") {
     const refLink = `https://t.me/DragonMonadBot?start=ref_${query.from.id}`;
     const count   = getReferralCount(query.from.id);
@@ -509,7 +627,7 @@ bot.on("callback_query", async (query) => {
     });
   }
   else if (data === "help_inline") { sendHelpMessage(chatId); }
-  else if (data === "watch")  {
+  else if (data === "watch") {
     setSession(chatId, "awaiting_watch_address");
     bot.sendMessage(chatId, "👁️ Enter the wallet address to watch:", {
       reply_markup: { force_reply: true },
@@ -552,9 +670,19 @@ bot.on("message", async (msg) => {
     if (!isAddress(text)) return bot.sendMessage(chatId, t(chatId, "invalid_address"));
     walletWatchers.set(chatId, text.toLowerCase());
     bot.sendMessage(chatId,
-      `👁️ *Now watching:*\n\`${text}\`\n\nBalance updates every 5 minutes.\nUse /stopwatch to stop.`,
+      `👁️ *Now watching:*\n\`${text}\`\n\nBalance updates every 5 minutes. Use /stopwatch to stop.`,
       { parse_mode: "Markdown" }
     );
+  }
+  else if (session.step === "awaiting_mystake_address") {
+    clearSession(chatId);
+    if (!isAddress(text)) return bot.sendMessage(chatId, t(chatId, "invalid_address"));
+    await handleMyStake(chatId, text);
+  }
+  else if (session.step === "awaiting_gold_address") {
+    clearSession(chatId);
+    if (!isAddress(text)) return bot.sendMessage(chatId, t(chatId, "invalid_address"));
+    await handleGoldBalance(chatId, text);
   }
   else if (session.step === "awaiting_swap_recipient") {
     if (!isAddress(text)) return bot.sendMessage(chatId, t(chatId, "invalid_address"));
@@ -584,16 +712,21 @@ bot.on("message", async (msg) => {
 });
 
 // ── HANDLER FUNCTIONS ─────────────────────────────────────────────
+
 async function handleBalanceCheck(chatId, address) {
   const loading = await bot.sendMessage(chatId, t(chatId, "fetching_balance"));
   try {
-    const { balance, decimals } = await getBalance(address);
-    const formatted = fmt(balance, decimals);
+    const [
+      { balance: dBal, decimals },
+      { balance: gBal },
+    ] = await Promise.all([getBalance(address), getGoldBalance(address)]);
+
     await bot.editMessageText(
 `💰 *DRAGON Balance*
 
 *Address:* \`${shortAddr(address)}\`
-*Balance:* \`${formatted} DRAGON\`
+*DRAGON:* \`${fmt(dBal, decimals)} DRAGON\`
+*GOLD:* \`${fmt(gBal, decimals)} GOLD\`
 
 [View on Explorer](${EXPLORER}/address/${address}) | [MonadVision](${VISION}/token/${TOKEN_ADDRESS})`,
       {
@@ -601,19 +734,188 @@ async function handleBalanceCheck(chatId, address) {
         parse_mode: "Markdown", disable_web_page_preview: true,
         reply_markup: {
           inline_keyboard: [
-            [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🔄 Trade", url: TRADE_URL }],
+            [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }],
             [{ text: "🔄 Check Again", callback_data: "balance" }, { text: "🏠 Menu", callback_data: "menu" }],
           ],
         },
       }
     );
-  } catch (e) {
+  } catch {
     bot.editMessageText(
       `${t(chatId, "rpc_error")}\n\n[${EXPLORER}/address/${address}](${EXPLORER}/address/${address})`,
       {
+        chat_id: chatId, message_id: loading.message_id, parse_mode: "Markdown",
+        reply_markup: { inline_keyboard: [[{ text: "🔄 Retry", callback_data: "balance" }, { text: "🏠 Menu", callback_data: "menu" }]] },
+      }
+    );
+  }
+}
+
+async function handleGoldBalance(chatId, address) {
+  const loading = await bot.sendMessage(chatId, "⏳ Fetching GOLD balance...");
+  try {
+    const [{ balance: gBal, decimals }, pendingRaw] = await Promise.all([
+      getGoldBalance(address),
+      stakingC.pendingRewards(address).catch(() => 0n),
+    ]);
+    await bot.editMessageText(
+`🪙 *GOLD Balance*
+
+*Address:* \`${shortAddr(address)}\`
+*GOLD Balance:* \`${fmt(gBal, decimals)} GOLD\`
+*Unclaimed Rewards:* \`${fmt(pendingRaw, decimals)} GOLD\`
+
+GOLD is earned by staking MON at *1 GOLD per MON per day*\\. Claim from the Stake tab in the dApp\\.
+
+[View GOLD on MonadVision](${VISION}/token/${GOLD_ADDRESS})`,
+      {
+        chat_id: chatId, message_id: loading.message_id,
+        parse_mode: "Markdown", disable_web_page_preview: true,
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🥩 Stake to Earn GOLD", url: STAKE_URL }, { text: "🌐 dApp", url: DAPP_URL }],
+            [{ text: "🔍 GOLD on Explorer", url: `${EXPLORER}/token/${GOLD_ADDRESS}` }],
+            [{ text: "🏠 Menu", callback_data: "menu" }],
+          ],
+        },
+      }
+    );
+  } catch {
+    bot.editMessageText(
+      `${t(chatId, "rpc_error")}\n\n[${EXPLORER}/token/${GOLD_ADDRESS}](${EXPLORER}/token/${GOLD_ADDRESS})`,
+      {
+        chat_id: chatId, message_id: loading.message_id, parse_mode: "Markdown",
+        reply_markup: { inline_keyboard: [[{ text: "🏠 Menu", callback_data: "menu" }]] },
+      }
+    );
+  }
+}
+
+async function handleGoldInfo(chatId) {
+  const loading = await bot.sendMessage(chatId, "⏳ Loading GOLD info...");
+  try {
+    const [supply, decimals] = await Promise.all([goldC.totalSupply(), goldC.decimals()]);
+    await bot.editMessageText(
+`🪙 *GOLD Token Info*
+
+*Name:* GOLD
+*Contract:* \`${GOLD_ADDRESS}\`
+*Total Supply:* \`${fmt(supply, decimals)} GOLD\`
+*Network:* Monad Mainnet · Chain 143
+*Verified:* Sourcify ✅
+
+━━━━━━━━━━━━━━━━━━━━
+💡 *How to earn GOLD:*
+1\\. Stake MON in the Stake tab
+2\\. Earn 1 GOLD per MON per day
+3\\. Claim anytime — GOLD goes to your wallet
+
+[View GOLD on MonadVision](${VISION}/token/${GOLD_ADDRESS})`,
+      {
+        chat_id: chatId, message_id: loading.message_id,
+        parse_mode: "Markdown", disable_web_page_preview: true,
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🥩 Stake MON Now", url: STAKE_URL }, { text: "🌐 dApp", url: DAPP_URL }],
+            [{ text: "📈 GOLD on MonadVision", url: `${VISION}/token/${GOLD_ADDRESS}` }],
+            [{ text: "🔍 GOLD Explorer", url: `${EXPLORER}/token/${GOLD_ADDRESS}` }],
+            [{ text: "🏠 Menu", callback_data: "menu" }],
+          ],
+        },
+      }
+    );
+  } catch {
+    bot.editMessageText(
+      `${t(chatId, "rpc_error")}\n\n[${EXPLORER}/token/${GOLD_ADDRESS}](${EXPLORER}/token/${GOLD_ADDRESS})`,
+      {
+        chat_id: chatId, message_id: loading.message_id, parse_mode: "Markdown",
+        reply_markup: { inline_keyboard: [[{ text: "🏠 Menu", callback_data: "menu" }]] },
+      }
+    );
+  }
+}
+
+async function handleStakingGlobal(chatId) {
+  const loading = await bot.sendMessage(chatId, t(chatId, "fetching_staking"));
+  try {
+    const { totalStaked, decimals } = await getStakingGlobal();
+    await bot.editMessageText(
+`🥩 *Liquid Staking — Dragon Monad*
+
+*Total MON Staked:* \`${fmt(totalStaked, decimals)} MON\`
+
+━━━━━━━━━━━━━━━━━━━━
+📐 *Staking Rules:*
+• Rate: 1 GOLD per MON per day
+• Normal unstake: 7-day delay
+• Instant unstake: 10% penalty to treasury
+• Claim rewards anytime
+
+📄 *Staking Contract:*
+\`${STAKING_ADDRESS}\`
+
+📄 *GOLD Contract:*
+\`${GOLD_ADDRESS}\`
+
+Use /mystake \`<address>\` to see your personal staking position.`,
+      {
         chat_id: chatId, message_id: loading.message_id,
         parse_mode: "Markdown",
-        reply_markup: { inline_keyboard: [[{ text: "🔄 Retry", callback_data: "balance" }, { text: "🏠 Menu", callback_data: "menu" }]] },
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🥩 Stake MON", url: STAKE_URL }, { text: "🌐 dApp", url: DAPP_URL }],
+            [{ text: "👤 My Position", callback_data: "mystake_prompt" }],
+            [{ text: "🔍 Staking Contract", url: `${EXPLORER}/address/${STAKING_ADDRESS}` }],
+            [{ text: "🏠 Menu", callback_data: "menu" }],
+          ],
+        },
+      }
+    );
+  } catch {
+    bot.editMessageText(
+      `${t(chatId, "rpc_error")}\n\n[${EXPLORER}/address/${STAKING_ADDRESS}](${EXPLORER}/address/${STAKING_ADDRESS})`,
+      {
+        chat_id: chatId, message_id: loading.message_id, parse_mode: "Markdown",
+        reply_markup: { inline_keyboard: [[{ text: "🔄 Retry", callback_data: "staking" }, { text: "🏠 Menu", callback_data: "menu" }]] },
+      }
+    );
+  }
+}
+
+async function handleMyStake(chatId, address) {
+  const loading = await bot.sendMessage(chatId, t(chatId, "fetching_staking"));
+  try {
+    const { staked, unstakeAmt, unstakeAt, canClaim, pendingGold, decimals } = await getStakingInfo(address);
+    const unstakeLine = unstakeAmt > 0n
+      ? `\n*Pending Unstake:* \`${fmt(unstakeAmt, decimals)} MON\`\n*Unlock:* ${timeLeft(unstakeAt)}`
+      : "";
+
+    await bot.editMessageText(
+`🥩 *My Staking Position*
+
+*Address:* \`${shortAddr(address)}\`
+*Staked MON:* \`${fmt(staked, decimals)} MON\`
+*Pending GOLD:* \`${fmt(pendingGold, decimals)} GOLD\`${unstakeLine}
+
+💡 Claim your GOLD rewards from the Stake tab in the dApp\\. 
+Earning 1 GOLD per MON per day\\.`,
+      {
+        chat_id: chatId, message_id: loading.message_id,
+        parse_mode: "Markdown",
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: "🥩 Stake / Claim", url: STAKE_URL }, { text: "🌐 dApp", url: DAPP_URL }],
+            [{ text: "🔄 Refresh", callback_data: "mystake_prompt" }, { text: "🏠 Menu", callback_data: "menu" }],
+          ],
+        },
+      }
+    );
+  } catch {
+    bot.editMessageText(
+      `${t(chatId, "rpc_error")}\n\n[${EXPLORER}/address/${address}](${EXPLORER}/address/${address})`,
+      {
+        chat_id: chatId, message_id: loading.message_id, parse_mode: "Markdown",
+        reply_markup: { inline_keyboard: [[{ text: "🏠 Menu", callback_data: "menu" }]] },
       }
     );
   }
@@ -632,9 +934,16 @@ async function handleInfo(chatId) {
 *Decimals:* ${decimals}
 *Standard:* ERC-20
 *Network:* Monad Mainnet · Chain 143
+*Verified:* Sourcify ✅
 
-*Token Contract:*
+*DRAGON Contract:*
 \`${TOKEN_ADDRESS}\`
+
+*GOLD Contract:*
+\`${GOLD_ADDRESS}\`
+
+*LiquidStaking Contract:*
+\`${STAKING_ADDRESS}\`
 
 *LP Mining Contract:*
 \`${LP_MINING}\``,
@@ -643,7 +952,7 @@ async function handleInfo(chatId) {
         parse_mode: "Markdown",
         reply_markup: {
           inline_keyboard: [
-            [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🔄 Trade", url: TRADE_URL }],
+            [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }],
             [{ text: "🔍 Explorer", url: `${EXPLORER}/token/${TOKEN_ADDRESS}` }, { text: "📈 MonadVision", url: `${VISION}/token/${TOKEN_ADDRESS}` }],
             [{ text: "🏠 Menu", callback_data: "menu" }],
           ],
@@ -661,13 +970,48 @@ async function handleInfo(chatId) {
   }
 }
 
+async function handleContracts(chatId) {
+  bot.sendMessage(chatId,
+`📄 *All Contract Addresses*
+
+🐉 *DRAGON Token:*
+\`${TOKEN_ADDRESS}\`
+
+🪙 *GOLD Token (Rewards):*
+\`${GOLD_ADDRESS}\`
+
+🥩 *LiquidStaking:*
+\`${STAKING_ADDRESS}\`
+
+⛏️ *LP Mining:*
+\`${LP_MINING}\`
+
+🏦 *Treasury:*
+\`${TREASURY}\`
+
+🌐 *Network:* Monad Mainnet · Chain 143
+🔗 *dApp:* ${DAPP_URL}`,
+    {
+      parse_mode: "Markdown",
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: "🔍 DRAGON", url: `${EXPLORER}/token/${TOKEN_ADDRESS}` }, { text: "🔍 GOLD", url: `${EXPLORER}/token/${GOLD_ADDRESS}` }],
+          [{ text: "🔍 Staking", url: `${EXPLORER}/address/${STAKING_ADDRESS}` }, { text: "🔍 LP Mining", url: `${EXPLORER}/address/${LP_MINING}` }],
+          [{ text: "🌐 Open dApp", url: DAPP_URL }],
+          [{ text: "🏠 Menu", callback_data: "menu" }],
+        ],
+      },
+    }
+  );
+}
+
 async function startSwapFlow(chatId) {
   const loading = await bot.sendMessage(chatId, t(chatId, "fetching_tokens"));
   try {
     const tokens  = await getNearTokens();
-    const buttons = tokens.slice(0, 8).map(t => [{
-      text: `${t.symbol}${t.price ? ` ($${Number(t.price).toFixed(2)})` : ""}`,
-      callback_data: `swap_token:${t.assetId}`,
+    const buttons = tokens.slice(0, 8).map(tk => [{
+      text: `${tk.symbol}${tk.price ? ` ($${Number(tk.price).toFixed(2)})` : ""}`,
+      callback_data: `swap_token:${tk.assetId}`,
     }]);
     buttons.push([{ text: "🏠 Menu", callback_data: "menu" }]);
     await bot.editMessageText(
@@ -689,7 +1033,7 @@ async function handleSwapQuote(chatId, { originAsset, amount, recipient }) {
   const loading = await bot.sendMessage(chatId, t(chatId, "fetching_quote"));
   try {
     const tokens    = await getNearTokens();
-    const origin    = tokens.find(t => t.assetId === originAsset);
+    const origin    = tokens.find(tk => tk.assetId === originAsset);
     const decimals  = origin?.decimals ?? 18;
     const amountRaw = (BigInt(Math.round(parseFloat(amount) * Math.pow(10, decimals)))).toString();
     const destAsset = `nep141:monad-${TOKEN_ADDRESS.toLowerCase()}.omft.near`;
@@ -716,7 +1060,7 @@ async function handleSwapQuote(chatId, { originAsset, amount, recipient }) {
     clearSession(chatId);
   } catch {
     bot.editMessageText(
-      "❌ Could not fetch quote\\. Try a different token or amount, or check your connection\\.",
+      "❌ Could not fetch quote\\. Try a different token or amount\\.",
       {
         chat_id: chatId, message_id: loading.message_id, parse_mode: "MarkdownV2",
         reply_markup: { inline_keyboard: [[{ text: "🔄 Try Again", callback_data: "swap" }, { text: "🏠 Menu", callback_data: "menu" }]] },
@@ -735,17 +1079,19 @@ Provide liquidity and earn DRAGON rewards\\!
 *Mining Contract:*
 \`${LP_MINING}\`
 
-*Token Contract:*
+*DRAGON Contract:*
 \`${TOKEN_ADDRESS}\`
 
-*Network:* Monad Mainnet · Chain 143`,
+*Network:* Monad Mainnet · Chain 143
+
+💡 Also try *Liquid Staking* — stake MON and earn 1 GOLD per MON per day\\.`,
     {
       parse_mode: "MarkdownV2",
       reply_markup: {
         inline_keyboard: [
-          [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🔄 Trade", url: TRADE_URL }],
-          [{ text: "🔍 View Mining Contract", url: `${EXPLORER}/address/${LP_MINING}` }],
-          [{ text: "📊 MonadVision Analytics", url: `${VISION}/token/${TOKEN_ADDRESS}` }],
+          [{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }],
+          [{ text: "🔍 Mining Contract", url: `${EXPLORER}/address/${LP_MINING}` }],
+          [{ text: "📊 MonadVision", url: `${VISION}/token/${TOKEN_ADDRESS}` }],
           [{ text: "🌐 Open dApp", url: DAPP_URL }],
           [{ text: "🏠 Menu", callback_data: "menu" }],
         ],
@@ -780,7 +1126,7 @@ setInterval(async () => {
           `👁️ *Wallet Update*\n\n\`${shortAddr(address)}\`\n\n*Previous:* ${oldFmt} DRAGON\n*Current:* ${newFmt} DRAGON\n*Change:* ${sign}${Math.abs(change).toFixed(4)} DRAGON`,
           {
             parse_mode: "Markdown",
-            reply_markup: { inline_keyboard: [[{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🔄 Trade", url: TRADE_URL }]] },
+            reply_markup: { inline_keyboard: [[{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }]] },
           }
         );
       }
@@ -793,8 +1139,8 @@ setInterval(async () => {
 setInterval(async () => {
   if (priceAlerts.size === 0) return;
   try {
-    const supply    = await contract.totalSupply();
-    const decimals  = await contract.decimals();
+    const supply    = await dragonC.totalSupply();
+    const decimals  = await dragonC.decimals();
     const supplyNum = Number(ethers.formatUnits(supply, decimals));
 
     for (const [chatId, alert] of priceAlerts.entries()) {
@@ -804,7 +1150,7 @@ setInterval(async () => {
           `🔔 *Supply Alert Triggered\\!*\n\nTotal supply has reached *${supplyNum.toLocaleString()}* DRAGON\n\\(Your threshold: ${alert.threshold.toLocaleString()}\\)`,
           {
             parse_mode: "MarkdownV2",
-            reply_markup: { inline_keyboard: [[{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🔄 Trade", url: TRADE_URL }]] },
+            reply_markup: { inline_keyboard: [[{ text: "🟢 Buy DRAGON", url: BUY_URL }, { text: "🥩 Stake MON", url: STAKE_URL }]] },
           }
         );
       }
@@ -816,3 +1162,7 @@ setInterval(async () => {
 bot.on("polling_error", (err) => console.error("Polling error:", err.message));
 
 console.log("🐉 Dragon Monad Bot is running...");
+console.log(`   dApp:     ${DAPP_URL}`);
+console.log(`   DRAGON:   ${TOKEN_ADDRESS}`);
+console.log(`   GOLD:     ${GOLD_ADDRESS}`);
+console.log(`   Staking:  ${STAKING_ADDRESS}`);
